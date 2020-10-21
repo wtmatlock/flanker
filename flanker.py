@@ -10,6 +10,7 @@ import numpy as np
 import subprocess
 import argparse
 from Bio import SeqIO
+from pathlib import Path
 
 
 __author__ = "Samuel Lipworth, William Matlock"
@@ -76,7 +77,7 @@ def flank_fasta_file(file):
             record.seq = record.seq[pos[0]:pos[1]] + record.seq[pos[2]:pos[3]]
             record.description = f"{record.description} | {args.goi} | {args.window}bp window"
 
-        with open(f"{file}_{args.goi}_flank.fasta", "w") as f:
+        with open(f"{Path(file).stem}_{args.goi}_flank.fasta", "w") as f:
                 SeqIO.write(record, f, "fasta")
                 f.close()
 
