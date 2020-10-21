@@ -79,8 +79,8 @@ def flank_fasta_file(file):
 
         with open(f"{Path(file).stem}_{args.goi}_flank.fasta", "w") as f:
                 SeqIO.write(record, f, "fasta")
+                print(f"{f.name} sucessfully created!")
                 f.close()
-                print(f"{Path(file).stem}_{args.goi}_flank.fasta sucessfully created!")
 
     else:
         print('Gene not found')
