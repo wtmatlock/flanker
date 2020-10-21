@@ -42,53 +42,31 @@ def run_abricate(file):
     o=open(str(file + '_resfinder'),'w') # create output file
     o.write(out) # write output file
     o.close() # close output
-    
-
-def lhs_position(file, gene_):
-    args = get_arguments()
-
-    data=pd.read_csv(file, sep='\t', header=0) # read abricate output
-    gene = data.query('GENE == @gene_') # gene of interest row
-    
-    # things break if gene is not found
-    # iloc could be used to specify if gene found multiple times... rare but a cool error
-    
-    end=int(gene['START'].iloc[0]) # start of gene
-    end-=1 # end of LHS flank
-    w=int(args.window)
-    start = end - w # start of LHS flank
-    return(start, end)
 
     
-def rhs_position(file, gene_):
-    args = get_arguments()
-
-    data=pd.read_csv(file, sep='\t', header=0)
-    gene = data.query('GENE == @gene_')
-
-    start=int(gene['END'].iloc[0]) # end of gene/start of RHS flank
-    w=int(args.window)
-    end = start + w # end of RHS flank
-    return(start, end)
-
-
 def flank_positions(file, gene_):
     args = get_arguments()
 
     data=pd.read_csv(file, sep='\t', header=0)
     gene = data.query('GENE == @gene_')
-    
-    # LHS flank
-    lhs_end=int(gene['START'].iloc[0]) # start of gene
-    lhs_end-=1 # end of LHS flank
-    w=int(args.window)
-    lhs_start = lhs_end - w # start of LHS flank
 
-    # RHS flank
-    rhs_start=int(gene['END'].iloc[0]) # end of gene/start of RHS flank
-    rhs_end = rhs_start + w # end of RHS flank
+    # check if gene is found
+    if len(gene) != 0:
 
-    return(lhs_start, lhs_end, rhs_start, rhs_end)
+        # LHS flank
+        lhs_end=int(gene['START'].iloc[0]) # start of gene
+        lhs_end-=1 # end of LHS flank
+        w=int(args.window)
+        lhs_start = lhs_end - w # start of LHS flank
+
+        # RHS flank
+        rhs_start=int(gene['END'].iloc[0]) # end of gene/start of RHS flank
+        rhs_end = rhs_start + w # end of RHS flank
+
+        return(lhs_start, lhs_end, rhs_start, rhs_end)
+
+    else:
+        return True
 
     
 def flank_fasta_file(file):
@@ -98,16 +76,18 @@ def flank_fasta_file(file):
 
     pos=flank_positions(abricate_file, args.goi)
 
-    # need some catch for windows that exceed sequence length
-    # i.e take mod(length) and loop round (or self-concatenate original seq)
+    if pos != True:
 
-    for record in SeqIO.parse(file,"fasta"):
-        record.seq = record.seq[pos[0]:pos[1]] + record.seq[pos[2]:pos[3]]
-        record.description = f"{record.description} | {args.goi} | {args.window}bp window"
+        for record in SeqIO.parse(file,"fasta"):
+            record.seq = record.seq[pos[0]:pos[1]] + record.seq[pos[2]:pos[3]]
+            record.description = f"{record.description} | {args.goi} | {args.window}bp window"
 
         with open(f"{file}_{args.goi}_flank.fasta", "w") as f:
-            SeqIO.write(record, f, "fasta")
-            f.close()
+                SeqIO.write(record, f, "fasta")
+                f.close()
+
+    else:
+        print('Gene not found')
 
     
 def main():
