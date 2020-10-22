@@ -139,7 +139,7 @@ def flank_fasta_file_lin(file):
             w = int(args.window)
             l = len(record.seq)
 
-            record.seq = record.seq[min(0, pos[0]):pos[1]] + record.seq[pos[2]:max(len(record.seq), pos[3])]
+            record.seq = record.seq[max(0, pos[0]):pos[1]] + record.seq[pos[2]:min(len(record.seq), pos[3])]
 
             record.description = f"{record.description} | {args.goi} | {w}bp window"
 
@@ -147,6 +147,9 @@ def flank_fasta_file_lin(file):
                 SeqIO.write(record, f, "fasta")
                 print(f"{f.name} sucessfully created!")
                 f.close()
+
+    else:
+        print('Gene not found')
           
 def main():
     args = get_arguments()
