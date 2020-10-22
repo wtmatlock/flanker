@@ -51,16 +51,13 @@ def flank_positions(file, gene_):
     if len(gene) != 0:
 
         # LHS flank
-        lhs_end = int(gene['START'].iloc[0]) # start of gene
-        lhs_end -= 1 # end of LHS flank
-        w = int(args.window)
-        lhs_start = lhs_end - w # start of LHS flank
+        start = int(gene['START'].iloc[0]) # start of gene
+        start -= 1 # end of LHS flank
 
         # RHS flank
-        rhs_start = int(gene['END'].iloc[0]) # end of gene/start of RHS flank
-        rhs_end = rhs_start + w # end of RHS flank
+        end = int(gene['END'].iloc[0]) # end of gene/start of RHS flank
 
-        return(lhs_start, lhs_end, rhs_start, rhs_end)
+        return(start, end)
 
     else:
         return True
@@ -81,14 +78,14 @@ def flank_fasta_file_circ(file):
             l = len(record.seq)
 
             # if window is too long for sequence length
-            if (w - pos[1] > l - pos[3]) | (w - (l - pos[2]) > pos[0]):
+            if (w - pos[0] > l - (pos[1] + w)) | (pos[0] - w > l - (pos[0] + w)):
                 print('Window too long for sequence length')
 
             # if window exceeds sequence length after gene
-            elif pos[2] + w > l:
+            elif pos[1] + w > l:
 
                 # loop to start
-                record.seq = record.seq[pos[0]:pos[1]] + record.seq[pos[2]:l] + record.seq[0:(w-(l-pos[2]))] 
+                record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)] 
 
                 record.description = f"{record.description} | {args.goi} | {w}bp window"
 
@@ -98,10 +95,10 @@ def flank_fasta_file_circ(file):
                     f.close()
 
             # if window exceeds sequence length before gene
-            elif pos[1] - w < 0:
+            elif pos[0] - w < 0:
 
                 # loop to end
-                record.seq = record.seq[(l-(w-pos[1])):l] + record.seq[0:pos[1]] + record.seq[pos[2]:pos[3]]
+                record.seq = record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
 
                 record.description = f"{record.description} | {args.goi} | {w}bp window"
 
@@ -112,7 +109,7 @@ def flank_fasta_file_circ(file):
 
             else:
             
-                record.seq = record.seq[pos[0]:pos[1]] + record.seq[pos[2]:pos[3]]
+                record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)]
 
                 record.description = f"{record.description} | {args.goi} | {w}bp window"
 
@@ -139,7 +136,7 @@ def flank_fasta_file_lin(file):
             w = int(args.window)
             l = len(record.seq)
 
-            record.seq = record.seq[max(0, pos[0]):pos[1]] + record.seq[pos[2]:min(len(record.seq), pos[3])]
+            record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
 
             record.description = f"{record.description} | {args.goi} | {w}bp window"
 
