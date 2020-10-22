@@ -78,7 +78,7 @@ def flank_fasta_file_circ(file):
             l = len(record.seq)
 
             # if window is too long for sequence length
-            if (w - pos[0] > l - (pos[1] + w)) | (pos[0] - w < (pos[1] + w) - l):
+            if w > 0.5 * (pos[0] - pos[1] + l):
                 print('Window too long for sequence length')
 
             # if window exceeds sequence length after gene
