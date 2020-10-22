@@ -25,6 +25,8 @@ def get_arguments():
                         help = 'gene of interest')
     parser.add_argument('-w', '--window', action = 'store',
                         help = 'length of flanking sequences')
+    parser.add_argument('-c', '--circ', action = 'store_true',
+                        help = 'sequence is circularised')
     parser
     return parser.parse_args()
 
@@ -64,7 +66,7 @@ def flank_positions(file, gene_):
         return True
 
     
-def flank_fasta_file(file):
+def flank_fasta_file_circ(file):
     args = get_arguments() 
 
     abricate_file = str(file + '_resfinder') # name of abricate output for fasta
@@ -121,11 +123,38 @@ def flank_fasta_file(file):
 
     else:
         print('Gene not found')
-    
+
+
+def flank_fasta_file_lin(file):
+    args = get_arguments() 
+
+    abricate_file = str(file + '_resfinder') # name of abricate output for fasta
+
+    pos = flank_positions(abricate_file, args.goi)
+
+    if pos != True:
+
+        for record in SeqIO.parse(file, "fasta"):
+
+            w = int(args.window)
+            l = len(record.seq)
+
+            record.seq = record.seq[min(0, pos[0]):pos[1]] + record.seq[pos[2]:max(len(record.seq), pos[3])]
+
+            record.description = f"{record.description} | {args.goi} | {w}bp window"
+
+            with open(f"{Path(file).stem}_{args.goi}_flank.fasta", "w") as f:
+                SeqIO.write(record, f, "fasta")
+                print(f"{f.name} sucessfully created!")
+                f.close()
+          
 def main():
     args = get_arguments()
     run_abricate(args.fasta_file)
-    flank_fasta_file(args.fasta_file)
+    if args.circ == True:
+        flank_fasta_file_circ(args.fasta_file)
+    else:
+        flank_fasta_file_lin(args.fasta_file)
     
     
 
