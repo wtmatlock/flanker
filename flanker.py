@@ -74,17 +74,53 @@ def flank_fasta_file(file):
     if pos != True:
 
         for record in SeqIO.parse(file, "fasta"):
-            record.seq = record.seq[pos[0]:pos[1]] + record.seq[pos[2]:pos[3]]
-            record.description = f"{record.description} | {args.goi} | {args.window}bp window"
 
-        with open(f"{Path(file).stem}_{args.goi}_flank.fasta", "w") as f:
-                SeqIO.write(record, f, "fasta")
-                print(f"{f.name} sucessfully created!")
-                f.close()
+            w = int(args.window)
+            l = len(record.seq)
+
+            # if window is too long for sequence length
+            if (w - pos[1] > l - pos[3]) | (w - (l - pos[2]) > pos[0]):
+                print('Window too long for sequence length')
+
+            # if window exceeds sequence length after gene
+            elif pos[2] + w > l:
+
+                # loop to start
+                record.seq = record.seq[pos[0]:pos[1]] + record.seq[pos[2]:l] + record.seq[0:(w-(l-pos[2]))] 
+
+                record.description = f"{record.description} | {args.goi} | {w}bp window"
+
+                with open(f"{Path(file).stem}_{args.goi}_flank.fasta", "w") as f:
+                    SeqIO.write(record, f, "fasta")
+                    print(f"{f.name} sucessfully created!")
+                    f.close()
+
+            # if window exceeds sequence length before gene
+            elif pos[1] - w < 0:
+
+                # loop to end
+                record.seq = record.seq[(l-(w-pos[1])):l] + record.seq[0:pos[1]] + record.seq[pos[2]:pos[3]]
+
+                record.description = f"{record.description} | {args.goi} | {w}bp window"
+
+                with open(f"{Path(file).stem}_{args.goi}_flank.fasta", "w") as f:
+                    SeqIO.write(record, f, "fasta")
+                    print(f"{f.name} sucessfully created!")
+                    f.close()
+
+            else:
+            
+                record.seq = record.seq[pos[0]:pos[1]] + record.seq[pos[2]:pos[3]]
+
+                record.description = f"{record.description} | {args.goi} | {w}bp window"
+
+                with open(f"{Path(file).stem}_{args.goi}_flank.fasta", "w") as f:
+                    SeqIO.write(record, f, "fasta")
+                    print(f"{f.name} sucessfully created!")
+                    f.close()
 
     else:
         print('Gene not found')
-
     
 def main():
     args = get_arguments()
