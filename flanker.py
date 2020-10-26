@@ -45,10 +45,13 @@ def flank_positions(file, gene_):
     args = get_arguments()
 
     data = pd.read_csv(file, sep='\t', header = 0)
-    gene = data.query('GENE == @gene_')
+    gene = data[data["GENE"].str.contains(gene_)]
 
     # check if gene is found
     if len(gene) != 0:
+
+        # gene found
+        g = gene['GENE'].iloc[0]
 
         # LHS flank
         start = int(gene['START'].iloc[0]) # start of gene
@@ -57,7 +60,7 @@ def flank_positions(file, gene_):
         # RHS flank
         end = int(gene['END'].iloc[0]) # end of gene/start of RHS flank
 
-        return(start, end)
+        return(start, end, g)
 
     else:
         return True
@@ -74,6 +77,8 @@ def flank_fasta_file_circ(file):
 
         for record in SeqIO.parse(file, "fasta"):
 
+            print(pos[2] + ' found!')
+
             w = int(args.window)
             l = len(record.seq)
 
@@ -87,9 +92,9 @@ def flank_fasta_file_circ(file):
                 # loop to start
                 record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)] 
 
-                record.description = f"{record.description} | {args.goi} | {w}bp window"
+                record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{args.goi}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -100,9 +105,9 @@ def flank_fasta_file_circ(file):
                 # loop to end
                 record.seq = record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
 
-                record.description = f"{record.description} | {args.goi} | {w}bp window"
+                record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{args.goi}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -111,9 +116,9 @@ def flank_fasta_file_circ(file):
             
                 record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)]
 
-                record.description = f"{record.description} | {args.goi} | {w}bp window"
+                record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{args.goi}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -133,14 +138,16 @@ def flank_fasta_file_lin(file):
 
         for record in SeqIO.parse(file, "fasta"):
 
+            print(pos[2] + ' found')
+
             w = int(args.window)
             l = len(record.seq)
 
             record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
 
-            record.description = f"{record.description} | {args.goi} | {w}bp window"
+            record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-            with open(f"{Path(file).stem}_{args.goi}_flank.fasta", "w") as f:
+            with open(f"{Path(file).stem}_{pos[2]}_flank.fasta", "w") as f:
                 SeqIO.write(record, f, "fasta")
                 print(f"{f.name} sucessfully created!")
                 f.close()
