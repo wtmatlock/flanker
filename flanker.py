@@ -26,7 +26,9 @@ def get_arguments():
     parser.add_argument('-w', '--window', action = 'store',
                         help = 'length of flanking sequences')
     parser.add_argument('-c', '--circ', action = 'store_true',
-                        help = 'sequence is circularised')
+                        help = 'sequence is circularised'),
+    parser.add_argument('-i', '--include_gene', action = 'store_true',
+                        help = 'include the gene of interest')
     parser
     return parser.parse_args()
 
@@ -88,9 +90,13 @@ def flank_fasta_file_circ(file):
 
             # if window exceeds sequence length after gene
             elif pos[1] + w > l:
-
+                
+                #include the gene if desired
+                if args.include_gene == True:
+                    record.seq = record.seq[(pos[0]-w):(pos[1]+w)] + record.seq[pos[1]:l]
+                else:
                 # loop to start
-                record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)] 
+                    record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)] 
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
@@ -102,8 +108,13 @@ def flank_fasta_file_circ(file):
             # if window exceeds sequence length before gene
             elif pos[0] - w < 0:
 
+                #include the gene if desired
+                if args.include_gene == True:
+                    record.seq = record.seq[0:pos[0]:(pos[1]+w)]
+                else:
+
                 # loop to end
-                record.seq = record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
+                    record.seq = record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
@@ -114,7 +125,12 @@ def flank_fasta_file_circ(file):
 
             else:
             
-                record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)]
+                #include the gene if desired
+                if args.include_gene == True:
+                    record.seq = record.seq[(pos[0]-w):(pos[1]+w)]
+                else:
+
+                    record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)]
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
@@ -143,7 +159,12 @@ def flank_fasta_file_lin(file):
             w = int(args.window)
             l = len(record.seq)
 
-            record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
+            #include the gene if desired
+            if args.include_gene == True:
+                record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq), pos[1]+w)]
+            else:
+
+                record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
 
             record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
