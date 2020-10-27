@@ -94,7 +94,7 @@ def flank_fasta_file_circ(file):
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_flank.fasta_{w}", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -107,7 +107,7 @@ def flank_fasta_file_circ(file):
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -118,7 +118,7 @@ def flank_fasta_file_circ(file):
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -147,7 +147,9 @@ def flank_fasta_file_lin(file):
 
             record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-            with open(f"{Path(file).stem}_{pos[2]}_flank.fasta", "w") as f:
+
+
+            with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
                 SeqIO.write(record, f, "fasta")
                 print(f"{f.name} sucessfully created!")
                 f.close()
