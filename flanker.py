@@ -5,10 +5,11 @@
 Creates fasta for gene flanks
 """
 
+import sys
+import argparse
 import pandas as pd
 import numpy as np
 import subprocess
-import argparse
 from Bio import SeqIO
 from pathlib import Path
 
@@ -36,8 +37,8 @@ def get_arguments():
     parser.add_argument('-d', '--database', action = 'store',
                         help = 'choose abricate database e.g. NCBI, resfinder',
                         default='resfinder')
-    parser
-    return parser.parse_args()
+    args = parser.parse_args(None if sys.argv[1:] else ['-h'])
+    return args
 
 
 def run_abricate(file):
@@ -59,7 +60,6 @@ def flank_positions(file, gene_):
 
     # check if gene is found
     if len(gene) != 0:
-
         # gene found
         g = gene['GENE'].iloc[0]
 
