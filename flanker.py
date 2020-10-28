@@ -19,18 +19,23 @@ __author__ = "Samuel Lipworth, William Matlock"
 def get_arguments():
     parser = argparse.ArgumentParser(description = 'flanker',
                                      formatter_class = argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-f', '--fasta_file', action = 'store',
+    required = parser.add_argument_group('required arguments')
+    required.add_argument('-f', '--fasta_file', action = 'store',
+                        required = True,
                         help = 'fasta file')
-    parser.add_argument('-g', '--goi', action = 'store',
+    required.add_argument('-g', '--goi', action = 'store',
+                        required = True,
                         help = 'gene of interest')
     parser.add_argument('-w', '--window', action = 'store',
-                        help = 'length of flanking sequences')
+                        help = 'length of flanking sequences',
+                        default = 1000)
     parser.add_argument('-c', '--circ', action = 'store_true',
                         help = 'sequence is circularised'),
     parser.add_argument('-i', '--include_gene', action = 'store_true',
                         help = 'include the gene of interest')
     parser.add_argument('-d', '--database', action = 'store',
-                        help = 'choose abricate database e.g. NCBI/resfinder', default='resfinder')
+                        help = 'choose abricate database e.g. NCBI, resfinder',
+                        default='resfinder')
     parser
     return parser.parse_args()
 
