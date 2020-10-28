@@ -90,17 +90,18 @@ def flank_fasta_file_circ(file):
 
             # if window exceeds sequence length after gene
             elif pos[1] + w > l:
-                
+             
                 #include the gene if desired
                 if args.include_gene == True:
                     record.seq = record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)]
+                    
                 else:
-                # loop to start
+                    # loop to start
                     record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)] 
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_flank.fasta_{w}", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -110,11 +111,10 @@ def flank_fasta_file_circ(file):
 
                 #include the gene if desired
                 if args.include_gene == True:
-
                     record.seq = record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
+                    
                 else:
-
-                # loop to end
+                    # loop to end
                     record.seq = record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
@@ -125,12 +125,11 @@ def flank_fasta_file_circ(file):
                     f.close()
 
             else:
-            
                 #include the gene if desired
                 if args.include_gene == True:
                     record.seq = record.seq[(pos[0]-w):(pos[1]+w)]
+                    
                 else:
-
                     record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)]
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
@@ -163,13 +162,11 @@ def flank_fasta_file_lin(file):
             #include the gene if desired
             if args.include_gene == True:
                 record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq), pos[1]+w)]
+            
             else:
-
                 record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
 
             record.description = f"{record.description} | {pos[2]} | {w}bp window"
-
-
 
             with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
                 SeqIO.write(record, f, "fasta")
