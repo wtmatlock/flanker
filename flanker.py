@@ -146,7 +146,7 @@ def flank_fasta_file_circ(file):
                     f.close()
 
     else:
-        print('Gene not found')
+        print(f"Gene not found in {args.fasta_file}")
 
 
 def flank_fasta_file_lin(file):
@@ -180,7 +180,7 @@ def flank_fasta_file_lin(file):
                 f.close()
 
     else:
-        print('Gene not found')
+        print(f"Gene not found in {args.fasta_file}")
           
 def main():
     args = get_arguments()
