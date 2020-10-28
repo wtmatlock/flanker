@@ -5,10 +5,11 @@
 Creates fasta for gene flanks
 """
 
+import sys
+import argparse
 import pandas as pd
 import numpy as np
 import subprocess
-import argparse
 from Bio import SeqIO
 from pathlib import Path
 
@@ -19,20 +20,25 @@ __author__ = "Samuel Lipworth, William Matlock"
 def get_arguments():
     parser = argparse.ArgumentParser(description = 'flanker',
                                      formatter_class = argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-f', '--fasta_file', action = 'store',
+    required = parser.add_argument_group('required arguments')
+    required.add_argument('-f', '--fasta_file', action = 'store',
+                        required = True,
                         help = 'fasta file')
-    parser.add_argument('-g', '--goi', action = 'store',
-                        help = 'gene of interest, nb need to escape special characters with \\')
+    required.add_argument('-g', '--goi', action = 'store',
+                        required = True,
+                        help = 'gene of interest, nb escape any special characters')
     parser.add_argument('-w', '--window', action = 'store',
-                        help = 'length of flanking sequences')
+                        help = 'length of flanking sequences',
+                        default = 1000)
     parser.add_argument('-c', '--circ', action = 'store_true',
                         help = 'sequence is circularised'),
     parser.add_argument('-i', '--include_gene', action = 'store_true',
                         help = 'include the gene of interest')
     parser.add_argument('-d', '--database', action = 'store',
-                        help = 'choose abricate database e.g. NCBI/resfinder', default='resfinder')
-    parser
-    return parser.parse_args()
+                        help = 'choose abricate database e.g. NCBI, resfinder',
+                        default='resfinder')
+    args = parser.parse_args(None if sys.argv[1:] else ['-h'])
+    return args
 
 
 def run_abricate(file):
@@ -56,7 +62,6 @@ def flank_positions(file, gene_):
 
     # check if gene is found
     if len(gene) != 0:
-
         # gene found
         g = gene['GENE'].iloc[0]
 
@@ -95,12 +100,13 @@ def flank_fasta_file_circ(file):
 
             # if window exceeds sequence length after gene
             elif pos[1] + w > l:
-                
+             
                 #include the gene if desired
                 if args.include_gene == True:
                     record.seq = record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)]
+                    
                 else:
-                # loop to start
+                    # loop to start
                     record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)] 
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
@@ -115,11 +121,10 @@ def flank_fasta_file_circ(file):
 
                 #include the gene if desired
                 if args.include_gene == True:
-
                     record.seq = record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
+                    
                 else:
-
-                # loop to end
+                    # loop to end
                     record.seq = record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
@@ -130,12 +135,11 @@ def flank_fasta_file_circ(file):
                     f.close()
 
             else:
-            
                 #include the gene if desired
                 if args.include_gene == True:
                     record.seq = record.seq[(pos[0]-w):(pos[1]+w)]
+                    
                 else:
-
                     record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)]
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
@@ -168,13 +172,11 @@ def flank_fasta_file_lin(file):
             #include the gene if desired
             if args.include_gene == True:
                 record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq), pos[1]+w)]
+            
             else:
-
                 record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
 
             record.description = f"{record.description} | {pos[2]} | {w}bp window"
-
-
 
             with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
                 SeqIO.write(record, f, "fasta")
