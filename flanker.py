@@ -22,7 +22,7 @@ def get_arguments():
     parser.add_argument('-f', '--fasta_file', action = 'store',
                         help = 'fasta file')
     parser.add_argument('-g', '--goi', action = 'store',
-                        help = 'gene of interest')
+                        help = 'gene of interest, nb need to escape special characters with \\')
     parser.add_argument('-w', '--window', action = 'store',
                         help = 'length of flanking sequences')
     parser.add_argument('-c', '--circ', action = 'store_true',
@@ -47,10 +47,12 @@ def run_abricate(file):
 
     
 def flank_positions(file, gene_):
-    args = get_arguments()
+    
+
+
 
     data = pd.read_csv(file, sep='\t', header = 0)
-    gene = data[data["GENE"].str.contains(gene_)]
+    gene = data[data["GENE"].str.contains(gene_, regex=False)]
 
     # check if gene is found
     if len(gene) != 0:
