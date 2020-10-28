@@ -29,12 +29,15 @@ def get_arguments():
                         help = 'sequence is circularised'),
     parser.add_argument('-i', '--include_gene', action = 'store_true',
                         help = 'include the gene of interest')
+    parser.add_argument('-d', '--database', action = 'store',
+                        help = 'choose abricate database e.g. NCBI/resfinder', default='resfinder')
     parser
     return parser.parse_args()
 
 
 def run_abricate(file):
-    abricate_command = ["abricate", "--db", "resfinder", file] # shell commands
+    args=get_arguments()
+    abricate_command = ["abricate", "--db", args.database, file] # shell commands
     p = subprocess.Popen(abricate_command, stdout = subprocess.PIPE, stderr = subprocess.PIPE) # run abricate
     out, _ = p.communicate() # read stdout data 
     out = out.decode() # decode from unicode
