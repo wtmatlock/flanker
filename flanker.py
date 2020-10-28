@@ -26,7 +26,7 @@ def get_arguments():
                         help = 'fasta file')
     required.add_argument('-g', '--goi', action = 'store',
                         required = True,
-                        help = 'gene of interest')
+                        help = 'gene of interest, nb escape any special characters')
     parser.add_argument('-w', '--window', action = 'store',
                         help = 'length of flanking sequences',
                         default = 1000)
@@ -53,10 +53,12 @@ def run_abricate(file):
 
     
 def flank_positions(file, gene_):
-    args = get_arguments()
+    
+
+
 
     data = pd.read_csv(file, sep='\t', header = 0)
-    gene = data[data["GENE"].str.contains(gene_)]
+    gene = data[data["GENE"].str.contains(gene_, regex=False)]
 
     # check if gene is found
     if len(gene) != 0:
