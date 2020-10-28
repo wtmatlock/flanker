@@ -93,7 +93,7 @@ def flank_fasta_file_circ(file):
                 
                 #include the gene if desired
                 if args.include_gene == True:
-                    record.seq = record.seq[(pos[0]-w):(pos[1]+w)] + record.seq[pos[1]:l]
+                    record.seq = record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)]
                 else:
                 # loop to start
                     record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)] 
@@ -110,7 +110,8 @@ def flank_fasta_file_circ(file):
 
                 #include the gene if desired
                 if args.include_gene == True:
-                    record.seq = record.seq[0:pos[0]:(pos[1]+w)]
+
+                    record.seq = record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
                 else:
 
                 # loop to end
