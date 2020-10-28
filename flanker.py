@@ -53,10 +53,6 @@ def run_abricate(file):
 
     
 def flank_positions(file, gene_):
-    
-
-
-
     data = pd.read_csv(file, sep='\t', header = 0)
     gene = data[data["GENE"].str.contains(gene_, regex=False)]
 
@@ -198,4 +194,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
