@@ -27,7 +27,7 @@ def get_arguments():
     required.add_argument('-g', '--goi', action = 'store',
                         required = True,
                         help = 'gene of interest, nb escape any special characters')
-    parser.add_argument('-w', '--window', action = 'store',
+    parser.add_argument('-w', '--window', action = 'store', type=int,
                         help = 'length of flanking sequences',
                         default = 1000)
     parser.add_argument('-c', '--circ', action = 'store_true',
@@ -36,7 +36,12 @@ def get_arguments():
                         help = 'include the gene of interest')
     parser.add_argument('-d', '--database', action = 'store',
                         help = 'choose abricate database e.g. NCBI, resfinder',
-                        default='resfinder')
+                        default='resfinder'),
+    parser.add_argument('-wstop', '--window_stop', action='store',type=int,
+                        help = 'Final window length'),
+    parser.add_argument('-wstep', '--window_step', action='store',type=int,
+                        help = 'Step in window sequence')
+    
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
 
@@ -53,10 +58,6 @@ def run_abricate(file):
 
     
 def flank_positions(file, gene_):
-    
-
-
-
     data = pd.read_csv(file, sep='\t', header = 0)
     gene = data[data["GENE"].str.contains(gene_, regex=False)]
 
@@ -78,7 +79,7 @@ def flank_positions(file, gene_):
         return True
 
     
-def flank_fasta_file_circ(file):
+def flank_fasta_file_circ(file, window):
     args = get_arguments() 
 
     abricate_file = str(file + '_resfinder') # name of abricate output for fasta
@@ -91,7 +92,7 @@ def flank_fasta_file_circ(file):
 
             print(pos[2] + ' found!')
 
-            w = int(args.window)
+            w = int(window)
             l = len(record.seq)
 
             # if window is too long for sequence length
@@ -153,7 +154,7 @@ def flank_fasta_file_circ(file):
         print('Gene not found')
 
 
-def flank_fasta_file_lin(file):
+def flank_fasta_file_lin(file, window):
     args = get_arguments() 
 
     abricate_file = str(file + '_resfinder') # name of abricate output for fasta
@@ -166,7 +167,7 @@ def flank_fasta_file_lin(file):
 
             print(pos[2] + ' found')
 
-            w = int(args.window)
+            w = int(window)
             l = len(record.seq)
 
             #include the gene if desired
@@ -189,13 +190,19 @@ def flank_fasta_file_lin(file):
 def main():
     args = get_arguments()
     run_abricate(args.fasta_file)
-    if args.circ == True:
-        flank_fasta_file_circ(args.fasta_file)
+    if args.window_stop is not None:
+        for i in range(args.window, args.window_stop, args.window_step):
+            if args.circ == True:
+                flank_fasta_file_circ(args.fasta_file, i)
+            else:
+                flank_fasta_file_lin(args.fasta_file, i)
     else:
-        flank_fasta_file_lin(args.fasta_file)
-    
+        if args.circ == True:
+            flank_fasta_file_circ(args.fasta_file, args.window)
+        else:
+            flank_fasta_file_lin(args.fasta_file, args.window)
+
     
 
 if __name__ == '__main__':
     main()
-
