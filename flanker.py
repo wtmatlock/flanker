@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """
 Creates fasta for gene flanks
 """
@@ -25,7 +22,6 @@ def get_arguments():
                         required = True,
                         help = 'fasta file')
     required.add_argument('-g', '--goi', action = 'store',
-                        required = True,
                         help = 'gene of interest, nb escape any special characters')
     parser.add_argument('-w', '--window', action = 'store', type=int,
                         help = 'length of flanking sequences',
@@ -40,7 +36,9 @@ def get_arguments():
     parser.add_argument('-wstop', '--window_stop', action='store',type=int,
                         help = 'Final window length'),
     parser.add_argument('-wstep', '--window_step', action='store',type=int,
-                        help = 'Step in window sequence')
+                        help = 'Step in window sequence'),
+    parser.add_argument('-log', '--list_of_genes', action='store',
+                        help = 'list of genes to process')
     
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
@@ -79,12 +77,12 @@ def flank_positions(file, gene_):
         return True
 
     
-def flank_fasta_file_circ(file, window):
+def flank_fasta_file_circ(file, window,gene):
     args = get_arguments() 
 
     abricate_file = str(file + '_resfinder') # name of abricate output for fasta
 
-    pos = flank_positions(abricate_file, args.goi)
+    pos = flank_positions(abricate_file, gene)
 
     if pos != True:
 
@@ -154,12 +152,11 @@ def flank_fasta_file_circ(file, window):
         print(f"Gene not found in {args.fasta_file}")
 
 
-def flank_fasta_file_lin(file, window):
+def flank_fasta_file_lin(file, window,gene):
     args = get_arguments() 
-
     abricate_file = str(file + '_resfinder') # name of abricate output for fasta
 
-    pos = flank_positions(abricate_file, args.goi)
+    pos = flank_positions(abricate_file, gene)
 
     if pos != True:
 
@@ -190,18 +187,33 @@ def flank_fasta_file_lin(file, window):
 def main():
     args = get_arguments()
     run_abricate(args.fasta_file)
-    if args.window_stop is not None:
-        for i in range(args.window, args.window_stop, args.window_step):
-            if args.circ == True:
-                flank_fasta_file_circ(args.fasta_file, i)
-            else:
-                flank_fasta_file_lin(args.fasta_file, i)
+    if args.list_of_genes is not None:
+        with open(args.list_of_genes) as gene_list:
+           for gene in gene_list:
+               print("Working on gene {}".format(gene.strip()))
+               if args.window_stop is not None:
+                   for i in range(args.window, args.window_stop, args.window_step):
+                       if args.circ == True:
+                           flank_fasta_file_circ(args.fasta_file, i, gene.strip())
+                       else:
+                           flank_fasta_file_lin(args.fasta_file, i, gene.strip())
+               else:
+                   if args.circ == True:
+                       flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
+                   else:
+                       flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
     else:
-        if args.circ == True:
-            flank_fasta_file_circ(args.fasta_file, args.window)
+        if args.window_stop is not None:
+            for i in range(args.window, args.window_stop, args.window_step):
+                if args.circ == True:
+                    flank_fasta_file_circ(args.fasta_file, i, args.goi)
+                else:
+                    flank_fasta_file_lin(args.fasta_file, i, args.goi)
         else:
-            flank_fasta_file_lin(args.fasta_file, args.window)
-
+            if args.circ == True:
+                flank_fasta_file_circ(args.fasta_file, args.window,args.goi)
+            else:
+                flank_fasta_file_lin(args.fasta_file, args.window,args.goi)
     
 
 if __name__ == '__main__':
