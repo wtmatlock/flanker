@@ -20,9 +20,7 @@ def get_arguments():
     required = parser.add_argument_group('required arguments')
     required.add_argument('-f', '--fasta_file', action = 'store',
                         required = True,
-                        help = 'fasta file')
-    required.add_argument('-g', '--goi', action = 'store',
-                        help = 'gene of interest, nb escape any special characters')
+                        help = 'fasta file'),
     parser.add_argument('-w', '--window', action = 'store', type=int,
                         help = 'length of flanking sequences',
                         default = 1000)
@@ -37,8 +35,12 @@ def get_arguments():
                         help = 'Final window length'),
     parser.add_argument('-wstep', '--window_step', action='store',type=int,
                         help = 'Step in window sequence'),
-    parser.add_argument('-log', '--list_of_genes', action='store',
-                        help = 'list of genes to process')
+    gene_group = parser.add_mutually_exclusive_group(required=True)
+    gene_group.add_argument('-log', '--list_of_genes', action='store',
+                        help = 'list of genes to process'),
+    gene_group.add_argument('-g', '--goi', action = 'store',
+                        help = 'gene of interest, nb escape any special characters')
+
     
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
