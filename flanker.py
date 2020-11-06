@@ -47,6 +47,9 @@ def get_arguments():
                         help = 'gene of interest, nb escape any special characters')
     
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
+
+    if bool(args.window_stop) ^ bool(args.window_step):
+        parser.error('--window_stop and --window_step are required together')
     
     return args
 
