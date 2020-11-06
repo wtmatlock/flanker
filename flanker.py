@@ -25,27 +25,33 @@ def get_arguments():
                         required = True,
                         help = 'fasta file'),
     parser.add_argument('-w', '--window', action = 'store', type=int,
-                        help = 'length of flanking sequences',
+                        help = 'length of flanking sequences/first window length',
                         default = 1000)
+    parser.add_argument('-wstop', '--window_stop', action='store',type=int,
+                        help = 'final window length',
+                        default = None),
+    parser.add_argument('-wstep', '--window_step', action='store',type=int,
+                        help = 'step in window sequence',
+                        default = None),
     parser.add_argument('-c', '--circ', action = 'store_true',
                         help = 'sequence is circularised'),
     parser.add_argument('-i', '--include_gene', action = 'store_true',
                         help = 'include the gene of interest')
     parser.add_argument('-d', '--database', action = 'store',
                         help = 'choose abricate database e.g. NCBI, resfinder',
-                        default='resfinder'),
-    parser.add_argument('-wstop', '--window_stop', action='store',type=int,
-                        help = 'Final window length'),
-    parser.add_argument('-wstep', '--window_step', action='store',type=int,
-                        help = 'Step in window sequence'),
-    gene_group = parser.add_mutually_exclusive_group(required=True)
-    gene_group.add_argument('-log', '--list_of_genes', action='store',
+                        default = 'resfinder'),
+    gene_group = parser.add_mutually_exclusive_group(required = True)
+    gene_group.add_argument('-log', '--list_of_genes', action= 'store',
                         help = 'list of genes to process'),
     gene_group.add_argument('-g', '--goi', action = 'store',
                         help = 'gene of interest, nb escape any special characters')
 
     
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
+
+    if args.goi is None and args.list_of_genes is None:
+        pa.error("at least one of --goi and --list_of_genes required")
+    
     return args
 
 
@@ -82,7 +88,7 @@ def flank_positions(file, gene_):
         return True
 
     
-def flank_fasta_file_circ(file, window,gene):
+def flank_fasta_file_circ(file, window, gene):
     args = get_arguments() 
 
     abricate_file = str(file + '_resfinder') # name of abricate output for fasta
@@ -154,10 +160,10 @@ def flank_fasta_file_circ(file, window,gene):
                     f.close()
 
     else:
-        print(f"Gene not found in {args.fasta_file}")
+        print(f"Gene {gene} not found in {args.fasta_file}")
 
 
-def flank_fasta_file_lin(file, window,gene):
+def flank_fasta_file_lin(file, window, gene):
     args = get_arguments() 
     abricate_file = str(file + '_resfinder') # name of abricate output for fasta
 
@@ -187,7 +193,7 @@ def flank_fasta_file_lin(file, window,gene):
                 f.close()
 
     else:
-        print(f"Gene not found in {args.fasta_file}")
+        print(f"Gene {gene} not found in {args.fasta_file}")
           
 def main():
     args = get_arguments()
@@ -206,7 +212,7 @@ def main():
                    if args.circ == True:
                        flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
                    else:
-                       flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
+                       flank_fasta_file_lin(args.fasta_file, args.window, gene.strip())
     else:
         if args.window_stop is not None:
             for i in range(args.window, args.window_stop, args.window_step):
