@@ -5,7 +5,7 @@ Flanker is a tool for studying the homology of gene-flanking sequences.
 | Required arguments  | Description |
 | --- | --- |
 | ```--fasta_file``` | Input .fasta file |
-| ```--gene_of_interest``` **OR** ```--list_of genes``` | Single gene to be found **OR** line-seperated list of multiple genes|
+| ```--gene_of_interest``` **OR** ```--list_of_genes``` | Single gene to be found **OR** line-seperated list of multiple genes|
 
 | Optional arguments | Description | Default|
 | --- | --- | --- |
