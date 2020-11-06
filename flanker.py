@@ -45,12 +45,8 @@ def get_arguments():
                         help = 'list of genes to process'),
     gene_group.add_argument('-g', '--goi', action = 'store',
                         help = 'gene of interest, nb escape any special characters')
-
     
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
-
-    if args.goi is None and args.list_of_genes is None:
-        pa.error("at least one of --goi and --list_of_genes required")
     
     return args
 
