@@ -9,6 +9,7 @@ Flanker is a tool for studying the homology of gene-flanking sequences.
 
 | Optional arguments | Description | Default|
 | --- | --- | --- |
+| ```--help``` | Displays help information then closes Flanker | ```False``` |
 | ```--window``` | Flank length on either side of gene | ```1000``` |
 | ```--wstop``` **AND** ```--wstep``` | For iterating: terminal flank length **AND** step size, ```--window``` becomes initial flank length | ```None``` |
 | ```--circ``` | Add if your sequence is circularised | ```False``` |
