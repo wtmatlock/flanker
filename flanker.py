@@ -38,7 +38,7 @@ def get_arguments():
                         help = 'Final window length'),
     parser.add_argument('-wstep', '--window_step', action='store',type=int,
                         help = 'Step in window sequence'),
-    parser.add_argument('-f','--flank',action='store',help='Choose which side of the gene to analyse (left/right/both)',default='both'),
+    parser.add_argument('-x','--flank',action='store',help='Choose which side of the gene to analyse (left/right/both)',default='both'),
     gene_group = parser.add_mutually_exclusive_group(required=True)
     gene_group.add_argument('-log', '--list_of_genes', action='store',
                         help = 'list of genes to process'),
@@ -217,13 +217,10 @@ def flank_fasta_file_lin(file, window,gene):
 
                     record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_left_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_both_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
-
-                else:
-                    print(f"Gene not found in {args.fasta_file}")
 
             #or if desired only go left
             elif args.flank == 'left':
@@ -233,17 +230,14 @@ def flank_fasta_file_lin(file, window,gene):
 
 
                 else:
-                        record.seq = record.seq[max(0, pos[0]-w):pos[0]]
+                    record.seq = record.seq[max(0, pos[0]-w):pos[0]]
 
-                        record.description = f"{record.description} | {pos[2]} | {w}bp window"
+                    record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                        with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
-                            SeqIO.write(record, f, "fasta")
-                            print(f"{f.name} sucessfully created!")
-                            f.close()
-
-                        else:
-                            print(f"Gene not found in {args.fasta_file}")
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_left_flank.fasta", "w") as f:
+                    SeqIO.write(record, f, "fasta")
+                    print(f"{f.name} sucessfully created!")
+                    f.close()
 
             #or if desired only go right
             elif args.flank == 'right':
@@ -253,17 +247,15 @@ def flank_fasta_file_lin(file, window,gene):
 
 
                 else:
-                        record.seq = record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
+                    record.seq = record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
 
-                        record.description = f"{record.description} | {pos[2]} | {w}bp window"
+                    record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                        with open(f"{Path(file).stem}_{pos[2]}_{w}_right_flank.fasta", "w") as f:
-                            SeqIO.write(record, f, "fasta")
-                            print(f"{f.name} sucessfully created!")
-                            f.close()
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_right_flank.fasta", "w") as f:
+                    SeqIO.write(record, f, "fasta")
+                    print(f"{f.name} sucessfully created!")
+                    f.close()
 
-                        else:
-                            print(f"Gene not found in {args.fasta_file}")
 
 
 def main():
