@@ -98,7 +98,7 @@ def flank_fasta_file_circ(file, window,gene):
 
             w = int(window)
             l = len(record.seq)
-
+            x = args.flank
             # if window is too long for sequence length
             if w > 0.5 * (pos[0] - pos[1] + l):
                 print('Window too long for sequence length')
@@ -120,14 +120,14 @@ def flank_fasta_file_circ(file, window,gene):
                     #same logic but without the gene
                     if args.flank == 'both':
                         record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]
-                    elif args.flank == 'left'
+                    elif args.flank == 'left':
                         record.seq = record.seq[(pos[0]-w):pos[0]]
-                    elif args.flank == 'right'
+                    elif args.flank == 'right':
                         record.seq = record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_{fl}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_{x}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -157,7 +157,7 @@ def flank_fasta_file_circ(file, window,gene):
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_{fl}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_{x}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -181,7 +181,7 @@ def flank_fasta_file_circ(file, window,gene):
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_{fl}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_{x}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
