@@ -108,15 +108,26 @@ def flank_fasta_file_circ(file, window,gene):
 
                 #include the gene if desired
                 if args.include_gene == True:
-                    record.seq = record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)]
-
+                    if args.flank == 'both':
+                        record.seq = record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)]
+                    elif args.flank == 'left':
+                        #left flank is unnaffected
+                        record.seq = record.seq[(pos[0]-w):pos[1]]
+                    elif args.flank =='right':
+                        #right flank needs circular correction
+                        record.seq = record.seq[(pos[0]):l] + record.seq[0:(pos[1]+w-l)]
                 else:
-                    # loop to start
-                    record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]
+                    #same logic but without the gene
+                    if args.flank == 'both':
+                        record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]
+                    elif args.flank == 'left'
+                        record.seq = record.seq[(pos[0]-w):pos[0]]
+                    elif args.flank == 'right'
+                        record.seq = record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_{fl}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -126,15 +137,27 @@ def flank_fasta_file_circ(file, window,gene):
 
                 #include the gene if desired
                 if args.include_gene == True:
-                    record.seq = record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
+                    if args.flank == 'both':
+                        record.seq = record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
+                    elif args.flank == 'left':
+                        #left flank needs circular correction
+                        record.seq = record.seq[0:(pos[1])] + record.seq[(l-(w-pos[0])):l]
+                    elif args.flank == 'right':
+                        #right flank is unnaffected
+                        record.seq = record.seq[pos[0]:(pos[1]+w)]
 
                 else:
-                    # loop to end
-                    record.seq = record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
+                    # same logic but without the gene
+                    if args.flank == 'both':
+                        record.seq = record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
+                    elif args.flank == 'left':
+                        record.seq = record.seq[0:pos[0]] + record.seq[(l-(w-pos[0])):l]
+                    elif args.flank == 'right':
+                        record.seq =  record.seq[pos[1]:(pos[1]+w)]
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_{fl}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -142,14 +165,23 @@ def flank_fasta_file_circ(file, window,gene):
             else:
                 #include the gene if desired
                 if args.include_gene == True:
-                    record.seq = record.seq[(pos[0]-w):(pos[1]+w)]
-
+                    if args.flank == 'both':
+                        record.seq = record.seq[(pos[0]-w):(pos[1]+w)]
+                    elif args.flank =='left':
+                        record.seq = record.seq[(pos[0]-w):pos[1]]
+                    elif args.flank =='right':
+                        record.seq = record.seq[pos[0]:(pos[1]+w)]
                 else:
-                    record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)]
+                    if args.flank == 'both':
+                        record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)]
+                    elif args.flank == 'left':
+                        record.seq = record.seq[(pos[0]-w):pos[0]]
+                    elif args.flank == 'right':
+                        record.seq = record.seq[pos[1]:(pos[1]+w)]
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_{fl}_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
