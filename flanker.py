@@ -38,13 +38,14 @@ def get_arguments():
                         help = 'Final window length'),
     parser.add_argument('-wstep', '--window_step', action='store',type=int,
                         help = 'Step in window sequence'),
+    parser.add_argument('-f','--flank',action='store',help='Choose which side of the gene to analyse (left/right/both)',default='both'),
     gene_group = parser.add_mutually_exclusive_group(required=True)
     gene_group.add_argument('-log', '--list_of_genes', action='store',
                         help = 'list of genes to process'),
     gene_group.add_argument('-g', '--goi', action = 'store',
                         help = 'gene of interest, nb escape any special characters')
 
-    
+
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
 
@@ -53,13 +54,13 @@ def run_abricate(file):
     args=get_arguments()
     abricate_command = ["abricate", "--db", args.database, file] # shell commands
     p = subprocess.Popen(abricate_command, stdout = subprocess.PIPE, stderr = subprocess.PIPE) # run abricate
-    out, _ = p.communicate() # read stdout data 
+    out, _ = p.communicate() # read stdout data
     out = out.decode() # decode from unicode
     o = open(str(file + '_resfinder'),'w') # create output file
     o.write(out) # write output file
     o.close() # close output
 
-    
+
 def flank_positions(file, gene_):
     data = pd.read_csv(file, sep='\t', header = 0)
     gene = data[data["GENE"].str.contains(gene_, regex=False)]
@@ -81,9 +82,9 @@ def flank_positions(file, gene_):
     else:
         return True
 
-    
+
 def flank_fasta_file_circ(file, window,gene):
-    args = get_arguments() 
+    args = get_arguments()
 
     abricate_file = str(file + '_resfinder') # name of abricate output for fasta
 
@@ -104,14 +105,14 @@ def flank_fasta_file_circ(file, window,gene):
 
             # if window exceeds sequence length after gene
             elif pos[1] + w > l:
-             
+
                 #include the gene if desired
                 if args.include_gene == True:
                     record.seq = record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)]
-                    
+
                 else:
                     # loop to start
-                    record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)] 
+                    record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]
 
                 record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
@@ -126,7 +127,7 @@ def flank_fasta_file_circ(file, window,gene):
                 #include the gene if desired
                 if args.include_gene == True:
                     record.seq = record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
-                    
+
                 else:
                     # loop to end
                     record.seq = record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
@@ -142,7 +143,7 @@ def flank_fasta_file_circ(file, window,gene):
                 #include the gene if desired
                 if args.include_gene == True:
                     record.seq = record.seq[(pos[0]-w):(pos[1]+w)]
-                    
+
                 else:
                     record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)]
 
@@ -158,7 +159,7 @@ def flank_fasta_file_circ(file, window,gene):
 
 
 def flank_fasta_file_lin(file, window,gene):
-    args = get_arguments() 
+    args = get_arguments()
     abricate_file = str(file + '_resfinder') # name of abricate output for fasta
 
     pos = flank_positions(abricate_file, gene)
@@ -172,23 +173,67 @@ def flank_fasta_file_lin(file, window,gene):
             w = int(window)
             l = len(record.seq)
 
+            #take both flanks
+            if args.flank == 'both':
+
             #include the gene if desired
-            if args.include_gene == True:
-                record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq), pos[1]+w)]
-            
-            else:
-                record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
+                if args.include_gene == True:
+                    record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq), pos[1]+w)]
 
-            record.description = f"{record.description} | {pos[2]} | {w}bp window"
+                else:
+                    record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
 
-            with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
-                SeqIO.write(record, f, "fasta")
-                print(f"{f.name} sucessfully created!")
-                f.close()
+                    record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-    else:
-        print(f"Gene not found in {args.fasta_file}")
-          
+                with open(f"{Path(file).stem}_{pos[2]}_{w}_left_flank.fasta", "w") as f:
+                    SeqIO.write(record, f, "fasta")
+                    print(f"{f.name} sucessfully created!")
+                    f.close()
+
+                else:
+                    print(f"Gene not found in {args.fasta_file}")
+
+            #or if desired only go left
+            elif args.flank == 'left':
+                #include the gene if desired
+                if args.include_gene == True:
+                    record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq),pos[1])]
+
+
+                else:
+                        record.seq = record.seq[max(0, pos[0]-w):pos[0]]
+
+                        record.description = f"{record.description} | {pos[2]} | {w}bp window"
+
+                        with open(f"{Path(file).stem}_{pos[2]}_{w}_flank.fasta", "w") as f:
+                            SeqIO.write(record, f, "fasta")
+                            print(f"{f.name} sucessfully created!")
+                            f.close()
+
+                        else:
+                            print(f"Gene not found in {args.fasta_file}")
+
+            #or if desired only go right
+            elif args.flank == 'right':
+                #include the gene if desired
+                if args.include_gene == True:
+                    record.seq = record.seq[pos[0]:min(len(record.seq), pos[1]+w)]
+
+
+                else:
+                        record.seq = record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
+
+                        record.description = f"{record.description} | {pos[2]} | {w}bp window"
+
+                        with open(f"{Path(file).stem}_{pos[2]}_{w}_right_flank.fasta", "w") as f:
+                            SeqIO.write(record, f, "fasta")
+                            print(f"{f.name} sucessfully created!")
+                            f.close()
+
+                        else:
+                            print(f"Gene not found in {args.fasta_file}")
+
+
 def main():
     args = get_arguments()
     run_abricate(args.fasta_file)
@@ -219,7 +264,7 @@ def main():
                 flank_fasta_file_circ(args.fasta_file, args.window,args.goi)
             else:
                 flank_fasta_file_lin(args.fasta_file, args.window,args.goi)
-    
+
 
 if __name__ == '__main__':
     main()
