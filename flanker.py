@@ -73,6 +73,9 @@ def flank_positions(file, gene_):
     if len(gene) != 0:
         # gene found
         g = gene['GENE'].iloc[0]
+        
+        if len(gene) > 1:
+            print(f"Multiple annotations: {gene} found {len(gene)} times in {Path(file).stem}")
 
         # LHS flank
         start = int(gene['START'].iloc[0]) # start of gene
