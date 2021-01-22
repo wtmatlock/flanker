@@ -100,6 +100,13 @@ def flank_positions(file, gene_):
 
     return(start, end, g)
 
+def writer(record, gene, window, file, x):
+    record.description = f"{record.description} | {gene} | {window}bp window"
+
+    with open(f"{Path(file).stem}_{gene}_{window}_{x}_flank.fasta", "w") as f:
+        SeqIO.write(record, f, "fasta")
+        print(f"{f.name} sucessfully created!")
+        f.close()
 
 def flank_fasta_file_circ(file, window,gene):
     args = get_arguments()
@@ -113,99 +120,111 @@ def flank_fasta_file_circ(file, window,gene):
         
     for record in SeqIO.parse(file, "fasta"):
 
-            print(pos[2] + ' found!')
+        print(pos[2] + ' found!')
 
-            w = int(window)
-            l = len(record.seq)
-            x = args.flank
+        w = int(window)
+        l = len(record.seq)
+        x = args.flank
             
-            # if window is too long for sequence length
-            if w > 0.5 * (pos[0] - pos[1] + l):
-                return print('Window too long for sequence length')
+        # if window is too long for sequence length
+        if w > 0.5 * (pos[0] - pos[1] + l):
+            return print('Window too long for sequence length')
 
-            # if window exceeds sequence length after gene and gene is included
-            if (pos[1] + w > l) and (args.include_gene == True) and (args.flank == 'both'):
-                record.seq = record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)]
-                break
-
-            if (pos[1] + w > l) and (args.include_gene == True) and (args.flank == 'left'):
-                record.seq = record.seq[(pos[0]-w):pos[1]]
-                break
-
-            if (pos[1] + w > l) and (args.include_gene == True) and (args.flank == 'right'):
-                record.seq = record.seq[(pos[0]):l] + record.seq[0:(pos[1]+w-l)] # logic needs checking
-                break
-
-            # if window exceeds sequence length after gene and gene is excluded
-            if (pos[1] + w > l) and (args.include_gene == False) and (args.flank == 'both'):
-                record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]
-                break
-
-            if (pos[1] + w > l) and (args.include_gene == False) and (args.flank == 'left'):
-                record.seq = record.seq[(pos[0]-w):pos[0]]
-                break
-
-            if (pos[1] + w > l) and (args.include_gene == False) and (args.flank == 'right'): 
-                record.seq = record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]
-                break
-
-            # if window exceeds sequence length before gene and gene is included
-            if (pos[0] - w < 0) and (args.include_gene == True) and (args.flank == 'both'):
-                record.seq = record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
-                break
-
-            if (pos[0] - w < 0) and (args.include_gene == True) and (args.flank == 'left'):
-                record.seq = record.seq[0:(pos[1])] + record.seq[(l-(w-pos[0])):l] # logic needs checking
-                break
-
-            if (pos[0] - w < 0) and (args.include_gene == True) and (args.flank == 'right'):
-                record.seq = record.seq[pos[0]:(pos[1]+w)]
-                break
+        # if window exceeds sequence length after gene and gene is included
+        if (pos[1] + w > l) and (args.include_gene == True) and (args.flank == 'both'):
+            record.seq = record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)]
+            writer(record, pos[2], w, file, x)
+            continue
             
-            # if window exceeds sequence length before gene and gene is excluded
-            if (pos[0] - w < 0) and (args.include_gene == False) and (args.flank == 'both'):
-                record.seq = record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
-                break
+        if (pos[1] + w > l) and (args.include_gene == True) and (args.flank == 'left'):
+            record.seq = record.seq[(pos[0]-w):pos[1]]
+            writer(record, pos[2], w, file, x)
+            continue
 
-            if (pos[0] - w < 0) and (args.include_gene == False) and (args.flank == 'left'):
-                record.seq = record.seq[0:pos[0]] + record.seq[(l-(w-pos[0])):l]
-                break
+        if (pos[1] + w > l) and (args.include_gene == True) and (args.flank == 'right'):
+            record.seq = record.seq[(pos[0]):l] + record.seq[0:(pos[1]+w-l)] # logic needs checking
+            writer(record, pos[2], w, file, x)
+            continue
+        
+        # if window exceeds sequence length after gene and gene is excluded
+        if (pos[1] + w > l) and (args.include_gene == False) and (args.flank == 'both'):
+            record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]
+            writer(record, pos[2], w, file, x)
+            continue
 
-            if (pos[0] - w < 0) and (args.include_gene == False) and (args.flank == 'right'):
-                record.seq =  record.seq[pos[1]:(pos[1]+w)]
-                break
+        if (pos[1] + w > l) and (args.include_gene == False) and (args.flank == 'left'):
+            record.seq = record.seq[(pos[0]-w):pos[0]]
+            writer(record, pos[2], w, file, x)
+            continue
+
+        if (pos[1] + w > l) and (args.include_gene == False) and (args.flank == 'right'): 
+            record.seq = record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]
+            writer(record, pos[2], w, file, x)
+            continue
+
+        # if window exceeds sequence length before gene and gene is included
+        if (pos[0] - w < 0) and (args.include_gene == True) and (args.flank == 'both'):
+            record.seq = record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
+            writer(record, pos[2], w, file, x)
+            continue
+
+        if (pos[0] - w < 0) and (args.include_gene == True) and (args.flank == 'left'):
+            record.seq = record.seq[0:(pos[1])] + record.seq[(l-(w-pos[0])):l] # logic needs checking
+            writer(record, pos[2], w, file, x)
+            continue
+
+        if (pos[0] - w < 0) and (args.include_gene == True) and (args.flank == 'right'):
+            record.seq = record.seq[pos[0]:(pos[1]+w)]
+            writer(record, pos[2], w, file, x)
+            continue
             
-            # if window length is short enough and gene is included
-            if (args.include_gene == True) and (args.flank == 'both'):
-                record.seq = record.seq[(pos[0]-w):(pos[1]+w)]
-                break
+        # if window exceeds sequence length before gene and gene is excluded
+        if (pos[0] - w < 0) and (args.include_gene == False) and (args.flank == 'both'):
+            record.seq = record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l]
+            writer(record, pos[2], w, file, x)
+            continue
 
-            if (args.include_gene == True) and (args.flank == 'left'):
-                record.seq = record.seq[(pos[0]-w):pos[1]]
-                break
+        if (pos[0] - w < 0) and (args.include_gene == False) and (args.flank == 'left'):
+            record.seq = record.seq[0:pos[0]] + record.seq[(l-(w-pos[0])):l]
+            writer(record, pos[2], w, file, x)
+            continue
 
-            if (args.include_gene == True) and (args.flank == 'right'):
-                record.seq = record.seq[pos[0]:(pos[1]+w)]
-                break
-
-            # if window length is short enough and gene is excluded
-            if (args.include_gene == False) and (args.flank == 'both'):
-                record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)]
-                break
-
-            if (args.include_gene == False) and (args.flank == 'left'):
-                record.seq = record.seq[(pos[0]-w):pos[0]]
-                break
-
-            if (args.include_gene == False) and (args.flank == 'right'):
-                record.seq = record.seq[pos[1]:(pos[1]+w)]
-                break
+        if (pos[0] - w < 0) and (args.include_gene == False) and (args.flank == 'right'):
+            record.seq =  record.seq[pos[1]:(pos[1]+w)]
+            writer(record, pos[2], w, file, x)
+            continue
             
-    record.description = f"{record.description} | {pos[2]} | {w}bp window"
-    with open(f"{Path(file).stem}_{pos[2]}_{w}_{x}_flank.fasta", "w") as f:
-        SeqIO.write(record, f, "fasta")
-        print(f"{f.name} sucessfully created!")
-        f.close()
+        # if window length is short enough and gene is included
+        if (args.include_gene == True) and (args.flank == 'both'):
+            record.seq = record.seq[(pos[0]-w):(pos[1]+w)]
+            writer(record, pos[2], w, file, x)
+            continue
+
+        if (args.include_gene == True) and (args.flank == 'left'):
+            record.seq = record.seq[(pos[0]-w):pos[1]]
+            writer(record, pos[2], w, file, x)
+            continue
+
+        if (args.include_gene == True) and (args.flank == 'right'):
+            record.seq = record.seq[pos[0]:(pos[1]+w)]
+            writer(record, pos[2], w, file, x)
+            continue
+
+        # if window length is short enough and gene is excluded
+        if (args.include_gene == False) and (args.flank == 'both'):
+            record.seq = record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)]
+            writer(record, pos[2], w, file, x)
+            continue
+        
+        if (args.include_gene == False) and (args.flank == 'left'):
+            record.seq = record.seq[(pos[0]-w):pos[0]]
+            writer(record, pos[2], w, file, x)
+            continue
+
+        if (args.include_gene == False) and (args.flank == 'right'):
+            record.seq = record.seq[pos[1]:(pos[1]+w)]
+            writer(record, pos[2], w, file, x)
+            continue
 
 
 def flank_fasta_file_lin(file, window,gene):
