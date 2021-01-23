@@ -79,7 +79,7 @@ def run_abricate(file):
     o.write(out) # write output file
     o.close() # close output
 
-
+# returns the start and end positions of the annotation
 def flank_positions(file, gene_):
     data = pd.read_csv(file, sep='\t', header = 0)
     gene = data[data["GENE"].str.contains(gene_, regex=False)]
@@ -100,6 +100,7 @@ def flank_positions(file, gene_):
 
     return(start, end, g)
 
+# writes output fasta
 def writer(record, gene, window, file, x):
     record.description = f"{record.description} | {gene} | {window}bp window"
 
@@ -116,8 +117,34 @@ def flank_fasta_file_circ(file, window,gene):
     pos = flank_positions(abricate_file, gene)
 
     if (pos == True):
-        return print(f"Gene {args.goi} not found in {args.fasta_file}")
-        
+        return print(f"Error: Gene {args.goi} not found in {args.fasta_file}")
+
+    # initialise dictionaries for sequence splicing functions
+
+    ###### check functions are correct! ######
+    
+    d = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1]+w)],
+         (True, 'left'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
+         (True, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)],
+         (False, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)],
+         (False, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
+         (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
+
+    d_before = {(True, 'both'): lambda record, pos, w, l : record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l],
+                (True, 'left'): lambda record, pos, w, l : record.seq[0:(pos[1])] + record.seq[(l-(w-pos[0])):l],
+                (True, 'right'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
+                (False, 'both'): lambda record, pos, w, l : record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l],
+                (False, 'left'): lambda record, pos, w, l : record.seq[0:pos[0]] + record.seq[(l-(w-pos[0])):l],
+                (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
+
+    d_after = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)],
+               (True, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[1]],
+               (True, 'right'): lambda record, pos, w, l : record.seq[(pos[0]):l] + record.seq[0:(pos[1]+w-l)],
+               (False, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)],
+               (False, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
+               (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]}
+
+    # loop through records in fasta    
     for record in SeqIO.parse(file, "fasta"):
 
         print(pos[2] + ' found!')
@@ -125,45 +152,25 @@ def flank_fasta_file_circ(file, window,gene):
         w = int(window)
         l = len(record.seq)
         x = args.flank
-
-        d = {(True, 'both'): lambda record=record, pos=pos, w=w : record.seq[(pos[0]-w):(pos[1]+w)],
-         (True, 'left'): lambda record=record, pos=pos, w=w : record.seq[pos[0]:(pos[1]+w)],
-         (True, 'right'): lambda record=record, pos=pos, w=w : record.seq[pos[1]:(pos[1]+w)],
-         (False, 'both'): lambda record=record, pos=pos, w=w : record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)],
-         (False, 'left'): lambda record=record, pos=pos, w=w : record.seq[(pos[0]-w):pos[0]],
-         (False, 'right'): lambda record=record, pos=pos, w=w : record.seq[pos[1]:(pos[1]+w)]}
-
-        d_before = {(True, 'both'): lambda record=record, pos=pos, w=w, l=l : record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l],
-                (True, 'left'): lambda record=record, pos=pos, w=w, l=l : record.seq[0:(pos[1])] + record.seq[(l-(w-pos[0])):l],
-                (True, 'right'): lambda record=record, pos=pos, w=w : record.seq[pos[0]:(pos[1]+w)],
-                (False, 'both'): lambda record=record, pos=pos, w=w, l=l : record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l],
-                (False, 'left'): lambda record=record, pos=pos, w=w, l=l : record.seq[0:pos[0]] + record.seq[(l-(w-pos[0])):l],
-                (False, 'right'): lambda record=record, pos=pos, w=w : record.seq[pos[1]:(pos[1]+w)]}
-
-        d_after = {(True, 'both'): lambda record=record, pos=pos, w=w, l=l : record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)],
-               (True, 'left'): lambda record=record, pos=pos, w=w : record.seq[(pos[0]-w):pos[1]],
-               (True, 'right'): lambda record=record, pos=pos, w=w, l=l : record.seq[(pos[0]):l] + record.seq[0:(pos[1]+w-l)],
-               (False, 'both'): lambda record=record, pos=pos, w=w, l=l : record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)],
-               (False, 'left'): lambda record=record, pos=pos, w=w : record.seq[(pos[0]-w):pos[0]],
-               (False, 'right'): lambda record=record, pos=pos, w=w, l=l : record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]}
             
         # if window is too long for sequence length
         if w > 0.5 * (pos[0] - pos[1] + l):
-            return print('Window too long for sequence length')
-
+            print(f"Error: Window length {w} too long for sequence length {l}")
+            continue
+        
         # if window exceeds sequence length after gene
         if (pos[1] + w > l):
-            record.seq = d_after[(args.include_gene, args.flank)](record)
+            record.seq = d_after[(args.include_gene, args.flank)](record, pos, w, l)
             writer(record, pos[2], w, file, x)
             continue
             
         # if window exceeds sequence length before gene
         if (pos[0] - w < 0):
-            record.seq = d_before[(args.include_gene, args.flank)](record)
+            record.seq = d_before[(args.include_gene, args.flank)](record, pos, w, l)
             writer(record, pos[2], w, file, x)
             continue
 
-        record.seq = d[(args.include_gene, args.flank)](record)
+        record.seq = d[(args.include_gene, args.flank)](record, pos, w, l)
         writer(record, pos[2], w, file, x)
         continue
 
