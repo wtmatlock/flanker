@@ -12,7 +12,9 @@ import numpy as np
 import subprocess
 from Bio import SeqIO
 from pathlib import Path
-
+from cluster import *
+from salami import *
+from multi_allelic import *
 
 __author__ = "Samuel Lipworth, William Matlock"
 
@@ -44,6 +46,13 @@ def get_arguments():
                         help = 'Step in window sequence',
                         default = None)
 
+    cluster=parser.add_argument_group('Clustering options')
+    cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true')
+    cluster.add_argument('-id', '--indir',action='store'),
+    cluster.add_argument('-o', '--outfile',action='store'),
+    cluster.add_argument('-tr', '--threshold',action='store'),
+    cluster.add_argument('-p', '--threads',action='store'),
+
     # is sequence circularised?
     parser.add_argument('-circ', '--circ', action = 'store_true',
                         help = 'Is sequence circularised')
@@ -57,12 +66,18 @@ def get_arguments():
                         help = 'Choose Abricate database e.g. NCBI, resfinder',
                         default = 'resfinder')
 
+    parser.add_argument('-m', '--mode',action='store',
+                        help = 'One of "MAC" - multi-allelic cluster, "SM" - salami-mode, "Default" - normal mode with no clustering, "CM" - cluster mode',
+                        default = "Default")
+
     # gene(s) to annotate
     gene_group = parser.add_mutually_exclusive_group(required = True)
     gene_group.add_argument('-g', '--goi', action = 'store',
                         help = 'Gene of interest (escape any special characters)')
     gene_group.add_argument('-lg', '--list_of_genes', action= 'store',
                         help = 'Takes a .txt /n list of genes to process')
+
+
 
 
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
@@ -88,7 +103,7 @@ def flank_positions(file, gene_):
     if len(gene) == 0:
         return True
 
-    # gene found
+    # gene foundname=str(recorname=str(record.description)d.description)
     g = gene['GENE'].iloc[0]
 
     # LHS flank
@@ -122,7 +137,7 @@ def flank_fasta_file_circ(file, window,gene):
     # initialise dictionaries for sequence splicing functions
 
     ###### check functions are correct! ######
-    
+
     d = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1]+w)],
          (True, 'left'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
          (True, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)],
@@ -144,34 +159,35 @@ def flank_fasta_file_circ(file, window,gene):
                (False, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
                (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]}
 
-    # loop through records in fasta    
+    # loop through records in fasta
     for record in SeqIO.parse(file, "fasta"):
+        name=str(record.description)
 
         print(pos[2] + ' found!')
 
         w = int(window)
         l = len(record.seq)
         x = args.flank
-            
+
         # if window is too long for sequence length
         if w > 0.5 * (pos[0] - pos[1] + l):
             print(f"Error: Window length {w} too long for sequence length {l}")
             continue
-        
+
         # if window exceeds sequence length after gene
         if (pos[1] + w > l):
             record.seq = d_after[(args.include_gene, args.flank)](record, pos, w, l)
-            writer(record, pos[2], w, file, x)
+            writer(record, pos[2], w, name, x)
             continue
-            
+
         # if window exceeds sequence length before gene
         if (pos[0] - w < 0):
             record.seq = d_before[(args.include_gene, args.flank)](record, pos, w, l)
-            writer(record, pos[2], w, file, x)
+            writer(record, pos[2], w, name, x)
             continue
 
         record.seq = d[(args.include_gene, args.flank)](record, pos, w, l)
-        writer(record, pos[2], w, file, x)
+        writer(record, pos[2], w, name, x)
         continue
 
 
@@ -184,6 +200,7 @@ def flank_fasta_file_lin(file, window,gene):
     if pos != True:
 
         for record in SeqIO.parse(file, "fasta"):
+            name=str(record.description)
 
             print(pos[2] + ' found')
 
@@ -202,7 +219,7 @@ def flank_fasta_file_lin(file, window,gene):
 
                     record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_both_flank.fasta", "w") as f:
+                with open(f"{name}_{pos[2]}_{w}_both_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -219,7 +236,7 @@ def flank_fasta_file_lin(file, window,gene):
 
                     record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_left_flank.fasta", "w") as f:
+                with open(f"{name}_{pos[2]}_{w}_left_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
@@ -236,43 +253,79 @@ def flank_fasta_file_lin(file, window,gene):
 
                     record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_right_flank.fasta", "w") as f:
+                with open(f"{name}_{pos[2]}_{w}_right_flank.fasta", "w") as f:
                     SeqIO.write(record, f, "fasta")
                     print(f"{f.name} sucessfully created!")
                     f.close()
 
 
 
-def main():
+def flanker_main():
     args = get_arguments()
     run_abricate(args.fasta_file)
+
     if args.list_of_genes is not None:
-        with open(args.list_of_genes) as gene_list:
-           for gene in gene_list:
-               print("Working on gene {}".format(gene.strip()))
-               if args.window_stop is not None:
-                   for i in range(args.window, args.window_stop, args.window_step):
-                       if args.circ == True:
-                           flank_fasta_file_circ(args.fasta_file, i, gene.strip())
-                       else:
-                           flank_fasta_file_lin(args.fasta_file, i, gene.strip())
-               else:
-                   if args.circ == True:
-                       flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
-                   else:
-                       flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
+        with open(args.list_of_genes) as f:
+            gene_list=f.readlines()
+
     else:
-        if args.window_stop is not None:
-            for i in range(args.window, args.window_stop, args.window_step):
+        gene_list=[args.gene]
+
+
+    if args.window_stop is not None:
+        for i in range(args.window, args.window_stop, args.window_step):
+            for gene in gene_list:
+
+
+
                 if args.circ == True:
-                    flank_fasta_file_circ(args.fasta_file, i, args.goi)
+                    flank_fasta_file_circ(args.fasta_file, i, gene.strip())
                 else:
-                    flank_fasta_file_lin(args.fasta_file, i, args.goi)
+                    flank_fasta_file_lin(args.fasta_file, i, gene.strip())
+
+                if args.cluster ==True and args.mode =='Default':
+                    define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
+                    filelist=glob.glob(str(args.indir + str("*flank.fasta")))
+                    for filename in filelist:
+                        os.remove(filename)
+
+            if args.cluster==True and args.mode=='MAM':
+                define_clusters(gene,"MAM",args.indir,args.threads,args.threshold,args.outfile)
+                filelist=glob.glob(str(args.indir + str("*flank.fasta")))
+                for filename in filelist:
+                    os.remove(filename)
+
+    else:
+        if args.circ == True:
+            flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
         else:
-            if args.circ == True:
-                flank_fasta_file_circ(args.fasta_file, args.window,args.goi)
-            else:
-                flank_fasta_file_lin(args.fasta_file, args.window,args.goi)
+            flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
+        if args.cluster ==True and args.mode =='Default':
+            define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
+            filelist=glob.glob(str(args.indir + str("*flank.fasta")))
+            for filename in filelist:
+                os.remove(filename)
+        if args.cluster==True and args.mode=='MAM':
+            define_clusters(gene,"MAM",args.indir,args.threads,args.threshold,args.outfile)
+            filelist=glob.glob(str(args.indir + str("*flank.fasta")))
+            for filename in filelist:
+                os.remove(filename)
+
+    #mult-allelic mode is desinged to allow e.g. comparison of blaKPC2/3 alleles together
+
+
+
+
+
+
+
+def main():
+    args=get_arguments()
+    print(args)
+    if args.mode =="Default" or args.mode == "MAM":
+        flanker_main()
+    elif args.mode =="SM":
+        salami_main(args.list_of_genes,args.fasta_file,args.window,args.window_step,args.window_stop,args.indir,args.outfile,args.threads,args.threshold,args.cluster)
 
 
 if __name__ == '__main__':
