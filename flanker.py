@@ -59,7 +59,7 @@ def get_arguments():
 
     # gene(s) to annotate
     gene_group = parser.add_mutually_exclusive_group(required = True)
-    gene_group.add_argument('-g', '--goi', action = 'store',
+    gene_group.add_argument('-g', '--gene', action = 'store',
                         help = 'Gene of interest (escape any special characters)')
     gene_group.add_argument('-lg', '--list_of_genes', action= 'store',
                         help = 'Takes a .txt /n list of genes to process')
@@ -91,6 +91,9 @@ def flank_positions(file, gene_):
     # gene found
     g = gene['GENE'].iloc[0]
 
+    if len(gene) > 1:
+        print(f"Multiple annotations: {gene} found {len(gene)} times in {Path(file).stem}")
+
     # LHS flank
     start = int(gene['START'].iloc[0]) # start of gene
     start -= 1 # end of LHS flank
@@ -117,7 +120,7 @@ def flank_fasta_file_circ(file, window,gene):
     pos = flank_positions(abricate_file, gene)
 
     if (pos == True):
-        return print(f"Error: Gene {args.goi} not found in {args.fasta_file}")
+        return print(f"Error: Gene {args.gene} not found in {args.fasta_file}")
 
     # initialise dictionaries for sequence splicing functions
 
@@ -144,14 +147,16 @@ def flank_fasta_file_circ(file, window,gene):
                (False, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
                (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]}
 
+    
+    w = int(window)
+    x = args.flank
+
     # loop through records in fasta    
     for record in SeqIO.parse(file, "fasta"):
 
         print(pos[2] + ' found!')
 
-        w = int(window)
         l = len(record.seq)
-        x = args.flank
             
         # if window is too long for sequence length
         if w > 0.5 * (pos[0] - pos[1] + l):
@@ -181,98 +186,56 @@ def flank_fasta_file_lin(file, window,gene):
 
     pos = flank_positions(abricate_file, gene)
 
-    if pos != True:
+    if (pos == True):
+        return print(f"Error: Gene {args.gene} not found in {args.fasta_file}")
 
-        for record in SeqIO.parse(file, "fasta"):
+    d_lin = {(True, 'both'): lambda record, pos, w, l: record.seq[max(0,pos[0]-w):min(l, pos[1]+w)],
+             (True, 'left'): lambda record, pos, w, l : record.seq[max(0,pos[0]-w):min(l,pos[1])],
+             (True, 'right'): lambda record, pos, w, l : record.seq[pos[0]:min(l, pos[1]+w)],
+             (False, 'both'): lambda record, pos, w, l : record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(l, pos[1]+w)],
+             (False, 'left'): lambda record, pos, w, l : record.seq[max(0, pos[0]-w):pos[0]],
+             (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:min(l, pos[1]+w)]}
 
-            print(pos[2] + ' found')
+    w = int(window)
+    x = args.flank
 
-            w = int(window)
-            l = len(record.seq)
+    for record in SeqIO.parse(file, "fasta"):
 
-            #take both flanks
-            if args.flank == 'both':
+        print(pos[2] + ' found')
 
-            #include the gene if desired
-                if args.include_gene == True:
-                    record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq), pos[1]+w)]
+        l = len(record.seq)
 
-                else:
-                    record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
-
-                    record.description = f"{record.description} | {pos[2]} | {w}bp window"
-
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_both_flank.fasta", "w") as f:
-                    SeqIO.write(record, f, "fasta")
-                    print(f"{f.name} sucessfully created!")
-                    f.close()
-
-            #or if desired only go left
-            elif args.flank == 'left':
-                #include the gene if desired
-                if args.include_gene == True:
-                    record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq),pos[1])]
-
-
-                else:
-                    record.seq = record.seq[max(0, pos[0]-w):pos[0]]
-
-                    record.description = f"{record.description} | {pos[2]} | {w}bp window"
-
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_left_flank.fasta", "w") as f:
-                    SeqIO.write(record, f, "fasta")
-                    print(f"{f.name} sucessfully created!")
-                    f.close()
-
-            #or if desired only go right
-            elif args.flank == 'right':
-                #include the gene if desired
-                if args.include_gene == True:
-                    record.seq = record.seq[pos[0]:min(len(record.seq), pos[1]+w)]
-
-
-                else:
-                    record.seq = record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
-
-                    record.description = f"{record.description} | {pos[2]} | {w}bp window"
-
-                with open(f"{Path(file).stem}_{pos[2]}_{w}_right_flank.fasta", "w") as f:
-                    SeqIO.write(record, f, "fasta")
-                    print(f"{f.name} sucessfully created!")
-                    f.close()
-
+        record.seq = d_lin[(args.include_gene, args.flank)](record, pos, w, l)
+        writer(record, pos[2], w, file, x)
+        continue
 
 
 def main():
     args = get_arguments()
     run_abricate(args.fasta_file)
+
     if args.list_of_genes is not None:
-        with open(args.list_of_genes) as gene_list:
-           for gene in gene_list:
-               print("Working on gene {}".format(gene.strip()))
-               if args.window_stop is not None:
-                   for i in range(args.window, args.window_stop, args.window_step):
-                       if args.circ == True:
-                           flank_fasta_file_circ(args.fasta_file, i, gene.strip())
-                       else:
-                           flank_fasta_file_lin(args.fasta_file, i, gene.strip())
-               else:
-                   if args.circ == True:
-                       flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
-                   else:
-                       flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
+        with open(args.list_of_genes) as f:
+            gene_list = f.readlines()
+
     else:
-        if args.window_stop is not None:
-            for i in range(args.window, args.window_stop, args.window_step):
-                if args.circ == True:
-                    flank_fasta_file_circ(args.fasta_file, i, args.goi)
-                else:
-                    flank_fasta_file_lin(args.fasta_file, i, args.goi)
-        else:
-            if args.circ == True:
-                flank_fasta_file_circ(args.fasta_file, args.window,args.goi)
+        gene_list = [args.gene]
+
+    for gene in gene_list:
+
+            print(f"Working on {gene} query")
+            
+            if args.window_stop is not None:
+                 for i in range(args.window, args.window_stop, args.window_step):
+                      if args.circ == True:
+                           flank_fasta_file_circ(args.fasta_file, i, gene.strip())
+                      else:
+                           flank_fasta_file_lin(args.fasta_file, i, gene.strip())
             else:
-                flank_fasta_file_lin(args.fasta_file, args.window,args.goi)
+                if args.circ == True:
+                       flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
+                else:
+                       flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
 
 
 if __name__ == '__main__':
