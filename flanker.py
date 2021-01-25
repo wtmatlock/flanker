@@ -154,7 +154,7 @@ def flank_fasta_file_circ(file, window,gene):
     # loop through records in fasta    
     for record in SeqIO.parse(file, "fasta"):
 
-        print(pos[2] + ' found!')
+        print(f"{pos[2]} found in {record.id}")
 
         l = len(record.seq)
             
@@ -201,7 +201,7 @@ def flank_fasta_file_lin(file, window,gene):
 
     for record in SeqIO.parse(file, "fasta"):
 
-        print(pos[2] + ' found')
+        print(f"{pos[2]} found in {record.id}")
 
         l = len(record.seq)
 
@@ -213,6 +213,7 @@ def flank_fasta_file_lin(file, window,gene):
 def main():
     args = get_arguments()
     run_abricate(args.fasta_file)
+
 
     if args.list_of_genes is not None:
         with open(args.list_of_genes) as f:
