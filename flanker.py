@@ -16,6 +16,7 @@ from cluster import *
 from salami import *
 from multi_allelic import *
 import time
+import logging as log
 
 start = time.time()
 
@@ -49,6 +50,8 @@ def get_arguments():
                         help = 'Step in window sequence',
                         default = None)
     parser.add_argument('-p', '--threads',action='store',default=multiprocessing.cpu_count()),
+    parser.add_argument("-v", "--verbose", const=1, default=0, type=int, nargs="?",
+                    help="increase verbosity: 0 = only warnings, 1 = info, 2 = debug. No number means info. Default is no verbosity.")
 
 
     cluster=parser.add_argument_group('Clustering options')
@@ -121,14 +124,15 @@ def flank_positions(data, gene_):
     return(start, end, g)
 
 # writes output fasta
-def writer(record, gene, window, file, x):
+def writer(record, gene, window, isolate, x):
     record.description = f"{record.description} | {gene} | {window}bp window"
 
-    with open(f"{Path(file).stem}_{gene}_{window}_{x}_flank.fasta", "w") as f:
+    with open(f"{isolate}_{gene}_{window}_{x}_flank.fasta", "w") as f:
         SeqIO.write(record, f, "fasta")
-        print(f"{f.name} sucessfully created!")
+        log.info(f"{f.name} sucessfully created!")
         f.close()
 
+#this function is needed for multi-fasta files
 def filter_abricate(data, isolate):
 
     data = data.loc[data['SEQUENCE'] == isolate]
@@ -141,17 +145,18 @@ def flank_fasta_file_circ(file, window,gene):
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
     #print(data)
     guids=data['SEQUENCE'].unique()
-    print(guids)
+    log.debug(guids)
+    #can't just use abricate output for whole of muli-fasta
     for guid in guids:
         abricate_file=filter_abricate(data,guid)
 
-        print(abricate_file)
+        log.debug(abricate_file)
 
         pos = flank_positions(abricate_file, gene)
 
-
+        log.debug(pos)
         if (pos == True):
-            print(f"Error: Gene {args.goi} not found in {args.fasta_file}")
+            log.warning(f"Error: Gene {args.goi} not found in {args.fasta_file}")
 
     # initialise dictionaries for sequence splicing functions
 
@@ -180,10 +185,12 @@ def flank_fasta_file_circ(file, window,gene):
 
         # loop through records in fasta
             for record in SeqIO.parse(file, "fasta"):
+                #select the fasta record of interest
                 if record.description == guid:
+                    log.debug('OK')
                     name=str(record.description)
 
-                    print(pos[2] + ' found!')
+                    log.info(pos[2] + ' found!')
 
                     w = int(window)
                     l = len(record.seq)
@@ -191,23 +198,29 @@ def flank_fasta_file_circ(file, window,gene):
 
                 # if window is too long for sequence length
                     if w > 0.5 * (pos[0] - pos[1] + l):
-                        print(f"Error: Window length {w} too long for sequence length {l}")
+                        log.warning(f"Error: Window length {w} too long for sequence length {l}")
                         continue
 
                 # if window exceeds sequence length after gene
+
                     if (pos[1] + w > l):
+                        log.debug("Window exceeds seq length after gene")
                         record.seq = d_after[(args.include_gene, args.flank)](record, pos, w, l)
-                        writer(record, pos[2], w, name, x)
+                        writer(record, pos[2], w, guid, x)
                         continue
 
                 # if window exceeds sequence length before gene
+
                     if (pos[0] - w < 0):
+                        log.debug("Window excees seq length before gene")
                         record.seq = d_before[(args.include_gene, args.flank)](record, pos, w, l)
-                        writer(record, pos[2], w, name, x)
+                        writer(record, pos[2], w, guid, x)
                         continue
 
+                    else:
+                        log.debug("Window is all good")
                         record.seq = d[(args.include_gene, args.flank)](record, pos, w, l)
-                        writer(record, pos[2], w, name, x)
+                        writer(record, pos[2], w, guid, x)
                         continue
 
 
@@ -217,7 +230,7 @@ def flank_fasta_file_lin(file, window,gene):
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
     #print(data)
     guids=data['SEQUENCE'].unique()
-    print(guids)
+
     for guid in guids:
         abricate_file=filter_abricate(data,guid)
 
@@ -225,69 +238,33 @@ def flank_fasta_file_lin(file, window,gene):
 
         pos = flank_positions(abricate_file, gene)
 
-        if pos != True:
+        if pos == True:
+            log.error(f"Error: Gene {gene} not found in {guid}")
 
-            for record in SeqIO.parse(file, "fasta"):
-                if record.description == guid:
-                    name=str(record.description)
-                    print(pos[0])
-                    print(pos[1])
-                    #print(pos[2] + ' found')
+        else:
+             d_lin = {(True, 'both'): lambda record, pos, w, l: record.seq[max(0,pos[0]-w):min(l, pos[1]+w)],
+             (True, 'left'): lambda record, pos, w, l : record.seq[max(0,pos[0]-w):min(l,pos[1])],
+             (True, 'right'): lambda record, pos, w, l : record.seq[pos[0]:min(l, pos[1]+w)],
+             (False, 'both'): lambda record, pos, w, l : record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(l, pos[1]+w)],
+             (False, 'left'): lambda record, pos, w, l : record.seq[max(0, pos[0]-w):pos[0]],
+             (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:min(l, pos[1]+w)]}
 
-                    w = int(window)
-                    l = len(record.seq)
+             w = int(window)
+             x = args.flank
 
-                    #take both flanks
-                    if args.flank == 'both':
-
-                    #include the gene if desired
-                        if args.include_gene == True:
-                            record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq), pos[1]+w)]
-
-                        else:
-                            record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
-
-                            record.description = f"{record.description} | {pos[2]} | {w}bp window"
-
-                        with open(f"{name}_{pos[2]}_{w}_both_flank.fasta", "w") as f:
-                            SeqIO.write(record, f, "fasta")
-                            #print(f"{f.name} sucessfully created!")
-                            f.close()
-
-                    #or if desired only go left
-                    elif args.flank == 'left':
-                        #include the gene if desired
-                        if args.include_gene == True:
-                            record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq),pos[1])]
+             for record in SeqIO.parse(file, "fasta"):
+                 if record.description == guid:
+                     name=str(record.description)
 
 
-                        else:
-                            record.seq = record.seq[max(0, pos[0]-w):pos[0]]
 
-                            record.description = f"{record.description} | {pos[2]} | {w}bp window"
+                     log.info(f"{gene} found in {record.description}")
 
-                        with open(f"{name}_{pos[2]}_{w}_left_flank.fasta", "w") as f:
-                            SeqIO.write(record, f, "fasta")
-                            #print(f"{f.name} sucessfully created!")
-                            f.close()
+                     l = len(record.seq)
 
-                    #or if desired only go right
-                    elif args.flank == 'right':
-                        #include the gene if desired
-                        if args.include_gene == True:
-                            record.seq = record.seq[pos[0]:min(len(record.seq), pos[1]+w)]
-
-
-                        else:
-                            record.seq = record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
-
-                            record.description = f"{record.description} | {pos[2]} | {w}bp window"
-
-                        with open(f"{name}_{pos[2]}_{w}_right_flank.fasta", "w") as f:
-                            SeqIO.write(record, f, "fasta")
-                            print(f"{f.name} sucessfully created!")
-                            f.close()
-
+                     record.seq = d_lin[(args.include_gene, args.flank)](record, pos, w, l)
+                     writer(record, pos[2], w, guid, x)
+                     continue
 
 
 def flanker_main():
@@ -315,12 +292,14 @@ def flanker_main():
                     flank_fasta_file_lin(args.fasta_file, i, gene.strip())
 
                 if args.cluster ==True and args.mode =='Default':
+
                     define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
                     filelist=glob.glob(str(args.indir + str("*flank.fasta")))
                     for filename in filelist:
                         os.remove(filename)
 
             if args.cluster==True and args.mode=='MAM':
+
                 define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
                 filelist=glob.glob(str(args.indir + str("*flank.fasta")))
                 for filename in filelist:
@@ -332,12 +311,16 @@ def flanker_main():
         else:
             flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
         if args.cluster ==True and args.mode =='Default':
+            log.info("Performing clustering")
             define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
+            long.info("Cleaning up")
             filelist=glob.glob(str(args.indir + str("*flank.fasta")))
             for filename in filelist:
                 os.remove(filename)
         if args.cluster==True and args.mode=='MAM':
+            log.info("Performing clustering")
             define_clusters(gene,"MAM",args.indir,args.threads,args.threshold,args.outfile)
+            log.info("Cleaning up")
             filelist=glob.glob(str(args.indir + str("*flank.fasta")))
             for filename in filelist:
                 os.remove(filename)
@@ -352,7 +335,21 @@ def flanker_main():
 
 def main():
     args=get_arguments()
-    print(args)
+
+
+    logger = log.getLogger()
+
+    log.basicConfig(format="%(message)s")
+
+    if args.verbose == 0:
+        logger.setLevel(log.WARNING)
+    elif args.verbose == 1:
+        logger.setLevel(log.INFO)
+    elif args.verbose == 2:
+        logger.setLevel(log.DEBUG)
+
+
+    log.info(args)
     if args.mode =="Default" or args.mode == "MAM":
         flanker_main()
     elif args.mode =="SM":
@@ -364,4 +361,4 @@ if __name__ == '__main__':
 
     end = time.time()
 
-    print(end - start)
+    log.info(f"All done in {round(end - start)} seconds")
