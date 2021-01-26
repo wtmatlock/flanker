@@ -99,8 +99,9 @@ def run_abricate(file):
     o.close() # close output
 
 # returns the start and end positions of the annotation
-def flank_positions(file, gene_):
-    data = pd.read_csv(file, sep='\t', header = 0)
+def flank_positions(data, gene_):
+
+
     gene = data[data["GENE"].str.contains(gene_, regex=False)]
 
     # check if gene is found
@@ -128,139 +129,164 @@ def writer(record, gene, window, file, x):
         print(f"{f.name} sucessfully created!")
         f.close()
 
+def filter_abricate(data, isolate):
+
+    data = data.loc[data['SEQUENCE'] == isolate]
+    return(data)
+
 def flank_fasta_file_circ(file, window,gene):
     args = get_arguments()
 
-    abricate_file = str(file + '_resfinder') # name of abricate output for fasta
+    unfiltered_abricate_file = str(file + '_resfinder') # name of abricate output for fasta
+    data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
+    #print(data)
+    guids=data['SEQUENCE'].unique()
+    print(guids)
+    for guid in guids:
+        abricate_file=filter_abricate(data,guid)
 
-    pos = flank_positions(abricate_file, gene)
+        print(abricate_file)
 
-    if (pos == True):
-        return print(f"Error: Gene {args.goi} not found in {args.fasta_file}")
+        pos = flank_positions(abricate_file, gene)
+
+
+        if (pos == True):
+            print(f"Error: Gene {args.goi} not found in {args.fasta_file}")
 
     # initialise dictionaries for sequence splicing functions
 
     ###### check functions are correct! ######
+        else:
+            d = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1]+w)],
+                (True, 'left'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
+                (True, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)],
+                (False, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)],
+                (False, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
+                (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
 
-    d = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1]+w)],
-         (True, 'left'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
-         (True, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)],
-         (False, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)],
-         (False, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
-         (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
-
-    d_before = {(True, 'both'): lambda record, pos, w, l : record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l],
+            d_before = {(True, 'both'): lambda record, pos, w, l : record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l],
                 (True, 'left'): lambda record, pos, w, l : record.seq[0:(pos[1])] + record.seq[(l-(w-pos[0])):l],
                 (True, 'right'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
                 (False, 'both'): lambda record, pos, w, l : record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l],
                 (False, 'left'): lambda record, pos, w, l : record.seq[0:pos[0]] + record.seq[(l-(w-pos[0])):l],
                 (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
 
-    d_after = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)],
-               (True, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[1]],
-               (True, 'right'): lambda record, pos, w, l : record.seq[(pos[0]):l] + record.seq[0:(pos[1]+w-l)],
-               (False, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)],
-               (False, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
-               (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]}
+            d_after = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)],
+                (True, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[1]],
+                (True, 'right'): lambda record, pos, w, l : record.seq[(pos[0]):l] + record.seq[0:(pos[1]+w-l)],
+                (False, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)],
+                (False, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
+                (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]}
 
-    # loop through records in fasta
-    for record in SeqIO.parse(file, "fasta"):
-        name=str(record.description)
+        # loop through records in fasta
+            for record in SeqIO.parse(file, "fasta"):
+                if record.description == guid:
+                    name=str(record.description)
 
-        print(pos[2] + ' found!')
+                    print(pos[2] + ' found!')
 
-        w = int(window)
-        l = len(record.seq)
-        x = args.flank
+                    w = int(window)
+                    l = len(record.seq)
+                    x = args.flank
 
-        # if window is too long for sequence length
-        if w > 0.5 * (pos[0] - pos[1] + l):
-            print(f"Error: Window length {w} too long for sequence length {l}")
-            continue
+                # if window is too long for sequence length
+                    if w > 0.5 * (pos[0] - pos[1] + l):
+                        print(f"Error: Window length {w} too long for sequence length {l}")
+                        continue
 
-        # if window exceeds sequence length after gene
-        if (pos[1] + w > l):
-            record.seq = d_after[(args.include_gene, args.flank)](record, pos, w, l)
-            writer(record, pos[2], w, name, x)
-            continue
+                # if window exceeds sequence length after gene
+                    if (pos[1] + w > l):
+                        record.seq = d_after[(args.include_gene, args.flank)](record, pos, w, l)
+                        writer(record, pos[2], w, name, x)
+                        continue
 
-        # if window exceeds sequence length before gene
-        if (pos[0] - w < 0):
-            record.seq = d_before[(args.include_gene, args.flank)](record, pos, w, l)
-            writer(record, pos[2], w, name, x)
-            continue
+                # if window exceeds sequence length before gene
+                    if (pos[0] - w < 0):
+                        record.seq = d_before[(args.include_gene, args.flank)](record, pos, w, l)
+                        writer(record, pos[2], w, name, x)
+                        continue
 
-        record.seq = d[(args.include_gene, args.flank)](record, pos, w, l)
-        writer(record, pos[2], w, name, x)
-        continue
+                        record.seq = d[(args.include_gene, args.flank)](record, pos, w, l)
+                        writer(record, pos[2], w, name, x)
+                        continue
 
 
 def flank_fasta_file_lin(file, window,gene):
     args = get_arguments()
-    abricate_file = str(file + '_resfinder') # name of abricate output for fasta
-
-    pos = flank_positions(abricate_file, gene)
-
-    if pos != True:
-
-        for record in SeqIO.parse(file, "fasta"):
-            name=str(record.description)
-
-            print(pos[2] + ' found')
-
-            w = int(window)
-            l = len(record.seq)
-
-            #take both flanks
-            if args.flank == 'both':
-
-            #include the gene if desired
-                if args.include_gene == True:
-                    record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq), pos[1]+w)]
-
-                else:
-                    record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
-
-                    record.description = f"{record.description} | {pos[2]} | {w}bp window"
-
-                with open(f"{name}_{pos[2]}_{w}_both_flank.fasta", "w") as f:
-                    SeqIO.write(record, f, "fasta")
-                    print(f"{f.name} sucessfully created!")
-                    f.close()
-
-            #or if desired only go left
-            elif args.flank == 'left':
-                #include the gene if desired
-                if args.include_gene == True:
-                    record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq),pos[1])]
+    unfiltered_abricate_file = str(file + '_resfinder') # name of abricate output for fasta
+    data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
+    #print(data)
+    guids=data['SEQUENCE'].unique()
+    print(guids)
+    for guid in guids:
+        abricate_file=filter_abricate(data,guid)
 
 
-                else:
-                    record.seq = record.seq[max(0, pos[0]-w):pos[0]]
 
-                    record.description = f"{record.description} | {pos[2]} | {w}bp window"
+        pos = flank_positions(abricate_file, gene)
 
-                with open(f"{name}_{pos[2]}_{w}_left_flank.fasta", "w") as f:
-                    SeqIO.write(record, f, "fasta")
-                    print(f"{f.name} sucessfully created!")
-                    f.close()
+        if pos != True:
 
-            #or if desired only go right
-            elif args.flank == 'right':
-                #include the gene if desired
-                if args.include_gene == True:
-                    record.seq = record.seq[pos[0]:min(len(record.seq), pos[1]+w)]
+            for record in SeqIO.parse(file, "fasta"):
+                if record.description == guid:
+                    name=str(record.description)
+                    print(pos[0])
+                    print(pos[1])
+                    #print(pos[2] + ' found')
+
+                    w = int(window)
+                    l = len(record.seq)
+
+                    #take both flanks
+                    if args.flank == 'both':
+
+                    #include the gene if desired
+                        if args.include_gene == True:
+                            record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq), pos[1]+w)]
+
+                        else:
+                            record.seq = record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
+
+                            record.description = f"{record.description} | {pos[2]} | {w}bp window"
+
+                        with open(f"{name}_{pos[2]}_{w}_both_flank.fasta", "w") as f:
+                            SeqIO.write(record, f, "fasta")
+                            #print(f"{f.name} sucessfully created!")
+                            f.close()
+
+                    #or if desired only go left
+                    elif args.flank == 'left':
+                        #include the gene if desired
+                        if args.include_gene == True:
+                            record.seq = record.seq[max(0,pos[0]-w):min(len(record.seq),pos[1])]
 
 
-                else:
-                    record.seq = record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
+                        else:
+                            record.seq = record.seq[max(0, pos[0]-w):pos[0]]
 
-                    record.description = f"{record.description} | {pos[2]} | {w}bp window"
+                            record.description = f"{record.description} | {pos[2]} | {w}bp window"
 
-                with open(f"{name}_{pos[2]}_{w}_right_flank.fasta", "w") as f:
-                    SeqIO.write(record, f, "fasta")
-                    print(f"{f.name} sucessfully created!")
-                    f.close()
+                        with open(f"{name}_{pos[2]}_{w}_left_flank.fasta", "w") as f:
+                            SeqIO.write(record, f, "fasta")
+                            #print(f"{f.name} sucessfully created!")
+                            f.close()
+
+                    #or if desired only go right
+                    elif args.flank == 'right':
+                        #include the gene if desired
+                        if args.include_gene == True:
+                            record.seq = record.seq[pos[0]:min(len(record.seq), pos[1]+w)]
+
+
+                        else:
+                            record.seq = record.seq[pos[1]:min(len(record.seq), pos[1]+w)]
+
+                            record.description = f"{record.description} | {pos[2]} | {w}bp window"
+
+                        with open(f"{name}_{pos[2]}_{w}_right_flank.fasta", "w") as f:
+                            SeqIO.write(record, f, "fasta")
+                            print(f"{f.name} sucessfully created!")
+                            f.close()
 
 
 
