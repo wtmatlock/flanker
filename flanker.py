@@ -224,7 +224,7 @@ def main():
 
     if circ == True:
 
-    for gene in gene_list:
+        for gene in gene_list:
 
             print(f"Working on {gene} query")
             
@@ -236,7 +236,7 @@ def main():
  
     else:
 
-    for gene in gene_list:
+        for gene in gene_list:
 
             print(f"Working on {gene} query")
             
