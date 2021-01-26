@@ -107,7 +107,7 @@ def flank_positions(file, gene_):
 def writer(record, gene, window, file, x):
     record.description = f"{record.description} | {gene} | {window}bp window"
 
-    with open(f"{Path(file).stem}_{gene}_{window}_{x}_flank.fasta", "w") as f:
+    with open(f"{record.id}_{gene}_{window}_{x}_flank.fasta", "w") as f:
         SeqIO.write(record, f, "fasta")
         print(f"{f.name} sucessfully created!")
         f.close()
