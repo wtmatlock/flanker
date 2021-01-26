@@ -269,7 +269,7 @@ def flanker_main():
             gene_list=f.readlines()
 
     else:
-        gene_list=[args.gene]
+        gene_list=[args.goi]
 
 
     if args.window_stop is not None:
