@@ -4,7 +4,7 @@
 """
 Creates fasta for gene flanks
 """
-
+import multiprocessing
 import sys
 import argparse
 import pandas as pd
@@ -15,6 +15,9 @@ from pathlib import Path
 from cluster import *
 from salami import *
 from multi_allelic import *
+import time
+
+start = time.time()
 
 __author__ = "Samuel Lipworth, William Matlock"
 
@@ -45,13 +48,14 @@ def get_arguments():
     parser.add_argument('-wstep', '--window_step', action='store',type=int,
                         help = 'Step in window sequence',
                         default = None)
+    parser.add_argument('-p', '--threads',action='store',default=multiprocessing.cpu_count()),
+
 
     cluster=parser.add_argument_group('Clustering options')
     cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true')
     cluster.add_argument('-id', '--indir',action='store'),
     cluster.add_argument('-o', '--outfile',action='store'),
     cluster.add_argument('-tr', '--threshold',action='store'),
-    cluster.add_argument('-p', '--threads',action='store'),
 
     # is sequence circularised?
     parser.add_argument('-circ', '--circ', action = 'store_true',
@@ -262,7 +266,8 @@ def flank_fasta_file_lin(file, window,gene):
 
 def flanker_main():
     args = get_arguments()
-    run_abricate(args.fasta_file)
+    with multiprocessing.Pool(int(args.threads)) as p:
+        p.map(run_abricate, [seq for seq in args.fasta_file])
 
     if args.list_of_genes is not None:
         with open(args.list_of_genes) as f:
@@ -290,7 +295,7 @@ def flanker_main():
                         os.remove(filename)
 
             if args.cluster==True and args.mode=='MAM':
-                define_clusters(gene,"MAM",args.indir,args.threads,args.threshold,args.outfile)
+                define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
                 filelist=glob.glob(str(args.indir + str("*flank.fasta")))
                 for filename in filelist:
                     os.remove(filename)
@@ -330,3 +335,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+    end = time.time()
+
+    print(end - start)
