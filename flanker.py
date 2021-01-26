@@ -222,21 +222,29 @@ def main():
     else:
         gene_list = [args.gene]
 
+    if circ == True:
+
     for gene in gene_list:
 
             print(f"Working on {gene} query")
             
             if args.window_stop is not None:
                  for i in range(args.window, args.window_stop, args.window_step):
-                      if args.circ == True:
-                           flank_fasta_file_circ(args.fasta_file, i, gene.strip())
-                      else:
-                           flank_fasta_file_lin(args.fasta_file, i, gene.strip())
+                     flank_fasta_file_circ(args.fasta_file, i, gene.strip())
             else:
-                if args.circ == True:
-                       flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
-                else:
-                       flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
+                flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
+ 
+    else:
+
+    for gene in gene_list:
+
+            print(f"Working on {gene} query")
+            
+            if args.window_stop is not None:
+                 for i in range(args.window, args.window_stop, args.window_step):
+                     flank_fasta_file_lin(args.fasta_file, i, gene.strip())
+            else:
+                flank_fasta_file_lin(args.fasta_file, args.window, gene.strip())
 
 
 if __name__ == '__main__':
