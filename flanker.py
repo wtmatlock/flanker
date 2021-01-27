@@ -47,7 +47,7 @@ def get_arguments():
 
     # running mode
     parser.add_argument('-m', '--mode',action='store',
-                        help = 'One of "Default" - normal mode with no clustering, "CM" - cluster mode, "SM" - salami-mode',
+                        help = 'One of "default" - normal mode with no clustering, "cm" - cluster mode, "sm" - salami-mode',
                         default = "Default")
 
     # is sequence circularised?
@@ -64,7 +64,7 @@ def get_arguments():
                         default = 'resfinder')
 
     # number of threads
-    parser.add_argument('-p', '--threads',action='store',default=multiprocessing.cpu_count()),
+    parser.add_argument('-p', '--threads',action='store', default=multiprocessing.cpu_count()),
 
     # output verbosity
     parser.add_argument("-v", "--verbose", const=1, default=0, type=int, nargs="?",
@@ -292,39 +292,26 @@ def flanker_main():
                 else:
                     flank_fasta_file_lin(args.fasta_file, i, gene.strip())
 
-                if args.cluster ==True and args.mode =='Default':
+                if args.cluster ==True and args.mode =='default':
 
                     define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
                     filelist=glob.glob(str(args.indir + str("*flank.fasta")))
                     for filename in filelist:
                         os.remove(filename)
 
-            if args.cluster==True and args.mode=='MAM':
-
-                define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
-                filelist=glob.glob(str(args.indir + str("*flank.fasta")))
-                for filename in filelist:
-                    os.remove(filename)
-
     else:
         if args.circ == True:
             flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
         else:
             flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
-        if args.cluster ==True and args.mode =='Default':
+        if args.cluster ==True and args.mode =='default':
             log.info("Performing clustering")
             define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
             long.info("Cleaning up")
             filelist=glob.glob(str(args.indir + str("*flank.fasta")))
             for filename in filelist:
                 os.remove(filename)
-        if args.cluster==True and args.mode=='MAM':
-            log.info("Performing clustering")
-            define_clusters(gene,"MAM",args.indir,args.threads,args.threshold,args.outfile)
-            log.info("Cleaning up")
-            filelist=glob.glob(str(args.indir + str("*flank.fasta")))
-            for filename in filelist:
-                os.remove(filename)
+
 
 def main():
     args=get_arguments()
@@ -343,9 +330,9 @@ def main():
 
 
     log.info(args)
-    if args.mode =="Default" or args.mode == "MAM":
+    if args.mode =="default"
         flanker_main()
-    elif args.mode =="SM":
+    elif args.mode =="sm":
         salami_main(args.list_of_genes,args.fasta_file,args.window,args.window_step,args.window_stop,args.indir,args.outfile,args.threads,args.threshold,args.cluster)
 
 
