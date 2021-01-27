@@ -47,7 +47,7 @@ def get_arguments():
 
     # running mode
     parser.add_argument('-m', '--mode',action='store',
-                        help = 'One of "default" - normal mode with no clustering, "cm" - cluster mode, "sm" - salami-mode',
+                        help = 'One of "default" - normal mode, "mm" - multi-allelic cluster, or "sm" - salami-mode',
                         default = "Default")
 
     # is sequence circularised?
@@ -299,6 +299,13 @@ def flanker_main():
                     for filename in filelist:
                         os.remove(filename)
 
+            if args.cluster==True and args.mode=='':
+
+                define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
+                filelist=glob.glob(str(args.indir + str("*flank.fasta")))
+                for filename in filelist:
+                    os.remove(filename)
+
     else:
         if args.circ == True:
             flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
@@ -311,7 +318,13 @@ def flanker_main():
             filelist=glob.glob(str(args.indir + str("*flank.fasta")))
             for filename in filelist:
                 os.remove(filename)
-
+        if args.cluster==True and args.mode=='mm':
+            log.info("Performing clustering")
+            define_clusters(gene,"mm",args.indir,args.threads,args.threshold,args.outfile)
+            log.info("Cleaning up")
+            filelist=glob.glob(str(args.indir + str("*flank.fasta")))
+            for filename in filelist:
+                os.remove(filename)
 
 def main():
     args=get_arguments()
@@ -330,7 +343,7 @@ def main():
 
 
     log.info(args)
-    if args.mode =="default"
+    if args.mode =="default" or args.mode == "mm":
         flanker_main()
     elif args.mode =="sm":
         salami_main(args.list_of_genes,args.fasta_file,args.window,args.window_step,args.window_stop,args.indir,args.outfile,args.threads,args.threshold,args.cluster)
