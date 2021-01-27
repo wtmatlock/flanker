@@ -4,7 +4,6 @@
 """
 Flanker v1.0
 """
-import multiprocessing
 import sys
 import argparse
 import pandas as pd
@@ -62,9 +61,6 @@ def get_arguments():
     parser.add_argument('-db', '--database', action = 'store',
                         help = 'Choose Abricate database e.g. NCBI, resfinder',
                         default = 'resfinder')
-
-    # number of threads
-    parser.add_argument('-p', '--threads',action='store', default=multiprocessing.cpu_count()),
 
     # output verbosity
     parser.add_argument("-v", "--verbose", const=1, default=0, type=int, nargs="?",
@@ -270,8 +266,7 @@ def flank_fasta_file_lin(file, window,gene):
 
 def flanker_main():
     args = get_arguments()
-    with multiprocessing.Pool(int(args.threads)) as p:
-        p.map(run_abricate, [seq for seq in args.fasta_file])
+    run_abricate(args.fasta_file)
 
     if args.list_of_genes is not None:
         with open(args.list_of_genes) as f:
@@ -284,8 +279,6 @@ def flanker_main():
     if args.window_stop is not None:
         for i in range(args.window, args.window_stop, args.window_step):
             for gene in gene_list:
-
-
 
                 if args.circ == True:
                     flank_fasta_file_circ(args.fasta_file, i, gene.strip())
@@ -307,24 +300,25 @@ def flanker_main():
                     os.remove(filename)
 
     else:
-        if args.circ == True:
-            flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
-        else:
-            flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
-        if args.cluster ==True and args.mode =='default':
-            log.info("Performing clustering")
-            define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
-            long.info("Cleaning up")
-            filelist=glob.glob(str(args.indir + str("*flank.fasta")))
-            for filename in filelist:
-                os.remove(filename)
-        if args.cluster==True and args.mode=='mm':
-            log.info("Performing clustering")
-            define_clusters(gene,"mm",args.indir,args.threads,args.threshold,args.outfile)
-            log.info("Cleaning up")
-            filelist=glob.glob(str(args.indir + str("*flank.fasta")))
-            for filename in filelist:
-                os.remove(filename)
+        for gene in gene_list:
+            if args.circ == True:
+                flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
+            else:
+                flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
+            if args.cluster ==True and args.mode =='default':
+                log.info("Performing clustering")
+                define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
+                long.info("Cleaning up")
+                filelist=glob.glob(str(args.indir + str("*flank.fasta")))
+                for filename in filelist:
+                    os.remove(filename)
+            if args.cluster==True and args.mode=='mm':
+                log.info("Performing clustering")
+                define_clusters(gene,"mm",args.indir,args.threads,args.threshold,args.outfile)
+                log.info("Cleaning up")
+                filelist=glob.glob(str(args.indir + str("*flank.fasta")))
+                for filename in filelist:
+                    os.remove(filename)
 
 def main():
     args=get_arguments()
