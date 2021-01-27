@@ -8,7 +8,6 @@ import multiprocessing
 import sys
 import argparse
 import pandas as pd
-import numpy as np
 import subprocess
 from Bio import SeqIO
 from pathlib import Path
@@ -56,8 +55,7 @@ def get_arguments():
 
     cluster=parser.add_argument_group('Clustering options')
     cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true')
-    cluster.add_argument('-id', '--indir',action='store'),
-    cluster.add_argument('-o', '--outfile',action='store','Prefix for the clustering file'),
+    cluster.add_argument('-o', '--outfile',action='store',help='Prefix for the clustering file'),
     cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering'),
 
     # is sequence circularised?
@@ -92,6 +90,7 @@ def get_arguments():
 
 
 def run_abricate(file):
+    log.debug("running abricate")
     args=get_arguments()
     abricate_command = ["abricate", "--db", args.database, file] # shell commands
     p = subprocess.Popen(abricate_command, stdout = subprocess.PIPE, stderr = subprocess.PIPE) # run abricate
@@ -187,7 +186,7 @@ def flank_fasta_file_circ(file, window,gene):
             for record in SeqIO.parse(file, "fasta"):
                 #select the fasta record of interest
                 if record.description == guid:
-                    log.debug('OK')
+
                     name=str(record.description)
 
                     log.info(pos[2] + ' found!')
@@ -269,8 +268,9 @@ def flank_fasta_file_lin(file, window,gene):
 
 def flanker_main():
     args = get_arguments()
-    with multiprocessing.Pool(int(args.threads)) as p:
-        p.map(run_abricate, [seq for seq in args.fasta_file])
+    #with multiprocessing.Pool(int(args.threads)) as p:
+    #    p.map(run_abricate, [seq for seq in args.fasta_file])
+    run_abricate(args.fasta_file)
 
     if args.list_of_genes is not None:
         with open(args.list_of_genes) as f:
@@ -278,6 +278,7 @@ def flanker_main():
 
     else:
         gene_list=[args.goi]
+        log.debug(gene_list)
 
 
     if args.window_stop is not None:
@@ -293,17 +294,14 @@ def flanker_main():
 
                 if args.cluster ==True and args.mode =='Default':
 
-                    define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
-                    filelist=glob.glob(str(args.indir + str("*flank.fasta")))
-                    for filename in filelist:
-                        os.remove(filename)
+                    define_clusters(gene,i,args.threads,args.threshold,args.outfile)
+                    flank_scrub()
 
             if args.cluster==True and args.mode=='MAM':
 
                 define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
-                filelist=glob.glob(str(args.indir + str("*flank.fasta")))
-                for filename in filelist:
-                    os.remove(filename)
+                log.info("Cleaning up")
+                flank_scrub()
 
     else:
         if args.circ == True:
@@ -312,18 +310,15 @@ def flanker_main():
             flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
         if args.cluster ==True and args.mode =='Default':
             log.info("Performing clustering")
-            define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
-            long.info("Cleaning up")
-            filelist=glob.glob(str(args.indir + str("*flank.fasta")))
-            for filename in filelist:
-                os.remove(filename)
+            define_clusters(gene,i,args.threads,args.threshold,args.outfile)
+            log.info("Cleaning up")
+            flank_scrub()
+
         if args.cluster==True and args.mode=='MAM':
             log.info("Performing clustering")
-            define_clusters(gene,"MAM",args.indir,args.threads,args.threshold,args.outfile)
+            define_clusters(gene,"MAM",args.threads,args.threshold,args.outfile)
             log.info("Cleaning up")
-            filelist=glob.glob(str(args.indir + str("*flank.fasta")))
-            for filename in filelist:
-                os.remove(filename)
+            flank_scrub()
 
     #mult-allelic mode is desinged to allow e.g. comparison of blaKPC2/3 alleles together
 
