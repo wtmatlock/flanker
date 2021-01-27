@@ -13,9 +13,12 @@ Flanker is a tool for studying the homology of gene-flanking sequences. It will 
 | --- | --- | --- |
 | ```--help``` | Displays help information then closes Flanker | ```False``` |
 | ```--flank``` | Choose which side(s) of the gene to extract (left/right/both)| ```both``` |
+| ```--mode``` | One of "Default" - normal mode with no clustering, "CM" - cluster mode, "SM" - salami-mode| ```Default``` |
 | ```--circ``` | Add if your sequence is circularised | ```False``` |
 | ```--include_gene``` | Add if you want the gene included in the output .fasta | ```False``` |
 | ```--database``` | Specify the database Abricate will use to find the gene(s) | ```resfinder``` |
+| ```--threads``` | Specify number of threads | ```multiprocessing.cpu_count()``` |
+| ```--verbose``` | Increase verbosity: 0 = only warnings, 1 = info, 2 = debug. No number means info. Default is no verbosity. | ```0``` |
 
 | Window options | Description | Default |
 | --- | --- | --- |
