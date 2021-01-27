@@ -48,7 +48,7 @@ def get_arguments():
     # running mode
     parser.add_argument('-m', '--mode',action='store',
                         help = 'One of "default" - normal mode, "mm" - multi-allelic cluster, or "sm" - salami-mode',
-                        default = "Default")
+                        default = "default")
 
     # is sequence circularised?
     parser.add_argument('-circ', '--circ', action = 'store_true',
