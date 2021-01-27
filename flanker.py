@@ -57,8 +57,8 @@ def get_arguments():
     cluster=parser.add_argument_group('Clustering options')
     cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true')
     cluster.add_argument('-id', '--indir',action='store'),
-    cluster.add_argument('-o', '--outfile',action='store'),
-    cluster.add_argument('-tr', '--threshold',action='store'),
+    cluster.add_argument('-o', '--outfile',action='store','Prefix for the clustering file'),
+    cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering'),
 
     # is sequence circularised?
     parser.add_argument('-circ', '--circ', action = 'store_true',
