@@ -1,0 +1,7 @@
+site_name: Flanker Documentaion
+
+nav:
+    - Home: index.md
+    - About: about.md
+
+theme: readthedocs
