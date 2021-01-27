@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Creates fasta for gene flanks
+Flanker v1.0
 """
 import multiprocessing
 import sys
@@ -14,7 +14,6 @@ from Bio import SeqIO
 from pathlib import Path
 from cluster import *
 from salami import *
-from multi_allelic import *
 import time
 import logging as log
 
@@ -34,31 +33,22 @@ def get_arguments():
                         required = True,
                         help = 'Input fasta file')
 
+    # gene(s) to annotate
+    gene_group = parser.add_mutually_exclusive_group(required = True)
+    gene_group.add_argument('-g', '--goi', action = 'store',
+                        help = 'Gene of interest (escape any special characters)')
+    gene_group.add_argument('-lg', '--list_of_genes', action= 'store',
+                        help = 'Takes a .txt /n list of genes to process')
+
     # flanks desired
     parser.add_argument('-f','--flank', action='store',
                         help='Choose which side(s) of the gene to extract (left/right/both)',
                         default='both')
 
-    # window arguments
-    parser.add_argument('-w', '--window', action = 'store', type=int,
-                        help = 'Length of flanking sequence/first window length',
-                        default = 1000)
-    parser.add_argument('-wstop', '--window_stop', action='store',type=int,
-                        help = 'Final window length',
-                        default = None)
-    parser.add_argument('-wstep', '--window_step', action='store',type=int,
-                        help = 'Step in window sequence',
-                        default = None)
-    parser.add_argument('-p', '--threads',action='store',default=multiprocessing.cpu_count()),
-    parser.add_argument("-v", "--verbose", const=1, default=0, type=int, nargs="?",
-                    help="increase verbosity: 0 = only warnings, 1 = info, 2 = debug. No number means info. Default is no verbosity.")
-
-
-    cluster=parser.add_argument_group('Clustering options')
-    cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true')
-    cluster.add_argument('-id', '--indir',action='store'),
-    cluster.add_argument('-o', '--outfile',action='store','Prefix for the clustering file'),
-    cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering'),
+    # running mode
+    parser.add_argument('-m', '--mode',action='store',
+                        help = 'One of "Default" - normal mode with no clustering, "CM" - cluster mode, "SM" - salami-mode',
+                        default = "Default")
 
     # is sequence circularised?
     parser.add_argument('-circ', '--circ', action = 'store_true',
@@ -68,24 +58,36 @@ def get_arguments():
     parser.add_argument('-inc', '--include_gene', action = 'store_true',
                         help = 'Include the gene of interest')
 
-    # speciify abricate database
+    # specify abricate database
     parser.add_argument('-db', '--database', action = 'store',
                         help = 'Choose Abricate database e.g. NCBI, resfinder',
                         default = 'resfinder')
 
-    parser.add_argument('-m', '--mode',action='store',
-                        help = 'One of "MAC" - multi-allelic cluster, "SM" - salami-mode, "Default" - normal mode with no clustering, "CM" - cluster mode',
-                        default = "Default")
+    # number of threads
+    parser.add_argument('-p', '--threads',action='store',default=multiprocessing.cpu_count()),
 
-    # gene(s) to annotate
-    gene_group = parser.add_mutually_exclusive_group(required = True)
-    gene_group.add_argument('-g', '--goi', action = 'store',
-                        help = 'Gene of interest (escape any special characters)')
-    gene_group.add_argument('-lg', '--list_of_genes', action= 'store',
-                        help = 'Takes a .txt /n list of genes to process')
+    # output verbosity
+    parser.add_argument("-v", "--verbose", const=1, default=0, type=int, nargs="?",
+                    help="Increase verbosity: 0 = only warnings, 1 = info, 2 = debug. No number means info. Default is no verbosity.")
 
+    # window arguments
+    window=parser.add_argument_group('window options')
+    window.add_argument('-w', '--window', action = 'store', type=int,
+                        help = 'Length of flanking sequence/first window length',
+                        default = 1000)
+    window.add_argument('-wstop', '--window_stop', action='store',type=int,
+                        help = 'Final window length',
+                        default = None)
+    window.add_argument('-wstep', '--window_step', action='store',type=int,
+                        help = 'Step in window sequence',
+                        default = None)
 
-
+    # clustering options
+    cluster=parser.add_argument_group('clustering options')
+    cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true')
+    cluster.add_argument('-id', '--indir',action='store'),
+    cluster.add_argument('-o', '--outfile',action='store',help='Prefix for the clustering file'),
+    cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering')
 
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
@@ -228,7 +230,6 @@ def flank_fasta_file_lin(file, window,gene):
     args = get_arguments()
     unfiltered_abricate_file = str(file + '_resfinder') # name of abricate output for fasta
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
-    #print(data)
     guids=data['SEQUENCE'].unique()
 
     for guid in guids:
@@ -324,14 +325,6 @@ def flanker_main():
             filelist=glob.glob(str(args.indir + str("*flank.fasta")))
             for filename in filelist:
                 os.remove(filename)
-
-    #mult-allelic mode is desinged to allow e.g. comparison of blaKPC2/3 alleles together
-
-
-
-
-
-
 
 def main():
     args=get_arguments()
