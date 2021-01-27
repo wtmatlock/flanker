@@ -27,9 +27,8 @@ Flanker is a tool for studying the homology of gene-flanking sequences. It will 
 | Clustering options | Description | Default |
 | --- | --- | --- |
 | ```--cluster``` | Use clustering mode? | ```False``` |
-| ```--indir``` | blah |  blah |
 | ```--outfile``` | Prefix for clustering output file | - |
-| ```--threshold``` | Mash distance threshold for clustering | blah |
+| ```--threshold``` | Mash distance threshold for clustering | 0.01 |
 
 # Dependencies
 
