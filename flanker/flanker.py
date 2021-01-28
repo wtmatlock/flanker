@@ -118,18 +118,28 @@ def flank_positions(data, gene_):
     return(start, end, g)
 
 # writes output fasta
-def writer(record, gene, window, isolate, x):
+def writer(record, gene, window, isolate, x,gene_sense):
     record.description = f"{record.description} | {gene} | {window}bp window"
 
-    with open(f"{isolate}_{gene}_{window}_{x}_flank.fasta", "w") as f:
-        SeqIO.write(record, f, "fasta")
-        log.info(f"{f.name} sucessfully created!")
-        f.close()
+
+
+    if gene_sense == '+':
+        with open(f"{isolate}_{gene}_{window}_{x}_flank.fasta", "w") as f:
+            SeqIO.write(record, f, "fasta")
+            log.info(f"{f.name} sucessfully created!")
+            f.close()
+    elif gene_sense == '-':
+        record=record.reverse_complement()
+        with open(f"{isolate}_{gene}_{window}_{x}_flank.fasta", "w") as f:
+            SeqIO.write(record, f, "fasta")
+            log.info(f"{f.name} sucessfully created!")
+            f.close()
 
 #this function is needed for multi-fasta files
 def filter_abricate(data, isolate):
 
     data = data.loc[data['SEQUENCE'] == isolate]
+
     return(data)
 
 def flank_fasta_file_circ(file, window,gene):
@@ -144,8 +154,13 @@ def flank_fasta_file_circ(file, window,gene):
     for guid in guids:
         abricate_file=filter_abricate(data,guid)
 
-        log.debug(abricate_file)
+        gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
 
+
+
+        gene_sense=str(gene_sense['STRAND'].iloc[0])
+
+        log.debug(gene_sense)
         pos = flank_positions(abricate_file, gene)
 
         log.debug(pos)
@@ -200,7 +215,7 @@ def flank_fasta_file_circ(file, window,gene):
                     if (pos[1] + w > l):
                         log.debug("Window exceeds seq length after gene")
                         record.seq = d_after[(args.include_gene, args.flank)](record, pos, w, l)
-                        writer(record, pos[2], w, guid, x)
+                        writer(record, pos[2], w, guid, x, gene_sense)
                         continue
 
                 # if window exceeds sequence length before gene
@@ -208,13 +223,13 @@ def flank_fasta_file_circ(file, window,gene):
                     if (pos[0] - w < 0):
                         log.debug("Window excees seq length before gene")
                         record.seq = d_before[(args.include_gene, args.flank)](record, pos, w, l)
-                        writer(record, pos[2], w, guid, x)
+                        writer(record, pos[2], w, guid, x, gene_sense)
                         continue
 
                     else:
                         log.debug("Window is all good")
                         record.seq = d[(args.include_gene, args.flank)](record, pos, w, l)
-                        writer(record, pos[2], w, guid, x)
+                        writer(record, pos[2], w, guid, x, gene_sense)
                         continue
 
 
@@ -222,11 +237,17 @@ def flank_fasta_file_lin(file, window,gene):
     args = get_arguments()
     unfiltered_abricate_file = str(file + '_resfinder') # name of abricate output for fasta
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
-    
+
     guids=data['SEQUENCE'].unique()
 
     for guid in guids:
         abricate_file=filter_abricate(data,guid)
+
+        gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
+
+
+
+        gene_sense=str(gene_sense['STRAND'].iloc[0])
 
         pos = flank_positions(abricate_file, gene)
 
@@ -253,7 +274,7 @@ def flank_fasta_file_lin(file, window,gene):
                      l = len(record.seq)
 
                      record.seq = d_lin[(args.include_gene, args.flank)](record, pos, w, l)
-                     writer(record, pos[2], w, guid, x)
+                     writer(record, pos[2], w, guid, x,gene_sense)
                      continue
 
 
@@ -331,4 +352,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
