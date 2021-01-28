@@ -79,7 +79,7 @@ def get_arguments():
     cluster=parser.add_argument_group('clustering options')
     cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true')
     cluster.add_argument('-o', '--outfile',action='store',help='Prefix for the clustering file')
-    cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering')
+    cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering', default=0.01)
 
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
