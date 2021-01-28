@@ -2,8 +2,6 @@
 
 Flanker is a tool for studying the homology of gene-flanking sequences. It will annotate FASTA or Multi-FASTA files for specified genes, then write the flanking sequences to new FASTA files.
 
-
-
 ## Installation
 
 ```
@@ -20,14 +18,12 @@ pytest
 conda install -c bioconda flanker
 ```
 
-
-
 ## Usage
 
 | Required arguments  | Description |
 | --- | --- |
 | ```--fasta_file``` | Input .fasta file |
-| ```--gene``` **OR** ```--list_of_genes``` | Single gene to be found **OR** line-seperated list of genes|
+| ```--gene``` | Space-delimited list of genes|
 
 | Optional arguments | Description | Default|
 | --- | --- | --- |
@@ -50,7 +46,10 @@ conda install -c bioconda flanker
 | ```--outfile``` | Prefix for clustering output file | - |
 | ```--threshold``` | Mash distance threshold for clustering | 0.01 |
 
-# Dependencies
+## Dependencies
+
+- [abricate](https://github.com/tseemann/abricate)
+- [mash](https://github.com/marbl/Mash) - if you want to do clustering
 
 The following Python packages are required for ```flanker.py```:
 
@@ -61,8 +60,3 @@ The following Python packages are required for ```flanker.py```:
 - [pathlib](https://docs.python.org/3/library/pathlib.html)
 - [subprocess](https://docs.python.org/3/library/subprocess.html)
 - [sys](https://docs.python.org/3/library/sys.html)
-
-- [mash](https://github.com/marbl/Mash) - if you want to do clustering
-- [abricate](https://github.com/tseemann/abricate)
-
-
