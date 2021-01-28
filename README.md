@@ -28,7 +28,7 @@ conda install -c bioconda flanker
 | Optional arguments | Description | Default|
 | --- | --- | --- |
 | ```--help``` | Displays help information then closes Flanker | ```False``` |
-| ```--flank``` | Choose which side(s) of the gene to extract (left/right/both)| ```both``` |
+| ```--flank``` | Choose which side(s) of the gene to extract (upstream/downstream/both)| ```both``` |
 | ```--mode``` | One of "default" - normal mode, "mm" - multi-allelic cluster, or "sm" - salami-mode| ```default``` |
 | ```--circ``` | Add if your sequence is circularised | ```False``` |
 | ```--include_gene``` | Add if you want the gene included in the output .fasta | ```False``` |
