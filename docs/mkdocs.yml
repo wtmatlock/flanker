@@ -1,0 +1,12 @@
+site_name: Flanker Documentaion
+
+nav:
+    - Home: index.md
+    - About: about.md
+    - Installation: install.md
+    - Quickstart: quickstart.md
+    - Flanker: flanker.md
+    - Clustering: cluster.md
+    - Salami mode: salami.md
+
+theme: readthedocs
