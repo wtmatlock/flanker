@@ -7,16 +7,14 @@ Flanker v1.0
 import sys
 import argparse
 import pandas as pd
-import numpy as np
 import subprocess
 from Bio import SeqIO
 from pathlib import Path
-from cluster import *
-from salami import *
+from flanker.cluster import *
+from flanker.salami import *
 import time
 import logging as log
 
-start = time.time()
 
 __author__ = "Samuel Lipworth, William Matlock"
 
@@ -321,6 +319,9 @@ def flanker_main():
                     os.remove(filename)
 
 def main():
+
+    start = time.time()
+
     args=get_arguments()
 
 
@@ -342,10 +343,10 @@ def main():
     elif args.mode =="sm":
         salami_main(args.list_of_genes,args.fasta_file,args.window,args.window_step,args.window_stop,args.indir,args.outfile,args.threads,args.threshold,args.cluster)
 
-
-if __name__ == '__main__':
-    main()
-
     end = time.time()
 
     log.info(f"All done in {round(end - start)} seconds")
+
+
+if __name__ == '__main__':
+    main()
