@@ -2,6 +2,22 @@
 
 Flanker is a tool for studying the homology of gene-flanking sequences. It will annotate FASTA or Multi-FASTA files for specified genes, then write the flanking sequences to new FASTA files.
 
+## Installation
+
+```
+# During development
+conda create -n flanker python=3 abricate biopython mash  # needs bioconda channel
+pip install --editable git+https://github.com/wtmatlock/flanker
+# Or from local version
+pip install --editable /path/to/flanker/package  # where 'package' contains setup.py 
+
+# Run tests
+pytest
+
+# Eventually
+conda install -c bioconda flanker
+```
+
 # Usage
 
 | Required arguments  | Description |
