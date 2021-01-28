@@ -99,7 +99,7 @@ def run_abricate(file):
 def flank_positions(data, gene_):
 
 
-    gene = data[data["GENE"].str.contains(gene_, regex=False)]
+    gene = data[data["GENE"].str.match(gene_)]
 
     # check if gene is found
     if len(gene) == 0:
