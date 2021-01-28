@@ -98,6 +98,7 @@ def run_abricate(file):
 # returns the start and end positions of the annotation
 def flank_positions(data, gene_):
 
+
     gene = data[data["GENE"].str.contains(gene_, regex=False)]
 
     # check if gene is found
@@ -256,6 +257,7 @@ def flank_fasta_file_lin(file, window,gene):
                      continue
 
 
+
 def flanker_main():
     args = get_arguments()
 
@@ -276,12 +278,12 @@ def flanker_main():
 
                 if args.cluster ==True and args.mode =='default':
 
-                    define_clusters(gene,i,args.threads,args.threshold,args.outfile)
+                    define_clusters(gene,i,args.threshold,args.outfile)
                     flank_scrub()
 
             if args.cluster==True and args.mode=='mm':
 
-                define_clusters(gene,i,args.threads,args.threshold,args.outfile)
+                define_clusters(gene,i,args.threshold,args.outfile)
                 log.info("Cleaning up")
                 flank_scrub()
 
@@ -293,13 +295,13 @@ def flanker_main():
                 flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
             if args.cluster ==True and args.mode =='default':
                 log.info("Performing clustering")
-                define_clusters(gene,i,args.threads,args.threshold,args.outfile)
+                define_clusters(gene,i,args.threshold,args.outfile)
                 log.info("Cleaning up")
                 flank_scrub()
 
         if args.cluster==True and args.mode=='mm':
             log.info("Performing clustering")
-            define_clusters(gene,"mm",args.threads,args.threshold,args.outfile)
+            define_clusters(gene,"mm",args.threshold,args.outfile)
             log.info("Cleaning up")
             flank_scrub()
 
@@ -321,7 +323,7 @@ def main():
     if args.mode =="default" or args.mode == "mm":
         flanker_main()
     elif args.mode =="sm":
-        salami_main(args.genes,args.fasta_file,args.window,args.window_step,args.window_stop,args.outfile,args.threads,args.threshold,args.cluster)
+        salami_main(args.gene,args.fasta_file,args.window,args.window_step,args.window_stop,args.outfile,args.threshold,args.cluster)
 
     end = time.time()
     log.info(f"All done in {round(end - start, 2)} seconds")
