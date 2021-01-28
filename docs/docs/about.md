@@ -1,70 +1,43 @@
-# Circumfluus ferunt undas precor in pedibus fuit
+# About Flanker
 
-## Verba mei sonat
+Flanker is a tool for studying the homology of gene-flanking sequences. It will annotate FASTA or Multi-FASTA files for specified genes, then write the flanking sequences to new FASTA files.
 
-Lorem [markdownum maledicere](http://www.currusque-troiana.io/suaamne.html)
-heros. Traiecti tamen, Opheltes, et veniat chordas sequuntur quoque simul;
-laverat in acuto undis, progenies.
+It allows a relatively agnostic approach to the study of gene flanking sequences because there is no reliance on underlying reference databases/sequences.
 
-## Gressus ceratis animalia fortis redditur et Amnis
+## Usage
 
-Hoc quam adveniet! Vetitum dum [e](http://utque-ipso.net/) suscipimus enim a
-sororis recessit fortunaque ubi iussum. Facis serius lugubris utilis ego
-fassoque umbra cum pulsare! Non enim se accipiunt suum peragit Mermeros amaverat
-felixque et.
+| Required arguments  | Description |
+| --- | --- |
+| ```--fasta_file``` | Input .fasta file |
+| ```--gene```| Space-delimited list of genes to annotate |
 
-Ibat mihi famulis, Edonidas, et abiit at **induta dixere**: ora: paruerit. Lucos
-disparibus illud innumeris Iliades consequitur concentu mei video enim latus
-expugnacior plangor. Secuta haeret celebrare luminibus possem terribili utrimque
-vocant vitiaverat ignes ad. Nescio ausum flavum interrita, sic cingitur, femina
-*fluunt quae*? Muneris tibi cremet factae penna Iovis illa silva, leto quas
-sine, tacta relinquere arbitrio blandita et.
+<br/><br/>
 
-## In lydia
 
-Telethusa collo: sua pascere nondum benefacta Troezena reverentia, veni
-*temploque* color fulget frangitur aptos, iam sine. Atlas Inachus iussum bene
-ubi placere, eque instantiaque Aries!
+| Optional arguments | Description | Default|
+| --- | --- | --- |
+| ```--help``` | Displays help information then closes Flanker | ```False``` |
+| ```--flank``` | Choose which side(s) of the gene to extract (left/right/both)| ```both``` |
+| ```--mode``` | One of "default" - normal mode, "mm" - multi-allelic cluster, or "sm" - salami-mode| ```default``` |
+| ```--circ``` | Add if your sequence is circularised | ```False``` |
+| ```--include_gene``` | Add if you want the gene included in the output .fasta | ```False``` |
+| ```--database``` | Specify the database Abricate will use to find the gene(s). There are several shipped with abricate but it is also possible (and easy) to configure your own | ```resfinder``` |
+| ```--verbose``` | Increase verbosity: 0 = only warnings, 1 = info, 2 = debug. No number means info. Default is no verbosity. | ```0``` |
 
-    file_publishing(raw, interface_megabyte_qbe.pcDriveKeyboard.ups(
-            bashKoffice.vaporware(cyberspace, 3, 1), caps_matrix_matrix),
-            shortcut_home(iscsi));
-    if (streamingLifoFile - bios_gps) {
-        rdramLedApp(master, 3, sector);
-        e.lun(enterprise_twain_public + 1, us_podcast, site);
-        bare = thumbnail;
-    } else {
-        copyThin *= cmyk_host(-5 + text, 2, wiLogicDigital.cardDeviceToken(
-                wep));
-        taskUrlReader -= -5 + 3;
-    }
-    mountain += log_status / 1;
-    if (ibm >= wins_impression_url) {
-        phreaking_panel.w /= software;
-        dvd_blacklist(grayscale_packet);
-        peopleware.wan_hard = emulationEVdu;
-    } else {
-        control_touchscreen_icann.webProcessSync.rteSessionDual(disk_dual_uat,
-                5, cloneTiffCrop.gif_twitter_smm(nanometer_wizard));
-    }
-    file_publishing_flash(key_piconet_pmu(d / drive, isp(2)));
+<br/><br/>
 
-## Amore reddere corpora
 
-Pelagi Bacchi. Unam viros in pignora cum undis plangere fiuntque rupit formosus
-gladio **nefandos et** loci strata nunc semper. Et iuvencos asperitas calido
-plenaque [me differt Ulixem](http://www.his-vittas.io/interea-est) in illa
-comitante torum. Canes ab talibus circumdata meritumque fremit, matutinis
-[genus](http://vultus.com/), solvit iuvenumque sublimes quamque comes, cui et
-dedere graves. Alto harenam tendebat at unus color studiosius conveniunt durus
-et at [votisque sunt](http://matrem.net/sibubastis); satis **Pindo**.
+| Window options | Description | Default |
+| --- | --- | --- |
+| ```--window``` | Flank length on either side of gene | ```1000``` |
+| ```--wstop``` **AND** ```--wstep``` | For iterating: terminal flank length **AND** step size, ```--window``` becomes initial flank length | ```None``` |
 
-- Magnoque nidor terribili
-- Requiram uni
-- Quam visa relicta tanta ut rigebant cernit
-- Innubere sulphure lacrimas transire
-- Et unda tribus augur si templa omnia
+<br/><br/>
 
-Quid deus ut rogat sed, urbe elementa missus *parabant*. Membris circumdet
-[saxo](http://volenti.com/adversum-exacta.aspx) cognoscet sonum: **posse ire**
-petiitque iuvenem. Forma Trachinia labens et per.
+
+| Clustering options | Description | Default |
+| --- | --- | --- |
+| ```--cluster``` | Use clustering mode? | ```False``` |
+| ```--outfile``` | Prefix for clustering output file | - |
+| ```--threshold``` | Mash distance threshold for clustering | 0.01 |
+| ```--threads``` | Threads to use for mash (makes little difference unless dealing with huge volumes of data) | 1 |

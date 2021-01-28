@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>About - Flanker Documentaion</title>
+  <title>Salami mode - Flanker Documentaion</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "About";
-    var mkdocs_page_input_path = "about.md";
+    var mkdocs_page_name = "Salami mode";
+    var mkdocs_page_input_path = "salami.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -51,12 +51,8 @@
                     <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                     </li>
                 </ul>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">About</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
-    </li>
-    </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
                     </li>
                 </ul>
                 <ul>
@@ -75,8 +71,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../clustering/">Clustering</a>
                     </li>
                 </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../salami/">Salami mode</a>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Salami mode</a>
+    <ul class="current">
+    </ul>
                     </li>
                 </ul>
                 <ul>
@@ -104,7 +102,7 @@
     
       
     
-    <li>About</li>
+    <li>Salami mode</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -115,129 +113,15 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="about-flanker">About Flanker</h1>
-<p>Flanker is a tool for studying the homology of gene-flanking sequences. It will annotate FASTA or Multi-FASTA files for specified genes, then write the flanking sequences to new FASTA files.</p>
-<p>It allows a relatively agnostic approach to the study of gene flanking sequences because there is no reliance on underlying reference databases/sequences.</p>
-<h2 id="usage">Usage</h2>
-<table>
-<thead>
-<tr>
-<th>Required arguments</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--fasta_file</code></td>
-<td>Input .fasta file</td>
-</tr>
-<tr>
-<td><code>--gene</code></td>
-<td>Space-delimited list of genes to annotate</td>
-</tr>
-</tbody>
-</table>
-<p><br/><br/></p>
-<table>
-<thead>
-<tr>
-<th>Optional arguments</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--help</code></td>
-<td>Displays help information then closes Flanker</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>--flank</code></td>
-<td>Choose which side(s) of the gene to extract (left/right/both)</td>
-<td><code>both</code></td>
-</tr>
-<tr>
-<td><code>--mode</code></td>
-<td>One of "default" - normal mode, "mm" - multi-allelic cluster, or "sm" - salami-mode</td>
-<td><code>default</code></td>
-</tr>
-<tr>
-<td><code>--circ</code></td>
-<td>Add if your sequence is circularised</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>--include_gene</code></td>
-<td>Add if you want the gene included in the output .fasta</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>--database</code></td>
-<td>Specify the database Abricate will use to find the gene(s). There are several shipped with abricate but it is also possible (and easy) to configure your own</td>
-<td><code>resfinder</code></td>
-</tr>
-<tr>
-<td><code>--verbose</code></td>
-<td>Increase verbosity: 0 = only warnings, 1 = info, 2 = debug. No number means info. Default is no verbosity.</td>
-<td><code>0</code></td>
-</tr>
-</tbody>
-</table>
-<p><br/><br/></p>
-<table>
-<thead>
-<tr>
-<th>Window options</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--window</code></td>
-<td>Flank length on either side of gene</td>
-<td><code>1000</code></td>
-</tr>
-<tr>
-<td><code>--wstop</code> <strong>AND</strong> <code>--wstep</code></td>
-<td>For iterating: terminal flank length <strong>AND</strong> step size, <code>--window</code> becomes initial flank length</td>
-<td><code>None</code></td>
-</tr>
-</tbody>
-</table>
-<p><br/><br/></p>
-<table>
-<thead>
-<tr>
-<th>Clustering options</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--cluster</code></td>
-<td>Use clustering mode?</td>
-<td><code>False</code></td>
-</tr>
-<tr>
-<td><code>--outfile</code></td>
-<td>Prefix for clustering output file</td>
-<td>-</td>
-</tr>
-<tr>
-<td><code>--threshold</code></td>
-<td>Mash distance threshold for clustering</td>
-<td>0.01</td>
-</tr>
-<tr>
-<td><code>--threads</code></td>
-<td>Threads to use for mash (makes little difference unless dealing with huge volumes of data)</td>
-<td>1</td>
-</tr>
-</tbody>
-</table>
+                <h1 id="salami-mode">Salami mode</h1>
+<p>Caveat: this is still under development and should be treated as experimental, use at your own risk. Please report any bugs.</p>
+<p>Salami mode considers each window (of length <code>-wstep</code>) from <code>-w</code> to <code>-wstop</code> as a seperate entity; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts.</p>
+<p>Example:</p>
+<pre><code>  python flanker.py -i example.fasta  -g blaTEM-1B_1 -w 0 -w 4900 -f left  -m SM  
+</code></pre>
+<p>Here we extract 100bp windows from 0-4900 bp to the left of the blaTEM-1B gene.</p>
+<p><img alt="Schematic" src="/images/flanker_schematic.jpg" />
+<em>Figure 1 - Illustrating the difference between default and salami mode</em></p>
               
             </div>
           </div>
@@ -245,10 +129,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../install/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../mam/" class="btn btn-neutral float-right" title="Multi-allelic mode">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../clustering/" class="btn btn-neutral" title="Clustering"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -274,10 +158,10 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../clustering/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../install/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../mam/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

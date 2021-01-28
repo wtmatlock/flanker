@@ -6,7 +6,8 @@ nav:
     - Installation: install.md
     - Quickstart: quickstart.md
     - Flanker: flanker.md
-    - Clustering: cluster.md
+    - Clustering: clustering.md
     - Salami mode: salami.md
+    - Multi-allelic mode: mam.md
 
 theme: readthedocs

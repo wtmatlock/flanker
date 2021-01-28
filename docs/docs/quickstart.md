@@ -20,7 +20,7 @@ e.g.
   mv david_plasmids_renamed.fasta david_plasmids.fasta
 ```
 
-Now you are ready to use Flanker. In this example we are going to compare the flanking sequences around blaKPC-2. We are going to extract windows from 0 (-w) to 5000 (-wstop) base pairs in 100bp chuncks (-wstep) to the left (-f left) (downstream) of the gene. We will include the gene (-inc) and use the default resfinder database.
+Now you are ready to use Flanker. In this example we are going to compare the flanking sequences around blaKPC-2. We are going to extract windows from 0 (```-w```) to 5000 (```-wstop```) base pairs in 100bp chuncks (```-wstep```) to the left (```-f left```) (downstream) of the gene. We will include the gene (```-inc```) and use the default resfinder database.
 
 ```
   python flanker.py -f left -w 0 -wstop 5000 -wstep 100 -p 8 -v 1 -g blaKPC-2_1 -i david_plasmids.fasta -inc
