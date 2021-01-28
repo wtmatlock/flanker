@@ -98,7 +98,6 @@ def run_abricate(file):
 # returns the start and end positions of the annotation
 def flank_positions(data, gene_):
 
-
     gene = data[data["GENE"].str.contains(gene_, regex=False)]
 
     # check if gene is found
@@ -228,8 +227,6 @@ def flank_fasta_file_lin(file, window,gene):
     for guid in guids:
         abricate_file=filter_abricate(data,guid)
 
-
-
         pos = flank_positions(abricate_file, gene)
 
         if pos == True:
@@ -250,8 +247,6 @@ def flank_fasta_file_lin(file, window,gene):
                  if record.description == guid:
                      name=str(record.description)
 
-
-
                      log.info(f"{gene} found in {record.description}")
 
                      l = len(record.seq)
@@ -259,7 +254,6 @@ def flank_fasta_file_lin(file, window,gene):
                      record.seq = d_lin[(args.include_gene, args.flank)](record, pos, w, l)
                      writer(record, pos[2], w, guid, x)
                      continue
-
 
 
 def flanker_main():
@@ -274,8 +268,6 @@ def flanker_main():
     if args.window_stop is not None:
         for i in range(args.window, args.window_stop, args.window_step):
             for gene in gene_list:
-
-
 
                 if args.circ == True:
                     flank_fasta_file_circ(args.fasta_file, i, gene.strip())
@@ -314,7 +306,6 @@ def flanker_main():
 def main():
     args=get_arguments()
 
-
     logger = log.getLogger()
 
     log.basicConfig(format="%(message)s")
@@ -325,7 +316,6 @@ def main():
         logger.setLevel(log.INFO)
     elif args.verbose == 2:
         logger.setLevel(log.DEBUG)
-
 
     log.info(args)
     if args.mode =="default" or args.mode == "mm":
