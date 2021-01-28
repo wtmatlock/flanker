@@ -152,7 +152,7 @@ def flank_fasta_file_circ(file, window,gene):
     log.debug(guids)
     #can't just use abricate output for whole of muli-fasta
     for guid in guids:
-        print(guid)
+
         abricate_file=filter_abricate(data,guid)
         pos = flank_positions(abricate_file, gene)
         if (pos == True):
