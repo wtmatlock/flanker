@@ -44,7 +44,7 @@ conda install -c bioconda flanker
 | --- | --- | --- |
 | ```--cluster``` | Use clustering mode? | ```False``` |
 | ```--outfile``` | Prefix for clustering output file | - |
-| ```--threshold``` | Mash distance threshold for clustering | 0.01 |
+| ```--threshold``` | Mash distance threshold for clustering | ```0.01``` |
 
 ## Dependencies
 
