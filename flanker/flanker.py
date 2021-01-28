@@ -334,7 +334,7 @@ def main():
         salami_main(args.list_of_genes,args.fasta_file,args.window,args.window_step,args.window_stop,args.indir,args.outfile,args.threads,args.threshold,args.cluster)
 
     end = time.time()
-    log.info(f"All done in {round(end - start)} seconds")
+    log.info(f"All done in {round(end - start, 2)} seconds")
 
 
 if __name__ == '__main__':
