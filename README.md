@@ -32,6 +32,9 @@ Flanker is a tool for studying the homology of gene-flanking sequences. It will 
 
 # Dependencies
 
+- [abricate](https://github.com/tseemann/abricate)
+- [mash](https://github.com/marbl/Mash) - if you want to do clustering
+
 The following Python packages are required for ```flanker.py```:
 
 - [argparse](https://docs.python.org/3/library/argparse.html)
@@ -41,8 +44,3 @@ The following Python packages are required for ```flanker.py```:
 - [pathlib](https://docs.python.org/3/library/pathlib.html)
 - [subprocess](https://docs.python.org/3/library/subprocess.html)
 - [sys](https://docs.python.org/3/library/sys.html)
-
-- [mash](https://github.com/marbl/Mash) - if you want to do clustering
-- [abricate](https://github.com/tseemann/abricate)
-
-
