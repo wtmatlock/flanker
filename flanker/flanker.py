@@ -333,10 +333,10 @@ def main():
     elif args.mode =="sm":
         salami_main(args.list_of_genes,args.fasta_file,args.window,args.window_step,args.window_stop,args.indir,args.outfile,args.threads,args.threshold,args.cluster)
 
+    end = time.time()
+    log.info(f"All done in {round(end - start)} seconds")
+
 
 if __name__ == '__main__':
     main()
 
-    end = time.time()
-
-    log.info(f"All done in {round(end - start)} seconds")
