@@ -121,16 +121,16 @@ def flank_positions(data, gene_):
 def writer(record, gene, window, isolate, x,gene_sense):
     record.description = f"{record.description} | {gene} | {window}bp window"
 
+    #log.debug(gene,window,isolate,x)
+    #log.debug(gene_sense)
 
-
-    if gene_sense == '+':
-        with open(f"{isolate}_{gene}_{window}_{x}_flank.fasta", "w") as f:
+    with open(f"{isolate}_{gene}_{window}_{x}_flank.fasta", "w") as f:
+        if gene_sense == '+':
             SeqIO.write(record, f, "fasta")
             log.info(f"{f.name} sucessfully created!")
             f.close()
-    elif gene_sense == '-':
-        record=record.reverse_complement()
-        with open(f"{isolate}_{gene}_{window}_{x}_flank.fasta", "w") as f:
+        elif gene_sense == '-':
+            record.seq=record.seq.reverse_complement()
             SeqIO.write(record, f, "fasta")
             log.info(f"{f.name} sucessfully created!")
             f.close()
@@ -152,25 +152,30 @@ def flank_fasta_file_circ(file, window,gene):
     log.debug(guids)
     #can't just use abricate output for whole of muli-fasta
     for guid in guids:
+        print(guid)
         abricate_file=filter_abricate(data,guid)
-
-        gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
-
-
-
-        gene_sense=str(gene_sense['STRAND'].iloc[0])
-
-        log.debug(gene_sense)
         pos = flank_positions(abricate_file, gene)
-
-        log.debug(pos)
         if (pos == True):
-            log.warning(f"Error: Gene {args.goi} not found in {args.fasta_file}")
+            log.warning(f"Error: Gene {gene} not found in {guid}")
+
+
+        else:
+            gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
+
+            log.info(f"Gene {gene} found in {guid}")
+
+            gene_sense=str(gene_sense['STRAND'].iloc[0])
+
+            log.debug(gene_sense)
+
+
+            log.debug(pos)
+
 
     # initialise dictionaries for sequence splicing functions
 
     ###### check functions are correct! ######
-        else:
+
             d = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1]+w)],
                 (True, 'upstream'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1])],
                 (True, 'downstream'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
@@ -228,6 +233,7 @@ def flank_fasta_file_circ(file, window,gene):
 
                     else:
                         log.debug("Window is all good")
+
                         record.seq = d[(args.include_gene, args.flank)](record, pos, w, l)
                         writer(record, pos[2], w, guid, x, gene_sense)
                         continue
@@ -242,19 +248,23 @@ def flank_fasta_file_lin(file, window,gene):
 
     for guid in guids:
         abricate_file=filter_abricate(data,guid)
-
-        gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
-
-
-
-        gene_sense=str(gene_sense['STRAND'].iloc[0])
-
         pos = flank_positions(abricate_file, gene)
-
         if pos == True:
             log.error(f"Error: Gene {gene} not found in {guid}")
 
+
         else:
+             gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
+
+
+
+             gene_sense=str(gene_sense['STRAND'].iloc[0])
+
+
+
+
+
+
              d_lin = {(True, 'both'): lambda record, pos, w, l: record.seq[max(0,pos[0]-w):min(l, pos[1]+w)],
              (True, 'upstream'): lambda record, pos, w, l : record.seq[max(0,pos[0]-w):min(l,pos[1])],
              (True, 'downstream'): lambda record, pos, w, l : record.seq[pos[0]:min(l, pos[1]+w)],
@@ -313,6 +323,7 @@ def flanker_main():
             if args.circ == True:
                 flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
             else:
+
                 flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
             if args.cluster ==True and args.mode =='default':
                 log.info("Performing clustering")
