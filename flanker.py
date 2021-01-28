@@ -4,7 +4,7 @@
 """
 Creates fasta for gene flanks
 """
-import multiprocessing
+
 import sys
 import argparse
 import pandas as pd
@@ -48,7 +48,7 @@ def get_arguments():
     parser.add_argument('-wstep', '--window_step', action='store',type=int,
                         help = 'Step in window sequence',
                         default = None)
-    parser.add_argument('-p', '--threads',action='store',default=multiprocessing.cpu_count()),
+    parser.add_argument('-p', '--threads',action='store',default=1,
     parser.add_argument("-v", "--verbose", const=1, default=0, type=int, nargs="?",
                     help="increase verbosity: 0 = only warnings, 1 = info, 2 = debug. No number means info. Default is no verbosity.")
 
@@ -142,7 +142,7 @@ def flank_fasta_file_circ(file, window,gene):
 
     unfiltered_abricate_file = str(file + '_resfinder') # name of abricate output for fasta
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
-    #print(data)
+
     guids=data['SEQUENCE'].unique()
     log.debug(guids)
     #can't just use abricate output for whole of muli-fasta
@@ -162,8 +162,8 @@ def flank_fasta_file_circ(file, window,gene):
     ###### check functions are correct! ######
         else:
             d = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1]+w)],
-                (True, 'left'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
-                (True, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)],
+                (True, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1])],
+                (True, 'right'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
                 (False, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)],
                 (False, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
                 (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
@@ -227,7 +227,7 @@ def flank_fasta_file_lin(file, window,gene):
     args = get_arguments()
     unfiltered_abricate_file = str(file + '_resfinder') # name of abricate output for fasta
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
-    #print(data)
+    
     guids=data['SEQUENCE'].unique()
 
     for guid in guids:
@@ -299,20 +299,21 @@ def flanker_main():
 
             if args.cluster==True and args.mode=='MAM':
 
-                define_clusters(gene,i,args.indir,args.threads,args.threshold,args.outfile)
+                define_clusters(gene,i,args.threads,args.threshold,args.outfile)
                 log.info("Cleaning up")
                 flank_scrub()
 
     else:
-        if args.circ == True:
-            flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
-        else:
-            flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
-        if args.cluster ==True and args.mode =='Default':
-            log.info("Performing clustering")
-            define_clusters(gene,i,args.threads,args.threshold,args.outfile)
-            log.info("Cleaning up")
-            flank_scrub()
+        for gene in gene_list:
+            if args.circ == True:
+                flank_fasta_file_circ(args.fasta_file, args.window, gene.strip())
+            else:
+                flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
+            if args.cluster ==True and args.mode =='Default':
+                log.info("Performing clustering")
+                define_clusters(gene,i,args.threads,args.threshold,args.outfile)
+                log.info("Cleaning up")
+                flank_scrub()
 
         if args.cluster==True and args.mode=='MAM':
             log.info("Performing clustering")
