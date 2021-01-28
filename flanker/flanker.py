@@ -38,7 +38,7 @@ def get_arguments():
 
     # flanks desired
     parser.add_argument('-f','--flank', action='store',
-                        help='Choose which side(s) of the gene to extract (left/right/both)',
+                        help='Choose which side(s) of the gene to extract (upstream/downstream/both)',
                         default='both')
 
     # running mode
@@ -79,7 +79,7 @@ def get_arguments():
     cluster=parser.add_argument_group('clustering options')
     cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true')
     cluster.add_argument('-o', '--outfile',action='store',help='Prefix for the clustering file')
-    cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering', default=0.01)
+    cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering')
 
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
@@ -157,25 +157,25 @@ def flank_fasta_file_circ(file, window,gene):
     ###### check functions are correct! ######
         else:
             d = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1]+w)],
-                (True, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1])],
-                (True, 'right'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
+                (True, 'upstream'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1])],
+                (True, 'downstream'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
                 (False, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:(pos[1]+w)],
-                (False, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
-                (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
+                (False, 'upstream'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
+                (False, 'downstream'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
 
             d_before = {(True, 'both'): lambda record, pos, w, l : record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l],
-                (True, 'left'): lambda record, pos, w, l : record.seq[0:(pos[1])] + record.seq[(l-(w-pos[0])):l],
-                (True, 'right'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
+                (True, 'upstream'): lambda record, pos, w, l : record.seq[0:(pos[1])] + record.seq[(l-(w-pos[0])):l],
+                (True, 'downstream'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
                 (False, 'both'): lambda record, pos, w, l : record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l],
-                (False, 'left'): lambda record, pos, w, l : record.seq[0:pos[0]] + record.seq[(l-(w-pos[0])):l],
-                (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
+                (False, 'upstream'): lambda record, pos, w, l : record.seq[0:pos[0]] + record.seq[(l-(w-pos[0])):l],
+                (False, 'downstream'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
 
             d_after = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)],
-                (True, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[1]],
-                (True, 'right'): lambda record, pos, w, l : record.seq[(pos[0]):l] + record.seq[0:(pos[1]+w-l)],
+                (True, 'upstream'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[1]],
+                (True, 'downstream'): lambda record, pos, w, l : record.seq[(pos[0]):l] + record.seq[0:(pos[1]+w-l)],
                 (False, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]] + record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)],
-                (False, 'left'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
-                (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]}
+                (False, 'upstream'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
+                (False, 'downstream'): lambda record, pos, w, l : record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]}
 
         # loop through records in fasta
             for record in SeqIO.parse(file, "fasta"):
@@ -235,11 +235,11 @@ def flank_fasta_file_lin(file, window,gene):
 
         else:
              d_lin = {(True, 'both'): lambda record, pos, w, l: record.seq[max(0,pos[0]-w):min(l, pos[1]+w)],
-             (True, 'left'): lambda record, pos, w, l : record.seq[max(0,pos[0]-w):min(l,pos[1])],
-             (True, 'right'): lambda record, pos, w, l : record.seq[pos[0]:min(l, pos[1]+w)],
+             (True, 'upstream'): lambda record, pos, w, l : record.seq[max(0,pos[0]-w):min(l,pos[1])],
+             (True, 'downstream'): lambda record, pos, w, l : record.seq[pos[0]:min(l, pos[1]+w)],
              (False, 'both'): lambda record, pos, w, l : record.seq[max(0, pos[0]-w):pos[0]] + record.seq[pos[1]:min(l, pos[1]+w)],
-             (False, 'left'): lambda record, pos, w, l : record.seq[max(0, pos[0]-w):pos[0]],
-             (False, 'right'): lambda record, pos, w, l : record.seq[pos[1]:min(l, pos[1]+w)]}
+             (False, 'upstream'): lambda record, pos, w, l : record.seq[max(0, pos[0]-w):pos[0]],
+             (False, 'downstream'): lambda record, pos, w, l : record.seq[pos[1]:min(l, pos[1]+w)]}
 
              w = int(window)
              x = args.flank
