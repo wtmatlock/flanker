@@ -7,14 +7,16 @@ Flanker v1.0
 import sys
 import argparse
 import pandas as pd
+import numpy as np
 import subprocess
 from Bio import SeqIO
 from pathlib import Path
-from flanker.cluster import *
-from flanker.salami import *
+from cluster import *
+from salami import *
 import time
 import logging as log
 
+start = time.time()
 
 __author__ = "Samuel Lipworth, William Matlock"
 
@@ -31,11 +33,8 @@ def get_arguments():
                         help = 'Input fasta file')
 
     # gene(s) to annotate
-    gene_group = parser.add_mutually_exclusive_group(required = True)
-    gene_group.add_argument('-g', '--goi', action = 'store',
+    required.add_argument('-g', '--gene', nargs='+', action = 'store', required=True,
                         help = 'Gene of interest (escape any special characters)')
-    gene_group.add_argument('-lg', '--list_of_genes', action= 'store',
-                        help = 'Takes a .txt /n list of genes to process')
 
     # flanks desired
     parser.add_argument('-f','--flank', action='store',
@@ -266,13 +265,7 @@ def flanker_main():
     args = get_arguments()
     run_abricate(args.fasta_file)
 
-    if args.list_of_genes is not None:
-        with open(args.list_of_genes) as f:
-            gene_list=f.readlines()
-
-    else:
-        gene_list=[args.goi]
-
+    gene_list=args.gene
 
     if args.window_stop is not None:
         for i in range(args.window, args.window_stop, args.window_step):
@@ -319,9 +312,6 @@ def flanker_main():
                     os.remove(filename)
 
 def main():
-
-    start = time.time()
-
     args=get_arguments()
 
 
@@ -343,10 +333,10 @@ def main():
     elif args.mode =="sm":
         salami_main(args.list_of_genes,args.fasta_file,args.window,args.window_step,args.window_stop,args.indir,args.outfile,args.threads,args.threshold,args.cluster)
 
-    end = time.time()
-
-    log.info(f"All done in {round(end - start)} seconds")
-
 
 if __name__ == '__main__':
     main()
+
+    end = time.time()
+
+    log.info(f"All done in {round(end - start)} seconds")

@@ -1,5 +1,5 @@
-from flanker.flanker import *
-from flanker.cluster import *
+from flanker import *
+from cluster import *
 
 def flank_salami_linear(start,stop,step,file,gene):
         args = get_arguments()
