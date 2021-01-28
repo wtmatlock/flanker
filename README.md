@@ -18,7 +18,7 @@ pytest
 conda install -c bioconda flanker
 ```
 
-# Usage
+## Usage
 
 | Required arguments  | Description |
 | --- | --- |
@@ -46,7 +46,7 @@ conda install -c bioconda flanker
 | ```--outfile``` | Prefix for clustering output file | - |
 | ```--threshold``` | Mash distance threshold for clustering | 0.01 |
 
-# Dependencies
+## Dependencies
 
 - [abricate](https://github.com/tseemann/abricate)
 - [mash](https://github.com/marbl/Mash) - if you want to do clustering
