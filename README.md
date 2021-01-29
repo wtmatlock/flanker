@@ -33,7 +33,7 @@ conda install -c bioconda flanker
 | ```--circ``` | Add if your sequence is circularised | ```False``` |
 | ```--include_gene``` | Add if you want the gene included in the output .fasta | ```False``` |
 | ```--database``` | Specify the database Abricate will use to find the gene(s) | ```resfinder``` |
-| ```--verbose``` | Increase verbosity: 0 = only warnings, 1 = info, 2 = debug. No number means info. Default is no verbosity. | ```0``` |
+| ```--verbose``` | Increase verbosity: 0 := only warnings, 1 := info, 2 := everything. | ```0``` |
 
 | Window options | Description | Default |
 | --- | --- | --- |
