@@ -1,0 +1,41 @@
+{% set version = "0.1.0" %}
+
+package:
+  name: Flanker
+  version: {{ version }}
+
+source:
+  url: https://github.com/wtmatlock/flanker/archive/v{{ version }}.tar.gz
+  sha256: 
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - flanker = flanker.flanker:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
+
+requirements:
+  host:
+    - python
+    - pip
+
+  run:
+    - python
+
+test:
+  imports:
+    - flanker
+
+  commands:
+    - flanker --help
+
+about:
+  home: 
+  license: MIT License
+  summary: 'Gene-flank analysis tool'
+  license_family: MIT
+
+extra:
+  identifiers:
+    - doi:?
