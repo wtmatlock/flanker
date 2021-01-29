@@ -99,7 +99,6 @@ def run_abricate(file):
 # returns the start and end positions of the annotation
 def flank_positions(data, gene_):
 
-
     gene = data[data["GENE"].str.match(gene_)]
 
     # check if gene is found
@@ -121,10 +120,6 @@ def flank_positions(data, gene_):
 # writes output fasta
 def writer(record, gene, window, isolate, x,gene_sense):
     record.description = f"{record.description} | {gene} | {window}bp window"
-
-    #
-    (gene,window,isolate,x)
-    #log.debug(gene_sense)
 
     with open(f"{isolate}_{gene}_{window}_{x}_flank.fasta", "w") as f:
         if gene_sense == '+':
@@ -160,23 +155,17 @@ def flank_fasta_file_circ(file, window,gene):
         if (pos == True):
             log.warning(f"Error: Gene {gene} not found in {guid}")
 
-
         else:
-            gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
-
+            gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND']
+                                                                             
             log.info(f"Gene {gene} found in {guid}")
 
             gene_sense=str(gene_sense['STRAND'].iloc[0])
 
             log.debug(gene_sense)
-
-
             log.debug(pos)
 
-
     # initialise dictionaries for sequence splicing functions
-
-    ###### check functions are correct! ######
 
             d = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1]+w)],
                 (True, 'upstream'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1])],
@@ -254,19 +243,10 @@ def flank_fasta_file_lin(file, window,gene):
         if pos == True:
             log.error(f"Error: Gene {gene} not found in {guid}")
 
-
         else:
              gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
-
-
-
              gene_sense=str(gene_sense['STRAND'].iloc[0])
-
-
-
-
-
-
+                                                                             
              d_lin = {(True, 'both'): lambda record, pos, w, l: record.seq[max(0,pos[0]-w):min(l, pos[1]+w)],
              (True, 'upstream'): lambda record, pos, w, l : record.seq[max(0,pos[0]-w):min(l,pos[1])],
              (True, 'downstream'): lambda record, pos, w, l : record.seq[pos[0]:min(l, pos[1]+w)],
@@ -288,7 +268,6 @@ def flank_fasta_file_lin(file, window,gene):
                      record.seq = d_lin[(args.include_gene, args.flank)](record, pos, w, l)
                      writer(record, pos[2], w, guid, x,gene_sense)
                      continue
-
 
 
 def flanker_main():
