@@ -156,7 +156,7 @@ def flank_fasta_file_circ(file, window,gene):
             log.warning(f"Error: Gene {gene} not found in {guid}")
 
         else:
-            gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND']
+            gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
                                                                              
             log.info(f"Gene {gene} found in {guid}")
 
