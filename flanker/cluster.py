@@ -33,13 +33,13 @@ def build_mash_sketch(assemblies, threads, temp_dir, sketch_size):
     mash_command = ['mash', 'sketch', '-p', str(threads), '-o', temp_dir + '/mash',
                         '-s', str(sketch_size)] + assemblies
 
-    subprocess.run(mash_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    subprocess.run(mash_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
     return temp_dir + '/mash.msh'
 
 def pairwise_mash_distances(mash_sketch, threads):
     mash_command = ['mash', 'dist', '-p', str(threads), mash_sketch, mash_sketch]
 
-    mash_out = subprocess.run(mash_command, stdout=subprocess.PIPE).stdout.decode()
+    mash_out = subprocess.run(mash_command, stdout=subprocess.PIPE, check=True).stdout.decode()
     return mash_out.splitlines()
 
 
@@ -96,4 +96,4 @@ def define_clusters(gene,window,threads,threshold,outfile):
 
         clusters=create_graph_from_distances(pairwise_distances, float(threshold))
 
-        clusters.to_csv(str(outfile + '_' + gene.strip() + '_' + str(window)),index=False)
+        clusters.to_csv(outfile + '_' + gene.strip() + '_' + str(window), index=False)

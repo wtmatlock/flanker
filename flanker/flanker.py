@@ -7,7 +7,6 @@ Flanker v1.0
 import sys
 import argparse
 import pandas as pd
-import numpy as np
 import subprocess
 from Bio import SeqIO
 from pathlib import Path
