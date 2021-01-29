@@ -79,7 +79,8 @@ def get_arguments():
     cluster=parser.add_argument_group('clustering options')
     cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true')
     cluster.add_argument('-o', '--outfile',action='store',help='Prefix for the clustering file')
-    cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering')
+    cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering'),
+    cluster.add_argument('-p', '--threads',action='store',help='threads for mash to use')
 
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
@@ -121,7 +122,8 @@ def flank_positions(data, gene_):
 def writer(record, gene, window, isolate, x,gene_sense):
     record.description = f"{record.description} | {gene} | {window}bp window"
 
-    #log.debug(gene,window,isolate,x)
+    #
+    (gene,window,isolate,x)
     #log.debug(gene_sense)
 
     with open(f"{isolate}_{gene}_{window}_{x}_flank.fasta", "w") as f:
@@ -309,12 +311,12 @@ def flanker_main():
 
                 if args.cluster ==True and args.mode =='default':
 
-                    define_clusters(gene,i,args.threshold,args.outfile)
+                    define_clusters(gene,i,args.threads,args.threshold,args.outfile)
                     flank_scrub()
 
             if args.cluster==True and args.mode=='mm':
 
-                define_clusters(gene,i,args.threshold,args.outfile)
+                define_clusters(gene,i,args.threads,args.threshold,args.outfile)
                 log.info("Cleaning up")
                 flank_scrub()
 
@@ -333,7 +335,7 @@ def flanker_main():
 
         if args.cluster==True and args.mode=='mm':
             log.info("Performing clustering")
-            define_clusters(gene,"mm",args.threshold,args.outfile)
+            define_clusters(gene,"mm",args.threads,args.threshold,args.outfile)
             log.info("Cleaning up")
             flank_scrub()
 
