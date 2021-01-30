@@ -187,11 +187,11 @@ def flank_fasta_file_circ(file, window,gene):
                 (False, 'upstream'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
                 (False, 'downstream'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
 
-            d_before = {(True, 'both'): lambda record, pos, w, l : record.seq[0:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l],
-                (True, 'upstream'): lambda record, pos, w, l : record.seq[0:(pos[1])] + record.seq[(l-(w-pos[0])):l],
+            d_before = {(True, 'both'): lambda record, pos, w, l : record.seq[(l-(w-pos[0])):l] + record.seq[0:(pos[1]+w)],
+                (True, 'upstream'): lambda record, pos, w, l : record.seq[(l-(w-pos[0])):l] + record.seq[0:(pos[1])] ,
                 (True, 'downstream'): lambda record, pos, w, l : record.seq[pos[0]:(pos[1]+w)],
-                (False, 'both'): lambda record, pos, w, l : record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] + record.seq[(l-(w-pos[0])):l],
-                (False, 'upstream'): lambda record, pos, w, l : record.seq[0:pos[0]] + record.seq[(l-(w-pos[0])):l],
+                (False, 'both'): lambda record, pos, w, l : record.seq[(l-(w-pos[0])):l] + record.seq[0:pos[0]] + record.seq[pos[1]:(pos[1]+w)] ,
+                (False, 'upstream'): lambda record, pos, w, l : record.seq[(l-(w-pos[0])):l] + record.seq[0:pos[0]],
                 (False, 'downstream'): lambda record, pos, w, l : record.seq[pos[1]:(pos[1]+w)]}
 
             d_after = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):l] + record.seq[0:(pos[1]+w-l)],
@@ -209,7 +209,7 @@ def flank_fasta_file_circ(file, window,gene):
                 x = args.flank
                 if record.description == guid:
                     if gene_sense == '-':
-                        
+
                         #record.seq = record.seq.reverse_complement()
                         if args.flank == 'upstream':
                             x = 'downstream'
@@ -224,13 +224,13 @@ def flank_fasta_file_circ(file, window,gene):
 
                 # if window is too long for sequence length
                     if w > 0.5 * (pos[0] - pos[1] + l):
-                        log.warning(f"Error: Window length {w} too long for sequence length {l}")
+                        log.info(f"Error: Window length {w} too long for sequence length {l}")
                         continue
 
                 # if window exceeds sequence length after gene
 
                     if (pos[1] + w > l):
-                        log.debug("Window exceeds seq length after gene")
+                        log.info("Window exceeds seq length after gene")
                         record.seq = d_after[(args.include_gene, x)](record, pos, w, l)
                         writer(record, pos[2], w, guid, x, gene_sense)
                         continue
@@ -238,13 +238,13 @@ def flank_fasta_file_circ(file, window,gene):
                 # if window exceeds sequence length before gene
 
                     if (pos[0] - w < 0):
-                        log.debug("Window excees seq length before gene")
+                        log.info("Window exceeds seq length before gene")
                         record.seq = d_before[(args.include_gene, x)](record, pos, w, l)
                         writer(record, pos[2], w, guid, x, gene_sense)
                         continue
 
                     else:
-                        log.debug("Window is all good")
+                        log.debug("Window is good")
 
                         record.seq = d[(args.include_gene, x)](record, pos, w, l)
                         writer(record, pos[2], w, guid, x, gene_sense)
@@ -289,13 +289,20 @@ def flank_fasta_file_lin(file, window,gene):
 
              for record in SeqIO.parse(file, "fasta"):
                  if record.description == guid:
+                     if gene_sense == '-':
+
+                         #record.seq = record.seq.reverse_complement()
+                         if args.flank == 'upstream':
+                             x = 'downstream'
+                         else:
+                             x = 'upstream'
                      name=str(record.description)
 
                      log.info(f"{gene} found in {record.description}")
 
                      l = len(record.seq)
 
-                     record.seq = d_lin[(args.include_gene, args.flank)](record, pos, w, l)
+                     record.seq = d_lin[(args.include_gene, x)](record, pos, w, l)
                      writer(record, pos[2], w, guid, x,gene_sense)
                      continue
 
