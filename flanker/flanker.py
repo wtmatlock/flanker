@@ -157,11 +157,13 @@ def flank_fasta_file_circ(file, window,gene):
 
         abricate_file=filter_abricate(data,guid)
         pos = flank_positions(abricate_file, gene)
+
         if (pos == True):
             log.warning(f"Error: Gene {gene} not found in {guid}")
 
 
         else:
+            pos=list(pos)
             gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
 
             log.info(f"Gene {gene} found in {guid}")
@@ -202,15 +204,23 @@ def flank_fasta_file_circ(file, window,gene):
         # loop through records in fasta
             for record in SeqIO.parse(file, "fasta"):
                 #select the fasta record of interest
+                w = int(window)
+                l = len(record.seq)
+                x = args.flank
                 if record.description == guid:
+                    if gene_sense == '-':
+                        
+                        #record.seq = record.seq.reverse_complement()
+                        if args.flank == 'upstream':
+                            x = 'downstream'
+                        else:
+                            x = 'upstream'
 
                     name=str(record.description)
 
                     log.info(pos[2] + ' found!')
 
-                    w = int(window)
-                    l = len(record.seq)
-                    x = args.flank
+
 
                 # if window is too long for sequence length
                     if w > 0.5 * (pos[0] - pos[1] + l):
@@ -221,7 +231,7 @@ def flank_fasta_file_circ(file, window,gene):
 
                     if (pos[1] + w > l):
                         log.debug("Window exceeds seq length after gene")
-                        record.seq = d_after[(args.include_gene, args.flank)](record, pos, w, l)
+                        record.seq = d_after[(args.include_gene, x)](record, pos, w, l)
                         writer(record, pos[2], w, guid, x, gene_sense)
                         continue
 
@@ -229,14 +239,14 @@ def flank_fasta_file_circ(file, window,gene):
 
                     if (pos[0] - w < 0):
                         log.debug("Window excees seq length before gene")
-                        record.seq = d_before[(args.include_gene, args.flank)](record, pos, w, l)
+                        record.seq = d_before[(args.include_gene, x)](record, pos, w, l)
                         writer(record, pos[2], w, guid, x, gene_sense)
                         continue
 
                     else:
                         log.debug("Window is all good")
 
-                        record.seq = d[(args.include_gene, args.flank)](record, pos, w, l)
+                        record.seq = d[(args.include_gene, x)](record, pos, w, l)
                         writer(record, pos[2], w, guid, x, gene_sense)
                         continue
 
