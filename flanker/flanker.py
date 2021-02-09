@@ -232,7 +232,7 @@ def flank_fasta_file_circ(file, window,gene):
                     if (pos[1] + w > l):
                         log.info("Window exceeds seq length after gene")
                         record.seq = d_after[(args.include_gene, x)](record, pos, w, l)
-                        writer(record, pos[2], w, guid, x, gene_sense)
+                        writer(record, pos[2], w, guid, args.flank, gene_sense)
                         continue
 
                 # if window exceeds sequence length before gene
@@ -240,14 +240,14 @@ def flank_fasta_file_circ(file, window,gene):
                     if (pos[0] - w < 0):
                         log.info("Window exceeds seq length before gene")
                         record.seq = d_before[(args.include_gene, x)](record, pos, w, l)
-                        writer(record, pos[2], w, guid, x, gene_sense)
+                        writer(record, pos[2], w, guid, args.flank, gene_sense)
                         continue
 
                     else:
                         log.debug("Window is good")
 
                         record.seq = d[(args.include_gene, x)](record, pos, w, l)
-                        writer(record, pos[2], w, guid, x, gene_sense)
+                        writer(record, pos[2], w, guid, args.flank, gene_sense)
                         continue
 
 
@@ -303,7 +303,7 @@ def flank_fasta_file_lin(file, window,gene):
                      l = len(record.seq)
 
                      record.seq = d_lin[(args.include_gene, x)](record, pos, w, l)
-                     writer(record, pos[2], w, guid, x,gene_sense)
+                     writer(record, pos[2], w, guid, args.flank,gene_sense)
                      continue
 
 
