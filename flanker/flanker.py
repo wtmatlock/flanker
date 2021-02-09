@@ -33,8 +33,12 @@ def get_arguments():
                         help = 'Input fasta file')
 
     # gene(s) to annotate
-    required.add_argument('-g', '--gene', nargs='+', action = 'store', required=True,
-                        help = 'Gene of interest (escape any special characters)')
+    genes=parser.add_mutually_exclusive_group(required=True)
+    genes.add_argument('-g', '--gene', nargs='+', action = 'store',
+                        help = 'Gene(s) of interest (escape any special characters). Use space seperation for multipe genes')
+    genes.add_argument('-log','--list_of_genes',action='store',default=False,
+                        help = 'Line separated file containing genes of interest')
+
 
     # flanks desired
     parser.add_argument('-f','--flank', action='store',
@@ -313,8 +317,19 @@ def flanker_main():
 
     run_abricate(args.fasta_file)
 
-    gene_list=args.gene
+    if args.list_of_genes == False:
+        gene_list=args.gene
+
+    else:
+        gene_list=[]
+        with open(args.list_of_genes, 'rb') as gl:
+            for line in gl:
+                line=line.decode('utf-8')
+                gene_list.append(line.strip())
+
     log.debug(gene_list)
+
+
 
 
     if args.window_stop is not None:
