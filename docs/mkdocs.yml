@@ -1,9 +1,0 @@
-site_name: Flanker Documentaion
-
-nav:
-    - Home: README.md
-    - Clustering: clustering.md
-    - Salami mode: salami.md
-    - Multi-allelic mode: mam.md
-
-theme: readthedocs
