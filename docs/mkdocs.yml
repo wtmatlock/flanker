@@ -6,4 +6,4 @@ site_name: Flanker Documentaion
      - Salami mode: salami.md		
      - Multi-allelic mode: mam.md		
 
-  theme: readthedocs
+  theme: rtd-dropdown
