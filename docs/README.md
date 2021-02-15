@@ -1,6 +1,6 @@
 # Flanker
 
-Flanker is a tool for studying the homology of gene-flanking sequences. It will annotate FASTA or Multi-FASTA files for specified genes, then write the flanking sequences to new FASTA files.
+Flanker is a tool for studying the homology of gene-flanking sequences. It will annotate FASTA/multi-FASTA files for specified genes, then write the flanking sequences to new FASTA files.
 
 ## Installation
 
@@ -8,12 +8,10 @@ Flanker is a tool for studying the homology of gene-flanking sequences. It will 
 
 This is the recommended method and by far the easiest. It will be available soon.
 
-### During development
+### PIP
 
 ```
-conda create -n flanker python=3 abricate biopython mash  # needs bioconda channel
-pip install --editable git+https://github.com/wtmatlock/flanker
-pip install --editable /path/to/flanker/package  # where 'package' contains setup.py
+pip install git+https://github.com/wtmatlock/flanker
 ```
 
 ### Run tests
@@ -65,17 +63,15 @@ and check everything is working:
 
 First we download some hybrid assemblies of plasmid genomes from *David, Sophia, et al. "Integrated chromosomal and plasmid sequence analyses reveal diverse modes of carbapenemase gene spread among Klebsiella pneumoniae." Proceedings of the National Academy of Sciences 117.40 (2020): 25043-25054.*
 
-There are 44 plasmid genomes of which 16 contain blaKPC-2 and 28 blaKPC-3.
+There are 44 plasmid genomes of which 16 and 28 contain blaKPC-2 and blaKPC-3, respectively.
 
-You need to take all replicons of interest (in this case the 44 plasmids) and concatenate these into a multifasta file.
+You need to take all replicons of interest (in this case the 44 plasmids) and concatenate these into a multi-FASTA file.
 
 ```
   cat *fsa > david_plasmids.fasta
 ```
 
-You should then rename the fasta headers so that they match the original files. We have provided a simple script to do this.
-
-e.g.
+You should then rename the fasta headers so that they match the original files. We have provided a simple script to do this:
 
 ```
   ls *fsa | sed 's/[.]fsa//' > input_files
@@ -83,7 +79,7 @@ e.g.
   mv david_plasmids_renamed.fasta david_plasmids.fasta
 ```
 
-Now you are ready to use Flanker. In this example we are going to compare the flanking sequences around blaKPC-2. We are going to extract windows from 0 (```-w```) to 5000 (```-wstop```) base pairs in 100bp chuncks (```-wstep```) to the left (```-f left```) (downstream) of the gene. We will include the gene (```-inc```) and use the default resfinder database.
+Now you are ready to use Flanker. In this example we are going to compare the flanking sequences around blaKPC-2. We are going to extract windows from 0 (```-w```) to 5000 (```-wstop```) base pairs in 100bp chuncks (```-wstep```) to the upsteam (```-f upstream```) of the gene. We will include the gene (```-inc```) and use the default resfinder database.
 
 ```
   python flanker.py -f left -w 0 -wstop 5000 -wstep 100 -p 8 -v 1 -g blaKPC-2_1 -i david_plasmids.fasta -inc
@@ -121,20 +117,9 @@ You should now see many fasta files in the working directory containing left fla
 
 ## Clustering
 
-Having extracted flanking sequences around a gene you might then want to cluster them into groups which share high sequence identity. Flanker does this using single linkage clustering of Mash distances. The method is very similar to that used by Ryan Wick in his [Assembly-Dereplicator](https://github.com/rrwick/Assembly-Dereplicator) package (and indeed we borrow several of his functions).
+Having extracted flanking sequences around a gene you might then want to cluster them into groups which share high sequence identity. Flanker does this using single linkage clustering of Mash distances. The method is very similar to that used by Ryan Wick in his [Assembly-Dereplicator](https://github.com/rrwick/Assembly-Dereplicator) package (and indeed we re-use several of his functions).
 
-
-| Option    | Explanation   |
-|-------- | -------- |
-| ```-tr``` | mash clustering threshold, flanks are grouped into the same cluster if they are <= this |
-| ```-p``` | threads for running mash (will make little difference unless very large input) |
-| ```-o``` | prefix for the output clustering files |
-
-<br/><br/>
-
-A seperate clustering file is produced for each window examined. The output is a comma separated file with two colomns: isolate and clustering group.
-
-These can easily be combined for further processing e.g.
+A seperate clustering file is produced for each window examined. The output is a comma separated file with two colomns: isolate and clustering group. These can easily be combined for further processing:
 
 ```
   cat out* | sed '/assembly/d'  > all_out
@@ -146,8 +131,6 @@ These can easily be combined for further processing e.g.
 If you feed flanker a list of genes (```-lg```) in default mode (```-m Default```), flanker considers each of these in turn. If you turn on multi-allelic mode (-m ```mm```) however, it considers all genes in the list for each window. This allows you to detect flanking regions which are similar between different alleles of genes (e.g. blaCPC-2/3 etc) and between completely different genes. 
 
 ## Salami mode
-
-Caveat: this is still under development and should be treated as experimental, use at your own risk. Please report any bugs.
 
 Salami mode considers each window (of length ```-wstep```) from ```-w``` to ```-wstop``` as a seperate entity; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts.
 
