@@ -389,7 +389,8 @@ def main():
     if args.mode =="default" or args.mode == "mm":
         flanker_main()
     elif args.mode =="sm":
-        salami_main(args.gene,args.fasta_file,args.window,args.window_step,args.window_stop,args.outfile,args.threshold,args.cluster)
+        print(args.cluster)
+        salami_main(args.list_of_genes,args.fasta_file,args.include_gene,args.window_step,args.window_stop,args.outfile,args.flank,args.threads,args.threshold,args.cluster)
 
     end = time.time()
     log.info(f"All done in {round(end - start, 2)} seconds")
