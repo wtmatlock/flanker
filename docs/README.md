@@ -144,3 +144,16 @@ These can easily be combined for further processing e.g.
 ## Multi-allelic mode
 
 If you feed flanker a list of genes (```-lg```) in default mode (```-m Default```), flanker considers each of these in turn. If you turn on multi-allelic mode (-m ```mm```) however, it considers all genes in the list for each window. This allows you to detect flanking regions which are similar between different alleles of genes (e.g. blaCPC-2/3 etc) and between completely different genes. 
+
+## Salami mode
+
+Caveat: this is still under development and should be treated as experimental, use at your own risk. Please report any bugs.
+
+Salami mode considers each window (of length ```-wstep```) from ```-w``` to ```-wstop``` as a seperate entity; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts.
+
+Example:
+```
+  python flanker.py -i example.fasta  -g blaTEM-1B_1 -w 0 -w 4900 -f left  -m SM  
+```
+
+Here we extract 100bp windows from 0-4900 bp to the left of the blaTEM-1B gene.
