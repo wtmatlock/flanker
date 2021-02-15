@@ -8,7 +8,7 @@ Flanker is a tool for studying the homology of gene-flanking sequences. It will 
 
 This is the recommended method and by far the easiest. It will be available soon.
 
-### PIP
+### pip
 
 ```
 pip install git+https://github.com/wtmatlock/flanker
@@ -45,7 +45,7 @@ Ensure you have all dependencies installed:
 **External software:**
 
 * [Abricate](https://github.com/tseemann/abricate)
-* [Mash](https://github.com/marbl/Mash
+* [Mash](https://github.com/marbl/Mash)
 
 Then simply clone the repository:
 
