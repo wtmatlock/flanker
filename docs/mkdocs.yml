@@ -1,11 +1,7 @@
 site_name: Flanker Documentaion
 
 nav:
-    - Home: index.md
-    - About: about.md
-    - Installation: install.md
-    - Quickstart: quickstart.md
-    - Flanker: flanker.md
+    - Home: README.md
     - Clustering: clustering.md
     - Salami mode: salami.md
     - Multi-allelic mode: mam.md
