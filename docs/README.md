@@ -26,26 +26,26 @@ Ensure you have all dependencies installed:
 
 **Python dependencies:**
 
-* multiprocessing
-* sys
-* argparse
-* pandas
-* numpy
-* subprocess
-* biopython
-* pathlib
-* time
-* logging
-* tempfile
-* os
-* collections
-* glob
-* networkx
+* [argparse](https://docs.python.org/3/library/argparse.html)
+* [biopython](https://biopython.org)
+* [collections](https://docs.python.org/3/library/collections.html)
+* [glob](https://docs.python.org/3/library/glob.html)
+* [logging](https://docs.python.org/3/library/logging.html)
+* [multiprocessing](https://docs.python.org/3/library/multiprocessing.html)
+* [networkx](https://networkx.org/documentation/stable/)
+* [numpy](https://numpy.org)
+* [os](https://docs.python.org/3/library/os.html)
+* [pandas](https://pandas.pydata.org)
+* [pathlib](https://docs.python.org/3/library/pathlib.html)
+* [subprocess](https://docs.python.org/3/library/subprocess.html)
+* [sys](https://docs.python.org/3/library/sys.html)
+* [tempfile](https://docs.python.org/3/library/tempfile.html)
+* [time](https://docs.python.org/3/library/time.html)
 
 **External software:**
 
-* abricate
-* mash
+* [Abricate](https://github.com/tseemann/abricate)
+* [Mash](https://github.com/marbl/Mash
 
 Then simply clone the repository:
 
