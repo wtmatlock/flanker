@@ -6,4 +6,9 @@ site_name: Flanker Documentaion
      - Salami mode: salami.md		
      - Multi-allelic mode: mam.md		
 
-  theme: rtd-dropdown
+  theme:
+     name: readthedocs
+     highlightjs: true
+     hljs_languages:
+         - yaml
+         - rust
