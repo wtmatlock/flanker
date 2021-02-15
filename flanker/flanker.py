@@ -361,7 +361,7 @@ def flanker_main():
                 flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
             if args.cluster ==True and args.mode =='default':
                 log.info("Performing clustering")
-                define_clusters(gene,i,args.threshold,args.outfile)
+                define_clusters(gene,args.window,args.threads,args.threshold,args.outfile)
                 log.info("Cleaning up")
                 flank_scrub()
 

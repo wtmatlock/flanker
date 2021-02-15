@@ -21,14 +21,14 @@ def find_all_assemblies():
         for filename in filenames:
 
             #might need something more sophisticated than 50
-        
+
             if os.path.getsize(os.path.join(foldername,filename)) > 100:
                 if filename.endswith('flank.fasta'):
                     all_assemblies.append(filename)
 
 
     print('found {:,} files\n'.format(len(all_assemblies)))
-    print(all_assemblies)
+
     return all_assemblies
 
 
@@ -36,7 +36,7 @@ def build_mash_sketch(assemblies, threads, temp_dir, sketch_size):
     mash_command = ['mash', 'sketch', '-p', str(threads), '-o', temp_dir + '/mash',
                         '-s', str(sketch_size)] + assemblies
 
-    print(mash_command)
+    
     subprocess.run(mash_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     return temp_dir + '/mash.msh'
 
