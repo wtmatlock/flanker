@@ -31,7 +31,6 @@ Ensure you have all dependencies installed:
 * [collections](https://docs.python.org/3/library/collections.html)
 * [glob](https://docs.python.org/3/library/glob.html)
 * [logging](https://docs.python.org/3/library/logging.html)
-* [multiprocessing](https://docs.python.org/3/library/multiprocessing.html)
 * [networkx](https://networkx.org/documentation/stable/)
 * [numpy](https://numpy.org)
 * [os](https://docs.python.org/3/library/os.html)
@@ -115,7 +114,7 @@ You should now see many fasta files in the working directory containing left fla
 | ```--outfile``` | Prefix for clustering output file | - |
 | ```--threshold``` | Mash distance threshold for clustering | ```0.001``` |
 
-N.B. Gene queries use exact matching, so e.g. querying only 'bla' will return nothing. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. blaCTX-M-15 becomes blaCTX-M-15_1. Please check your Abricate output if you are unsure of the naming conventions.
+**N.B.** Gene queries use exact matching, so e.g. querying only 'bla' will return nothing. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. blaCTX-M-15 becomes blaCTX-M-15_1. Please check your Abricate output if you are unsure of the naming conventions.
 
 ## Clustering
 
