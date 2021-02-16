@@ -79,10 +79,10 @@ You should then rename the fasta headers so that they match the original files. 
   mv david_plasmids_renamed.fasta david_plasmids.fasta
 ```
 
-Now you are ready to use Flanker. In this example we are going to compare the flanking sequences around blaKPC-2. We are going to extract windows from 0 (```-w```) to 5000 (```-wstop```) base pairs in 100bp chuncks (```-wstep```) to the upsteam (```-f upstream```) of the gene. We will include the gene (```-inc```) and use the default resfinder database.
+Now you are ready to use Flanker. In this example we are going to compare the flanking sequences around blaKPC-2. We are going to extract windows from 0 (```-w```) to 5000 (```-wstop```) base pairs in 100bp chuncks (```-wstep```) to the upsteam (```-f upstream```) of the gene. We will include the gene (```-inc```) and use the default NCBI database.
 
 ```
-  python flanker.py -f left -w 0 -wstop 5000 -wstep 100 -p 8 -v 1 -g blaKPC-2_1 -i david_plasmids.fasta -inc
+  python flanker.py -f left -w 0 -wstop 5000 -wstep 100 -p 8 -v 1 -g blaKPC-2 -i david_plasmids.fasta -inc
 ```
 
 You should now see many fasta files in the working directory containing left flanking regions from 0 to 4900 bp.
@@ -101,7 +101,7 @@ You should now see many fasta files in the working directory containing left fla
 | ```--mode``` | One of "default" - normal mode, "mm" - multi-allelic cluster, or "sm" - salami-mode| ```default``` |
 | ```--circ``` | Add if your sequence is circularised | ```False``` |
 | ```--include_gene``` | Add if you want the gene included in the output .fasta | ```False``` |
-| ```--database``` | Specify the database Abricate will use to find the gene(s) | ```resfinder``` |
+| ```--database``` | Specify the database Abricate will use to find the gene(s) | ```ncbi``` |
 | ```--verbose``` | Increase verbosity: 0 := only warnings, 1 := info, 2 := everything. | ```0``` |
 
 | Window options | Description | Default |
@@ -114,6 +114,8 @@ You should now see many fasta files in the working directory containing left fla
 | ```--cluster``` | Use clustering mode? | ```False``` |
 | ```--outfile``` | Prefix for clustering output file | - |
 | ```--threshold``` | Mash distance threshold for clustering | ```0.001``` |
+
+N.B. Gene queries use exact matching, so e.g. querying only 'bla' will return nothing. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. blaCTX-M-15 becomes blaCTX-M-15_1. Please check your Abricate output if you are unsure of the naming conventions.
 
 ## Clustering
 
@@ -136,7 +138,7 @@ Salami mode considers each window (of length ```-wstep```) from ```-w``` to ```-
 
 Example:
 ```
-  python flanker.py -i example.fasta  -g blaTEM-1B_1 -w 0 -w 4900 -f left  -m SM  
+  python flanker.py -i example.fasta  -g blaTEM-1B -w 0 -w 4900 -f left  -m SM  
 ```
 
 Here we extract 100bp windows from 0-4900 bp to the left of the blaTEM-1B gene.
