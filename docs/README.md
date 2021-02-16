@@ -133,7 +133,7 @@ If you feed flanker a list of genes (```-lg```) in default mode (```-m default``
 
 Salami mode considers each window (of length ```-wstep```) from ```-w``` to ```-wstop``` as a seperate contiguous sequence; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts.
 
-For instance, here we extract 100bp windows from 0-5000 bp to the left of the blaTEM-1B gene.
+For instance, here we extract 100bp windows from 0-5000 bp to the left of the *bla*TEM-1B gene.
 
 ```
 python flanker.py -i example.fasta  -g blaTEM-1B -w 0 -w 5000 -f left -m sm  
