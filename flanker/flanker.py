@@ -7,6 +7,7 @@ Flanker v1.0
 import sys
 import argparse
 import pandas as pd
+import numpy as np
 import subprocess
 from Bio import SeqIO
 from pathlib import Path
@@ -32,8 +33,12 @@ def get_arguments():
                         help = 'Input fasta file')
 
     # gene(s) to annotate
-    required.add_argument('-g', '--gene', nargs='+', action = 'store', required=True,
-                        help = 'Gene of interest (escape any special characters)')
+    genes=parser.add_mutually_exclusive_group(required=True)
+    genes.add_argument('-g', '--gene', nargs='+', action = 'store',
+                        help = 'Gene(s) of interest (escape any special characters). Use space seperation for multipe genes')
+    genes.add_argument('-log','--list_of_genes',action='store',default=False,
+                        help = 'Line separated file containing genes of interest')
+
 
     # flanks desired
     parser.add_argument('-f','--flank', action='store',
@@ -77,9 +82,9 @@ def get_arguments():
     # clustering options
     cluster=parser.add_argument_group('clustering options')
     cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true')
-    cluster.add_argument('-o', '--outfile',action='store',help='Prefix for the clustering file')
-    cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering'),
-    cluster.add_argument('-p', '--threads',action='store',help='threads for mash to use')
+    cluster.add_argument('-o', '--outfile',action='store',help='Prefix for the clustering file',default='out')
+    cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering',default="0.001"),
+    cluster.add_argument('-p', '--threads',action='store',help='threads for mash to use',default='1')
 
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
@@ -97,6 +102,7 @@ def run_abricate(file):
 
 # returns the start and end positions of the annotation
 def flank_positions(data, gene_):
+
 
     gene = data[data["GENE"].str.match(gene_)]
 
@@ -119,6 +125,10 @@ def flank_positions(data, gene_):
 # writes output fasta
 def writer(record, gene, window, isolate, x,gene_sense):
     record.description = f"{record.description} | {gene} | {window}bp window"
+
+    #
+    (gene,window,isolate,x)
+    #log.debug(gene_sense)
 
     with open(f"{isolate}_{gene}_{window}_{x}_flank.fasta", "w") as f:
         if gene_sense == '+':
@@ -155,18 +165,24 @@ def flank_fasta_file_circ(file, window,gene):
         if (pos == True):
             log.warning(f"Error: Gene {gene} not found in {guid}")
 
+
         else:
             pos=list(pos)
             gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
-                                                                             
+
             log.info(f"Gene {gene} found in {guid}")
 
             gene_sense=str(gene_sense['STRAND'].iloc[0])
 
             log.debug(gene_sense)
+
+
             log.debug(pos)
 
+
     # initialise dictionaries for sequence splicing functions
+
+    ###### check functions are correct! ######
 
             d = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1]+w)],
                 (True, 'upstream'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1])],
@@ -220,7 +236,7 @@ def flank_fasta_file_circ(file, window,gene):
                     if (pos[1] + w > l):
                         log.info("Window exceeds seq length after gene")
                         record.seq = d_after[(args.include_gene, x)](record, pos, w, l)
-                        writer(record, pos[2], w, guid, x, gene_sense)
+                        writer(record, pos[2], w, guid, args.flank, gene_sense)
                         continue
 
                 # if window exceeds sequence length before gene
@@ -228,14 +244,14 @@ def flank_fasta_file_circ(file, window,gene):
                     if (pos[0] - w < 0):
                         log.info("Window exceeds seq length before gene")
                         record.seq = d_before[(args.include_gene, x)](record, pos, w, l)
-                        writer(record, pos[2], w, guid, x, gene_sense)
+                        writer(record, pos[2], w, guid, args.flank, gene_sense)
                         continue
 
                     else:
                         log.debug("Window is good")
 
                         record.seq = d[(args.include_gene, x)](record, pos, w, l)
-                        writer(record, pos[2], w, guid, x, gene_sense)
+                        writer(record, pos[2], w, guid, args.flank, gene_sense)
                         continue
 
 
@@ -252,10 +268,19 @@ def flank_fasta_file_lin(file, window,gene):
         if pos == True:
             log.error(f"Error: Gene {gene} not found in {guid}")
 
+
         else:
              gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
+
+
+
              gene_sense=str(gene_sense['STRAND'].iloc[0])
-                                                                             
+
+
+
+
+
+
              d_lin = {(True, 'both'): lambda record, pos, w, l: record.seq[max(0,pos[0]-w):min(l, pos[1]+w)],
              (True, 'upstream'): lambda record, pos, w, l : record.seq[max(0,pos[0]-w):min(l,pos[1])],
              (True, 'downstream'): lambda record, pos, w, l : record.seq[pos[0]:min(l, pos[1]+w)],
@@ -282,8 +307,9 @@ def flank_fasta_file_lin(file, window,gene):
                      l = len(record.seq)
 
                      record.seq = d_lin[(args.include_gene, x)](record, pos, w, l)
-                     writer(record, pos[2], w, guid, x,gene_sense)
+                     writer(record, pos[2], w, guid, args.flank,gene_sense)
                      continue
+
 
 
 def flanker_main():
@@ -291,8 +317,19 @@ def flanker_main():
 
     run_abricate(args.fasta_file)
 
-    gene_list=args.gene
+    if args.list_of_genes == False:
+        gene_list=args.gene
+
+    else:
+        gene_list=[]
+        with open(args.list_of_genes, 'rb') as gl:
+            for line in gl:
+                line=line.decode('utf-8')
+                gene_list.append(line.strip())
+
     log.debug(gene_list)
+
+
 
 
     if args.window_stop is not None:
@@ -324,7 +361,7 @@ def flanker_main():
                 flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
             if args.cluster ==True and args.mode =='default':
                 log.info("Performing clustering")
-                define_clusters(gene,i,args.threshold,args.outfile)
+                define_clusters(gene,args.window,args.threads,args.threshold,args.outfile)
                 log.info("Cleaning up")
                 flank_scrub()
 
@@ -352,7 +389,8 @@ def main():
     if args.mode =="default" or args.mode == "mm":
         flanker_main()
     elif args.mode =="sm":
-        salami_main(args.gene,args.fasta_file,args.window,args.window_step,args.window_stop,args.outfile,args.threshold,args.cluster)
+        print(args.cluster)
+        salami_main(args.list_of_genes,args.fasta_file,args.include_gene,args.window_step,args.window_stop,args.outfile,args.flank,args.threads,args.threshold,args.cluster)
 
     end = time.time()
     log.info(f"All done in {round(end - start, 2)} seconds")

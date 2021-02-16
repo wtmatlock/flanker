@@ -19,13 +19,16 @@ def find_all_assemblies():
     all_assemblies=[]
     for foldername, subfolders, filenames in os.walk(os.getcwd()):
         for filename in filenames:
+
             #might need something more sophisticated than 50
+
             if os.path.getsize(os.path.join(foldername,filename)) > 100:
                 if filename.endswith('flank.fasta'):
                     all_assemblies.append(filename)
 
 
     print('found {:,} files\n'.format(len(all_assemblies)))
+
     return all_assemblies
 
 
@@ -33,13 +36,14 @@ def build_mash_sketch(assemblies, threads, temp_dir, sketch_size):
     mash_command = ['mash', 'sketch', '-p', str(threads), '-o', temp_dir + '/mash',
                         '-s', str(sketch_size)] + assemblies
 
-    subprocess.run(mash_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
+    
+    subprocess.run(mash_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     return temp_dir + '/mash.msh'
 
 def pairwise_mash_distances(mash_sketch, threads):
     mash_command = ['mash', 'dist', '-p', str(threads), mash_sketch, mash_sketch]
 
-    mash_out = subprocess.run(mash_command, stdout=subprocess.PIPE, check=True).stdout.decode()
+    mash_out = subprocess.run(mash_command, stdout=subprocess.PIPE).stdout.decode()
     return mash_out.splitlines()
 
 
@@ -75,7 +79,7 @@ def create_graph_from_distances(pairwise_distances, threshold):
     return(df2)
 
 def flank_scrub():
-    
+
     filelist=glob.glob(str(str(os.getcwd()) + '/' + str("*flank.fasta")))
 
     for filename in filelist:
@@ -96,4 +100,4 @@ def define_clusters(gene,window,threads,threshold,outfile):
 
         clusters=create_graph_from_distances(pairwise_distances, float(threshold))
 
-        clusters.to_csv(outfile + '_' + gene.strip() + '_' + str(window), index=False)
+        clusters.to_csv(str(outfile + '_' + gene.strip() + '_' + str(window)),index=False)
