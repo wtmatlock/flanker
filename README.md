@@ -6,6 +6,6 @@ This repository accompanies the paper *Flanker: a tool for comparative genomics 
 [Read the Docs](https://flanker.readthedocs.io/en/latest/)
 
 # Reproducibility
-You can recreate the analysis performed in our manuscript and the figures in the Binder environment above (click on the binder badge, n.b it is very slow to load).
+You can recreate the analysis performed in our manuscript and the figures in the Binder environment below (click on the Binder badge, N.B. it is very slow to load).
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/samlipworth/Flanker-Reproducible-Example/main?urlpath=rstudio)
