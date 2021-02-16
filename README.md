@@ -3,4 +3,4 @@
 
 [Read the Docs](https://flanker.readthedocs.io/en/latest/)
 
-You can recreate the analysis performed in our manuscript and the figures in the Binder environment above (click on the binder badge).
+You can recreate the analysis performed in our manuscript and the figures in the Binder environment above (click on the binder badge, n.b it is very slow to load).
