@@ -116,7 +116,7 @@ You should now see many fasta files in the working directory containing upstream
 
 ## Clustering
 
-Having extracted flanking sequences around a gene, you might then want to cluster them into groups which share high sequence identity. Flanker does this using single linkage clustering of Mash distances. The method is very similar to that used by Ryan Wick in his [Assembly-Dereplicator](https://github.com/rrwick/Assembly-Dereplicator) package (and indeed we re-use several of his functions).
+Having extracted flanking sequences around a gene, you might then want to cluster them into groups which share high sequence identity. Flanker does this using [single-linkage clustering](https://en.wikipedia.org/wiki/Single-linkage_clustering) of Mash distances. The method is very similar to that used by Ryan Wick in his [Assembly-Dereplicator](https://github.com/rrwick/Assembly-Dereplicator) package (and indeed we re-use several of his functions).
 
 A seperate clustering file is produced for each window examined. The output is a comma separated file with two columns: sequence and cluster group. These can easily be combined for further processing:
 
