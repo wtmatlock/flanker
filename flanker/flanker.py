@@ -61,7 +61,7 @@ def get_arguments():
     # specify abricate database
     parser.add_argument('-db', '--database', action = 'store',
                         help = 'Choose Abricate database e.g. NCBI, resfinder',
-                        default = 'resfinder')
+                        default = 'ncbi')
 
     # output verbosity
     parser.add_argument("-v", "--verbose", const=1, default=0, type=int, nargs="?",
@@ -90,6 +90,7 @@ def get_arguments():
     return args
 
 
+# annotate for gene(s) of interest
 def run_abricate(file):
     args=get_arguments()
     abricate_command = ["abricate", "--db", args.database, file] # shell commands
@@ -103,14 +104,12 @@ def run_abricate(file):
 # returns the start and end positions of the annotation
 def flank_positions(data, gene_):
 
-
     gene = data[data["GENE"].str.match(gene_)]
 
     # check if gene is found
     if len(gene) == 0:
         return True
 
-    # gene foundname=str(recorname=str(record.description)d.description)
     g = gene['GENE'].iloc[0]
 
     # LHS flank
@@ -126,9 +125,7 @@ def flank_positions(data, gene_):
 def writer(record, gene, window, isolate, x,gene_sense):
     record.description = f"{record.description} | {gene} | {window}bp window"
 
-    #
     (gene,window,isolate,x)
-    #log.debug(gene_sense)
 
     with open(f"{isolate}_{gene}_{window}_{x}_flank.fasta", "w") as f:
         if gene_sense == '+':
@@ -141,13 +138,14 @@ def writer(record, gene, window, isolate, x,gene_sense):
             log.info(f"{f.name} sucessfully created!")
             f.close()
 
-#this function is needed for multi-fasta files
+# for processing multi-fasta files
 def filter_abricate(data, isolate):
 
     data = data.loc[data['SEQUENCE'] == isolate]
 
     return(data)
 
+# generates flanks for circularised sequences
 def flank_fasta_file_circ(file, window,gene):
     args = get_arguments()
 
@@ -156,7 +154,7 @@ def flank_fasta_file_circ(file, window,gene):
 
     guids=data['SEQUENCE'].unique()
     log.debug(guids)
-    #can't just use abricate output for whole of muli-fasta
+
     for guid in guids:
 
         abricate_file=filter_abricate(data,guid)
@@ -164,7 +162,6 @@ def flank_fasta_file_circ(file, window,gene):
 
         if (pos == True):
             log.warning(f"Error: Gene {gene} not found in {guid}")
-
 
         else:
             pos=list(pos)
@@ -175,14 +172,9 @@ def flank_fasta_file_circ(file, window,gene):
             gene_sense=str(gene_sense['STRAND'].iloc[0])
 
             log.debug(gene_sense)
-
-
             log.debug(pos)
 
-
-    # initialise dictionaries for sequence splicing functions
-
-    ###### check functions are correct! ######
+            # initialise dictionaries of sequence splicing functions
 
             d = {(True, 'both'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1]+w)],
                 (True, 'upstream'): lambda record, pos, w, l : record.seq[(pos[0]-w):(pos[1])],
@@ -205,8 +197,9 @@ def flank_fasta_file_circ(file, window,gene):
                 (False, 'upstream'): lambda record, pos, w, l : record.seq[(pos[0]-w):pos[0]],
                 (False, 'downstream'): lambda record, pos, w, l : record.seq[pos[1]:l] + record.seq[0:((pos[1]+w)-l)]}
 
-        # loop through records in fasta
+            # loop through records in fasta
             for record in SeqIO.parse(file, "fasta"):
+
                 #select the fasta record of interest
                 w = int(window)
                 l = len(record.seq)
@@ -224,23 +217,19 @@ def flank_fasta_file_circ(file, window,gene):
 
                     log.info(pos[2] + ' found!')
 
-
-
-                # if window is too long for sequence length
+                    # if window is too long for sequence length
                     if w > 0.5 * (pos[0] - pos[1] + l):
                         log.info(f"Error: Window length {w} too long for sequence length {l}")
                         continue
 
-                # if window exceeds sequence length after gene
-
+                    # if window exceeds sequence length after gene
                     if (pos[1] + w > l):
                         log.info("Window exceeds seq length after gene")
                         record.seq = d_after[(args.include_gene, x)](record, pos, w, l)
                         writer(record, pos[2], w, guid, args.flank, gene_sense)
                         continue
 
-                # if window exceeds sequence length before gene
-
+                    # if window exceeds sequence length before gene
                     if (pos[0] - w < 0):
                         log.info("Window exceeds seq length before gene")
                         record.seq = d_before[(args.include_gene, x)](record, pos, w, l)
@@ -254,7 +243,7 @@ def flank_fasta_file_circ(file, window,gene):
                         writer(record, pos[2], w, guid, args.flank, gene_sense)
                         continue
 
-
+# generates flanks for linear sequences
 def flank_fasta_file_lin(file, window,gene):
     args = get_arguments()
     unfiltered_abricate_file = str(file + '_resfinder') # name of abricate output for fasta
@@ -268,19 +257,13 @@ def flank_fasta_file_lin(file, window,gene):
         if pos == True:
             log.error(f"Error: Gene {gene} not found in {guid}")
 
-
         else:
              gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
 
-
-
              gene_sense=str(gene_sense['STRAND'].iloc[0])
 
-
-
-
-
-
+             # initialise dictionary of sequence splicing functions
+             
              d_lin = {(True, 'both'): lambda record, pos, w, l: record.seq[max(0,pos[0]-w):min(l, pos[1]+w)],
              (True, 'upstream'): lambda record, pos, w, l : record.seq[max(0,pos[0]-w):min(l,pos[1])],
              (True, 'downstream'): lambda record, pos, w, l : record.seq[pos[0]:min(l, pos[1]+w)],
@@ -291,11 +274,11 @@ def flank_fasta_file_lin(file, window,gene):
              w = int(window)
              x = args.flank
 
+             # loop through records in fasta
              for record in SeqIO.parse(file, "fasta"):
                  if record.description == guid:
                      if gene_sense == '-':
 
-                         #record.seq = record.seq.reverse_complement()
                          if args.flank == 'upstream':
                              x = 'downstream'
                          else:
@@ -309,8 +292,6 @@ def flank_fasta_file_lin(file, window,gene):
                      record.seq = d_lin[(args.include_gene, x)](record, pos, w, l)
                      writer(record, pos[2], w, guid, args.flank,gene_sense)
                      continue
-
-
 
 def flanker_main():
     args = get_arguments()
@@ -328,9 +309,6 @@ def flanker_main():
                 gene_list.append(line.strip())
 
     log.debug(gene_list)
-
-
-
 
     if args.window_stop is not None:
         for i in range(args.window, args.window_stop, args.window_step):
