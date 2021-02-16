@@ -113,7 +113,7 @@ You should now see many fasta files in the working directory containing left fla
 | --- | --- | --- |
 | ```--cluster``` | Use clustering mode? | ```False``` |
 | ```--outfile``` | Prefix for clustering output file | - |
-| ```--threshold``` | Mash distance threshold for clustering | ```0.01``` |
+| ```--threshold``` | Mash distance threshold for clustering | ```0.001``` |
 
 ## Clustering
 
