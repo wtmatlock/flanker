@@ -2,3 +2,5 @@
 [![flanker](https://github.com/wtmatlock/flanker/blob/main/docs/frontpage.png)](https://flanker.readthedocs.io/en/latest/ "Read the Docs")
 
 [Read the Docs](https://flanker.readthedocs.io/en/latest/)
+
+You can recreate the analysis performed in our manuscript and the figures in the Binder environment above (click on the binder badge).
