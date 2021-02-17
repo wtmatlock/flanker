@@ -125,6 +125,8 @@ cat out* | sed '/assembly/d'  > all_out
 sed -i '1 i\flank,cluster' all_out
 ```
 
+You can take this output and create figures similar to those in our manuscript (see the Binder on the Flanker GitHub page) or use in custom downstream applications.
+
 ## Multi-allelic mode
 
 If you feed flanker a list of genes (```-lg```) in default mode (```-m default```), flanker considers each of these in turn. However, if you turn on multi-allelic mode (```-m mm```), it considers all genes in the list for each window. This allows you to detect flanking regions which are similar between different alleles of genes (e.g. *bla*KPC-2/3 etc) and between completely different genes. 
@@ -138,3 +140,9 @@ For instance, here we extract 100bp windows from 0-5000 bp to the left of the *b
 ```
 python flanker.py -i example.fasta  -g blaTEM-1B -w 0 -w 5000 -f left -m sm  
 ```
+
+## Issues
+
+Please post any issues/feature requests on the Github page.
+
+
