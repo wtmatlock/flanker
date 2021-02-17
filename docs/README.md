@@ -2,6 +2,12 @@
 
 Flanker is a tool for studying the homology of gene-flanking sequences. It will annotate FASTA/multi-FASTA files for specified genes, then write the flanking sequences to new FASTA files. There is also an optional step to cluster the flanks by sequence identity.
 
+https://github.com/wtmatlock/flanker/
+
+## Citation
+
+If you use Flanker in your work please cite our paper (to follow).
+
 ## Installation
 
 ### Conda
