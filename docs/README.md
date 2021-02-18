@@ -95,10 +95,7 @@ You should now see many fasta files in the working directory containing upstream
 | Required arguments  | Description |
 | --- | --- |
 | ```--fasta_file``` | Input .fasta file |
-| ```--gene```| Space-delimited list of genes to annotate |
-| ```--list_of_genes```| New-line separated list of genes |
-
-*n.b. only one of --gene / --list_of_genes should be provided*
+| ```--gene``` **OR** ```--list_of_genes``` | Space-delimited list of genes in the command line **OR** newline-delimited .txt of genes |
 
 | Optional arguments | Description | Default|
 | --- | --- | --- |
