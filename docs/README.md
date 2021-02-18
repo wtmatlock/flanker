@@ -149,6 +149,4 @@ python flanker.py -i example.fasta  -g blaTEM-1B -w 0 -w 5000 -f left -m sm
 
 ## Issues
 
-Please post any issues/feature requests on the Github page.
-
-
+Please post any issues/feature requests [here](https://github.com/wtmatlock/flanker/issues).
