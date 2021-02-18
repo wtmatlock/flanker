@@ -139,7 +139,7 @@ If you feed flanker a list of genes (```--list_of_genes```) in default mode (```
 
 ## Salami mode
 
-Salami mode (--mode sm```)considers each window (of length ```--wstep```) from ```--window``` to ```--wstop``` as a seperate contiguous sequence; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts.
+Salami mode (```--mode sm```)considers each window (of length ```--wstep```) from ```--window``` to ```--wstop``` as a seperate contiguous sequence; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts.
 
 For instance, here we extract 100bp windows from 0-5000bp downstream of the *bla*TEM-1B gene.
 
