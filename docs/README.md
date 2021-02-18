@@ -82,10 +82,10 @@ python multi_fa_rename.py david_plasmids.fasta input_files david_plasmids_rename
 mv david_plasmids_renamed.fasta david_plasmids.fasta
 ```
 
-Now you are ready to use Flanker. In this example we are going to compare the flanking sequences around *bla*KPC-2. We are going to extract windows from 0bp (```-w```) to 5000bp (```-wstop```) base pairs in 100bp chuncks (```-wstep```) to the upsteam (```-f upstream```) of the gene. We will include the gene (```-inc```) and use the default NCBI database.
+Now you are ready to use Flanker. In this example we are going to compare the flanking sequences around *bla*KPC-2. We are going to extract windows from 0bp (```--window```) to 5000bp (```--wstop```) base pairs in 100bp chuncks (```--wstep```) to the upsteam (```--flank upstream```) of the gene. We will include the gene (```--include_gene```) and use the default NCBI database.
 
 ```
-python flanker.py -f upstream -w 0 -wstop 5000 -wstep 100 -p 8 -v 1 -g blaKPC-2 -i david_plasmids.fasta -inc
+python flanker.py --flank upstream --window 0 --wstop 5000 --wstep 100 --gene blaKPC-2 --fasta_file david_plasmids.fasta --include_gene
 ```
 
 You should now see many fasta files in the working directory containing upstream flanking regions from 0 to 4900 bp.
@@ -135,16 +135,16 @@ You can take this output and create figures similar to those in our manuscript (
 
 ## Multi-allelic mode
 
-If you feed flanker a list of genes (```-lg```) in default mode (```-m default```), flanker considers each of these in turn. However, if you turn on multi-allelic mode (```-m mm```), it considers all genes in the list for each window. This allows you to detect flanking regions which are similar between different alleles of genes (e.g. *bla*KPC-2/3 etc) and between completely different genes. 
+If you feed flanker a list of genes (```--list_of_genes```) in default mode (```--mode default```), flanker considers each of these in turn. However, if you turn on multi-allelic mode (```--mode mm```), it considers all genes in the list for each window. This allows you to detect flanking regions which are similar between different alleles of genes (e.g. *bla*KPC-2/3 etc) and between completely different genes. 
 
 ## Salami mode
 
-Salami mode considers each window (of length ```-wstep```) from ```-w``` to ```-wstop``` as a seperate contiguous sequence; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts.
+Salami mode (--mode sm```)considers each window (of length ```--wstep```) from ```--window``` to ```--wstop``` as a seperate contiguous sequence; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts.
 
-For instance, here we extract 100bp windows from 0-5000 bp to the left of the *bla*TEM-1B gene.
+For instance, here we extract 100bp windows from 0-5000bp downstream of the *bla*TEM-1B gene.
 
 ```
-python flanker.py -i example.fasta  -g blaTEM-1B -w 0 -w 5000 -f left -m sm  
+python flanker.py --fasta_file example.fasta --gene blaTEM-1B --window 0 --wstop 5000 --wstep 100 --flank downstream --mode sm  
 ```
 
 ## Issues
