@@ -1,5 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+![Tests](https://github.com/bede/flanker/actions/workflows/test.yml/badge.svg)
 
 [![flanker](https://github.com/wtmatlock/flanker/blob/main/docs/frontpage.png)](https://flanker.readthedocs.io/en/latest/ "Read the Docs")
 

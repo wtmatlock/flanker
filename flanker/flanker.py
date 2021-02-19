@@ -147,7 +147,7 @@ def filter_abricate(data, isolate):
 def flank_fasta_file_circ(file, window,gene):
     args = get_arguments()
 
-    unfiltered_abricate_file = file.rstrip('') + '_resfinder' # name of abricate output for fasta
+    unfiltered_abricate_file = file + '_resfinder' # name of abricate output for fasta
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
 
     guids=data['SEQUENCE'].unique()
@@ -211,7 +211,7 @@ def flank_fasta_file_circ(file, window,gene):
                         else:
                             x = 'upstream'
 
-                    name=str(record.description)
+                    name=record.description
 
                     log.info(pos[2] + ' found!')
 
@@ -281,7 +281,7 @@ def flank_fasta_file_lin(file, window,gene):
                              x = 'downstream'
                          else:
                              x = 'upstream'
-                     name=str(record.description)
+                     name=record.description
 
                      log.info(f"{gene} found in {record.description}")
 
