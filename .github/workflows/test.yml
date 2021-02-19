@@ -1,0 +1,27 @@
+name: Tests
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+        python-version: [3.6, 3.9]
+    name: Python ${{ matrix.python-version }} (${{ matrix.os }})
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup conda
+        uses: s-weigand/setup-conda@v1
+        with:
+          update-conda: true
+          python-version: ${{ matrix.python-version }}
+          conda-channels: conda-forge, bioconda
+      - name: Install
+        run: |
+          conda install abricate=1.0.1 mash pytest
+          pip install .
+      - name: Test
+        run: |
+          pytest -s
+

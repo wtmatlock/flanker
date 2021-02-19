@@ -10,6 +10,7 @@ setup(
     url='https://github.com/wtmatlock/flanker',
     license='LICENSE',
     python_requires='>=3.6',
+    packages=['flanker'],
     install_requires=['pandas', 'biopython', 'networkx'],
     entry_points={'console_scripts':['flanker=flanker.flanker:main']},
     classifiers=[

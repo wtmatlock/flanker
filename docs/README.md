@@ -21,7 +21,7 @@ If you use Flanker in your work please cite our paper (to follow).
 ### Conda + pip
 
 ```
-conda create -n flanker -c bioconda python=3 abricate mash
+conda create -n flanker -c bioconda python=3 abricate=1.0.1 mash
 conda activate flanker
 pip install git+https://github.com/wtmatlock/flanker
 ```
@@ -141,7 +141,7 @@ To install and test a development build:
 ```
 git clone https://github.com/wtmatlock/flanker
 cd flanker
-conda create -n flanker -c bioconda python=3 abricate mash pytest
+conda create -n flanker -c bioconda python=3 abricate=1.0.1 mash pytest
 conda activate flanker
 pip install --editable ./
 pytest
