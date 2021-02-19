@@ -19,5 +19,5 @@ def run(cmd, cwd=cwd):  # Helper for CLI testing
                           stderr=subprocess.PIPE)
 
 def test_cli_blactxm():
-	run('flanker -i RHB02-C01_4.fasta -g CTX-M', cwd=data_dir)
-	run('rm RHB02-C01_4_blaCTX-M-55_1_1000_both_flank.fasta RHB02-C01_4.fasta_resfinder', cwd=data_dir)  # Tidy up
+	run('flanker -i RHB02-C01_4.fasta -g blaCTX-M-55', cwd=data_dir)
+	run('rm RHB02-C01_4_blaCTX-M-55_1000_both_flank.fasta RHB02-C01_4.fasta_resfinder', cwd=data_dir)  # Tidy up

@@ -1,6 +1,6 @@
 import flanker
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 setup(
@@ -9,7 +9,8 @@ setup(
     description = ' Gene-flank analysis tool ',
     url = 'https://github.com/wtmatlock/flanker',
     license = '',
-    packages=['flanker'],
+    package_dir={'':'flanker'},
+    py_modules=['cluster','salami'],
     python_requires='>=3.6',
     install_requires=['pandas', 'biopython', 'pytest'],
     entry_points = {'console_scripts':['flanker=flanker.flanker:main']},
