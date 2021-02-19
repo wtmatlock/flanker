@@ -1,0 +1,8 @@
+.DS_Store
+*.py[cod]
+__pycache__/
+.cache/
+dist/
+build/
+flanker.egg-info/
+.pytest_cache/
