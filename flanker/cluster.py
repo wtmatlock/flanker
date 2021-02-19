@@ -1,11 +1,10 @@
-#from flanker import get_arguments
-#from flanker import run_abricate
-import tempfile
 import os
+import glob
+import tempfile
 import subprocess
 import collections
+
 import pandas as pd
-import glob
 import networkx as nx
 
 """

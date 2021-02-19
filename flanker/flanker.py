@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-"""
-Flanker v1.0
-"""
 import sys
-import argparse
-import pandas as pd
-import numpy as np
-import subprocess
-from Bio import SeqIO
-from pathlib import Path
-from cluster import *
-from salami import *
 import time
+import argparse
+import subprocess
 import logging as log
+from pathlib import Path
+
+import pandas as pd
+from Bio import SeqIO
+
+from flanker.salami import *
+from flanker.cluster import *
+
 
 start = time.time()
 
@@ -149,7 +147,7 @@ def filter_abricate(data, isolate):
 def flank_fasta_file_circ(file, window,gene):
     args = get_arguments()
 
-    unfiltered_abricate_file = str(file + '_resfinder') # name of abricate output for fasta
+    unfiltered_abricate_file = file.rstrip('') + '_resfinder' # name of abricate output for fasta
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
 
     guids=data['SEQUENCE'].unique()
@@ -246,7 +244,7 @@ def flank_fasta_file_circ(file, window,gene):
 # generates flanks for linear sequences
 def flank_fasta_file_lin(file, window,gene):
     args = get_arguments()
-    unfiltered_abricate_file = str(file + '_resfinder') # name of abricate output for fasta
+    unfiltered_abricate_file = file + '_resfinder' # name of abricate output for fasta
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
 
     guids=data['SEQUENCE'].unique()

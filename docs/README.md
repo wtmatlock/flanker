@@ -4,65 +4,39 @@ Flanker is a tool for studying the homology of gene-flanking sequences. It will 
 
 https://github.com/wtmatlock/flanker/
 
+
+
 ## Citation
 
 If you use Flanker in your work please cite our paper (to follow).
 
+
+
 ## Installation
 
-### Conda
+### Bioconda
 
-This is the recommended method and by far the easiest. It will be available soon.
+*Coming soon*
+
+### Conda + pip
+
+```
+conda create -n flanker -c bioconda python=3 abricate mash
+conda activate flanker
+pip install git+https://github.com/wtmatlock/flanker
+```
 
 ### pip
 
 ```
-pip install git+https://github.com/wtmatlock/flanker
+pip install git+https://github.com/wtmatlock/flanker  # Install Mash and Abricate seperately
 ```
 
-### Run tests
+External dependencies
+- [Abricate](https://github.com/tseemann/abricate)
+- [Mash](https://github.com/marbl/Mash)
 
-```
-pytest
-```
 
-### From GitHub
-
-Ensure you have all dependencies installed:
-
-**Python dependencies:**
-
-* [argparse](https://docs.python.org/3/library/argparse.html)
-* [biopython](https://biopython.org)
-* [collections](https://docs.python.org/3/library/collections.html)
-* [glob](https://docs.python.org/3/library/glob.html)
-* [logging](https://docs.python.org/3/library/logging.html)
-* [networkx](https://networkx.org/documentation/stable/)
-* [numpy](https://numpy.org)
-* [os](https://docs.python.org/3/library/os.html)
-* [pandas](https://pandas.pydata.org)
-* [pathlib](https://docs.python.org/3/library/pathlib.html)
-* [subprocess](https://docs.python.org/3/library/subprocess.html)
-* [sys](https://docs.python.org/3/library/sys.html)
-* [tempfile](https://docs.python.org/3/library/tempfile.html)
-* [time](https://docs.python.org/3/library/time.html)
-
-**External software:**
-
-* [Abricate](https://github.com/tseemann/abricate)
-* [Mash](https://github.com/marbl/Mash)
-
-Then simply clone the repository:
-
-```
-  git clone https://github.com/wtmatlock/flanker
-```
-
-and check everything is working:
-
-```
-  python flanker.py --help
-```
 
 ## Quickstart
 
@@ -89,6 +63,8 @@ python flanker.py --flank upstream --window 0 --wstop 5000 --wstep 100 --gene bl
 ```
 
 You should now see many fasta files in the working directory containing upstream flanking regions from 0 to 4900 bp.
+
+
 
 ## Usage
 
@@ -120,6 +96,8 @@ You should now see many fasta files in the working directory containing upstream
 
 **N.B.** Gene queries use exact matching, so e.g. querying only ```bla``` will return nothing. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. ```blaCTX-M-15``` becomes ```blaCTX-M-15_1```. Please check your Abricate output if you are unsure of the naming conventions.
 
+
+
 ## Clustering
 
 Having extracted flanking sequences around a gene, you might then want to cluster them into groups which share high sequence identity. Flanker does this using [single-linkage clustering](https://en.wikipedia.org/wiki/Single-linkage_clustering) of Mash distances. The method is very similar to that used by Ryan Wick in his [Assembly-Dereplicator](https://github.com/rrwick/Assembly-Dereplicator) package (and indeed we re-use several of his functions).
@@ -133,9 +111,13 @@ sed -i '1 i\flank,cluster' all_out
 
 You can take this output and create figures similar to those in our manuscript (see the Binder on the Flanker GitHub page) or use in custom downstream applications.
 
+
+
 ## Multi-allelic mode
 
 If you feed flanker a list of genes (```--list_of_genes```) in default mode (```--mode default```), flanker considers each of these in turn. However, if you turn on multi-allelic mode (```--mode mm```), it considers all genes in the list for each window. This allows you to detect flanking regions which are similar between different alleles of genes (e.g. *bla*KPC-2/3 etc) and between completely different genes. 
+
+
 
 ## Salami mode
 
@@ -147,6 +129,20 @@ For instance, here we extract 100bp windows from 0-5000bp downstream of the *bla
 python flanker.py --fasta_file example.fasta --gene blaTEM-1B --window 0 --wstop 5000 --wstep 100 --flank downstream --mode sm  
 ```
 
-## Issues
 
-Please post any issues/feature requests [here](https://github.com/wtmatlock/flanker/issues).
+
+
+## Contributing
+
+If you would like to contribute to this project, please [open an issue]((https://github.com/wtmatlock/flanker/issues)) or contact the authors directly.
+
+To install and test a development build:
+
+```
+git clone https://github.com/wtmatlock/flanker
+cd flanker
+conda create -n flanker -c bioconda python=3 abricate mash pytest
+conda activate flanker
+pip install --editable ./
+pytest
+```

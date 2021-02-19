@@ -1,5 +1,5 @@
-from flanker import *
-from cluster import *
+from flanker.flanker import *
+from flanker.cluster import *
 
 
 
