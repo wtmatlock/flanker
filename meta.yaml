@@ -1,5 +1,5 @@
 {% set version = "0.1.0" %}
-# {% set sha256 = "1bb7b8eafb508e16667fc246be68479110322c4cd2d0191f48bbefe25cd95cc7" %}
+{% set sha256 = "910c5515350049ecbc526e9dacaf0975ad1829bcfff912e060fbf9171707fee9" %}
 
 package:
   name: flanker
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/wtmatlock/flanker/archive/{{ version }}.tar.gz
-  # sha256: {{ sha256 }}
+  sha256: {{ sha256 }}
 
 build:
   number: 0
