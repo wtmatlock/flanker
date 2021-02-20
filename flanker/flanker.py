@@ -88,6 +88,17 @@ def get_arguments():
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
 
+#check that the input is actually exists and is a fasta file
+def check_input(fasta_file):
+    try:
+        with open(fasta_file) as f:
+            input_fasta = SeqIO.parse(f, "fasta")
+            return any(input_fasta)
+    except IOError:
+        return(False)
+
+
+
 
 # annotate for gene(s) of interest
 def run_abricate(file):
@@ -289,6 +300,8 @@ def flank_fasta_file_lin(file, window,gene):
                      l = len(record.seq)
 
                      record.seq = d_lin[(args.include_gene, x)](record, pos, w, l)
+                     writer(record, pos[2], w, guid, args.flank, gene_sense)
+
 
                      continue
 
@@ -352,6 +365,9 @@ def flanker_main():
 def main():
     args=get_arguments()
 
+
+
+
     logger = log.getLogger()
 
     log.basicConfig(format="%(message)s")
@@ -364,6 +380,15 @@ def main():
         logger.setLevel(log.DEBUG)
 
     log.info(args)
+
+    test_input=check_input(args.fasta_file)
+
+    if(test_input) == False:
+        print(f"{args.fasta_file} is not a valid fasta file")
+        exit()
+    else:
+        log.info(f"{args.fasta_file} is a valid fasta file")
+
     if args.mode =="default" or args.mode == "mm":
         flanker_main()
     elif args.mode =="sm":
