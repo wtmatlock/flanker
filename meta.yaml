@@ -37,9 +37,9 @@ test:
     - flanker --help
 
 about:
-  home: 
+  home: https://github.com/wtmatlock/flanker
   summary: 'Gene-flank analysis tool'
-  license_family: MIT
+  license: MIT
 
 extra:
   recipe-maintainers:
