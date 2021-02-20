@@ -11,7 +11,7 @@ You can recreate the analysis performed in our manuscript and the figures in the
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/samlipworth/Flanker-Reproducible-Example/main?urlpath=rstudio)
 
  # Tests
- ![Tests](https://github.com/bede/flanker/actions/workflows/test.yml/badge.svg)
+ ![Tests](https://github.com/wtmatlock/flanker/actions/workflows/test.yml/badge.svg)
  
  # License
  Flanker is licensed under the MIT License.
