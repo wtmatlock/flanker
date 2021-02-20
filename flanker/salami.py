@@ -1,18 +1,18 @@
-from flanker.flanker import *
-from flanker.cluster import *
+import pandas as pd
 
+from flanker import flanker, cluster
 
 
 def flank_salami_linear(file, include_gene,step, stop,gene,flank):
-    args = get_arguments()
+    args = flanker.get_arguments()
     unfiltered_abricate_file = str(file + '_resfinder') # name of abricate output for fasta
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
 
     guids=data['SEQUENCE'].unique()
 
     for guid in guids:
-        abricate_file=filter_abricate(data,guid)
-        pos = flank_positions(abricate_file, gene)
+        abricate_file=flanker.filter_abricate(data,guid)
+        pos = flanker.flank_positions(abricate_file, gene)
         if pos == True:
             log.error(f"Error: Gene {gene} not found in {guid}")
 
@@ -116,7 +116,7 @@ def salami_main(genes,fasta,include_gene,wstep,wstop,out,flank,threads,threshold
     with open(genes) as gene_list:
         for gene in gene_list:
             print(gene)
-            run_abricate(fasta)
+            flanker.run_abricate(fasta)
 
             print("Working on gene {}".format(gene))
             flank_salami_linear(fasta,include_gene,wstep,wstop,gene.strip(),flank)

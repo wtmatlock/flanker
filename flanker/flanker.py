@@ -10,8 +10,7 @@ from pathlib import Path
 import pandas as pd
 from Bio import SeqIO
 
-from flanker.salami import *
-from flanker.cluster import *
+from flanker import cluster, salami
 
 
 start = time.time()
@@ -294,6 +293,7 @@ def flank_fasta_file_lin(file, window,gene):
 def flanker_main():
     args = get_arguments()
 
+
     run_abricate(args.fasta_file)
 
     if args.list_of_genes == False:
@@ -319,14 +319,14 @@ def flanker_main():
 
                 if args.cluster ==True and args.mode =='default':
 
-                    define_clusters(gene,i,args.threads,args.threshold,args.outfile)
-                    flank_scrub()
+                    cluster.define_clusters(gene,i,args.threads,args.threshold,args.outfile)
+                    cluster.flank_scrub()
 
             if args.cluster==True and args.mode=='mm':
 
-                define_clusters(gene,i,args.threads,args.threshold,args.outfile)
+                cluster.define_clusters(gene,i,args.threads,args.threshold,args.outfile)
                 log.info("Cleaning up")
-                flank_scrub()
+                cluster.flank_scrub()
 
     else:
         for gene in gene_list:
@@ -337,15 +337,15 @@ def flanker_main():
                 flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
             if args.cluster ==True and args.mode =='default':
                 log.info("Performing clustering")
-                define_clusters(gene,args.window,args.threads,args.threshold,args.outfile)
+                cluster.define_clusters(gene,args.window,args.threads,args.threshold,args.outfile)
                 log.info("Cleaning up")
-                flank_scrub()
+                cluster.flank_scrub()
 
         if args.cluster==True and args.mode=='mm':
             log.info("Performing clustering")
-            define_clusters(gene,"mm",args.threads,args.threshold,args.outfile)
+            cluster.define_clusters(gene,"mm",args.threads,args.threshold,args.outfile)
             log.info("Cleaning up")
-            flank_scrub()
+            cluster.flank_scrub()
 
 def main():
     args=get_arguments()
@@ -366,7 +366,7 @@ def main():
         flanker_main()
     elif args.mode =="sm":
         print(args.cluster)
-        salami_main(args.list_of_genes,args.fasta_file,args.include_gene,args.window_step,args.window_stop,args.outfile,args.flank,args.threads,args.threshold,args.cluster)
+        salami.salami_main(args.list_of_genes,args.fasta_file,args.include_gene,args.window_step,args.window_stop,args.outfile,args.flank,args.threads,args.threshold,args.cluster)
 
     end = time.time()
     log.info(f"All done in {round(end - start, 2)} seconds")
