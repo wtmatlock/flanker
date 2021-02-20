@@ -111,7 +111,7 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
 
 
 
-def salami_main(gene_list,fasta,include_gene,wstep,wstop,out,flank,threads,threshold,cluster):
+def salami_main(gene_list,fasta,include_gene,wstep,wstop,out,flank,threads,threshold,cluster,kmer_length,sketch_size):
 
     for gene in gene_list:
 
@@ -119,8 +119,8 @@ def salami_main(gene_list,fasta,include_gene,wstep,wstop,out,flank,threads,thres
 
         print("Working on gene {}".format(gene))
         flank_salami_linear(fasta,include_gene,wstep,wstop,gene.strip(),flank)
-        
+
     if cluster ==True:
-        define_clusters("salami","mode",threads,threshold,out)
+        define_clusters("salami","mode",threads,threshold,out,kmer_length,sketch_size)
 
         flank_scrub()

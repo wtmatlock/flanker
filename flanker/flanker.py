@@ -78,10 +78,12 @@ def get_arguments():
 
     # clustering options
     cluster=parser.add_argument_group('clustering options')
-    cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true')
-    cluster.add_argument('-o', '--outfile',action='store',help='Prefix for the clustering file',default='out')
+    cluster.add_argument('-cl','--cluster',help='Turn on clustering mode?',action='store_true'),
+    cluster.add_argument('-o', '--outfile',action='store',help='Prefix for the clustering file',default='out'),
     cluster.add_argument('-tr', '--threshold',action='store',help='mash distance threshold for clustering',default="0.001"),
-    cluster.add_argument('-p', '--threads',action='store',help='threads for mash to use',default='1')
+    cluster.add_argument('-p', '--threads',action='store',help='threads for mash to use',default='1'),
+    cluster.add_argument('-k', '--kmer_length',action='store', help='kmer length for Mash',default='21'),
+    cluster.add_argument('-s', '--sketch_size',action='store', help='sketch size for mash',default='1000')
 
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
@@ -319,12 +321,12 @@ def flanker_main():
 
                 if args.cluster ==True and args.mode =='default':
 
-                    cluster.define_clusters(gene,i,args.threads,args.threshold,args.outfile)
+                    cluster.define_clusters(gene,i,args.threads,args.threshold,args.outfile,args.kmer_length,args.sketch_size)
                     cluster.flank_scrub()
 
             if args.cluster==True and args.mode=='mm':
 
-                cluster.define_clusters(gene,i,args.threads,args.threshold,args.outfile)
+                cluster.define_clusters(gene,i,args.threads,args.threshold,args.outfile,args.kmer_length,args.sketch_size)
                 log.info("Cleaning up")
                 cluster.flank_scrub()
 
@@ -337,13 +339,13 @@ def flanker_main():
                 flank_fasta_file_lin(args.fasta_file, args.window,gene.strip())
             if args.cluster ==True and args.mode =='default':
                 log.info("Performing clustering")
-                cluster.define_clusters(gene,args.window,args.threads,args.threshold,args.outfile)
+                cluster.define_clusters(gene,args.window,args.threads,args.threshold,args.outfile,args.kmer_length,args.sketch_size)
                 log.info("Cleaning up")
                 cluster.flank_scrub()
 
         if args.cluster==True and args.mode=='mm':
             log.info("Performing clustering")
-            cluster.define_clusters(gene,"mm",args.threads,args.threshold,args.outfile)
+            cluster.define_clusters(gene,"mm",args.threads,args.threshold,args.outfile,args.kmer_length,args.sketch_size)
             log.info("Cleaning up")
             cluster.flank_scrub()
 
@@ -365,11 +367,11 @@ def main():
     if args.mode =="default" or args.mode == "mm":
         flanker_main()
     elif args.mode =="sm":
-        
+
         if args.list_of_genes != False:
-            salami.salami_main(args.list_of_genes,args.fasta_file,args.include_gene,args.window_step,args.window_stop,args.outfile,args.flank,args.threads,args.threshold,args.cluster)
+            salami.salami_main(args.list_of_genes,args.fasta_file,args.include_gene,args.window_step,args.window_stop,args.outfile,args.flank,args.threads,args.threshold,args.cluster,args.kmer_length,args.sketch_size)
         if args.list_of_genes == False:
-            salami.salami_main(args.gene,args.fasta_file,args.include_gene,args.window_step,args.window_stop,args.outfile,args.flank,args.threads,args.threshold,args.cluster)
+            salami.salami_main(args.gene,args.fasta_file,args.include_gene,args.window_step,args.window_stop,args.outfile,args.flank,args.threads,args.threshold,args.cluster,args.kmer_length,args.sketch_size)
     end = time.time()
     log.info(f"All done in {round(end - start, 2)} seconds")
 

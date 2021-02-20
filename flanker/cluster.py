@@ -31,11 +31,11 @@ def find_all_assemblies():
     return all_assemblies
 
 
-def build_mash_sketch(assemblies, threads, temp_dir, sketch_size):
+def build_mash_sketch(assemblies, threads, temp_dir, sketch_size,kmer_length):
     mash_command = ['mash', 'sketch', '-p', str(threads), '-o', temp_dir + '/mash',
-                        '-s', str(sketch_size)] + assemblies
+                        '-s', str(sketch_size), '-k', str(kmer_length)] + assemblies
 
-    
+
     subprocess.run(mash_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     return temp_dir + '/mash.msh'
 
@@ -86,12 +86,12 @@ def flank_scrub():
 
 
 #here we build clusters using mash distances
-def define_clusters(gene,window,threads,threshold,outfile):
+def define_clusters(gene,window,threads,threshold,outfile,kmer_length,sketch_size):
 
 
     with tempfile.TemporaryDirectory() as temp_dir:
         all_assemblies=find_all_assemblies()
-        mash_sketch = build_mash_sketch(all_assemblies, threads, temp_dir, 1000)
+        mash_sketch = build_mash_sketch(all_assemblies, threads, temp_dir, sketch_size,kmer_length)
 
         pairwise_distances= pairwise_mash_distances(mash_sketch,threads)
 
