@@ -1,12 +1,13 @@
 {% set version = "0.1.0" %}
+# {% set sha256 = "1bb7b8eafb508e16667fc246be68479110322c4cd2d0191f48bbefe25cd95cc7" %}
 
 package:
-  name: Flanker
+  name: flanker
   version: {{ version }}
 
 source:
-  url: https://github.com/wtmatlock/flanker/archive/v{{ version }}.tar.gz
-  sha256: 
+  url: https://github.com/wtmatlock/flanker/archive/{{ version }}.tar.gz
+  # sha256: {{ sha256 }}
 
 build:
   number: 0
@@ -17,11 +18,16 @@ build:
 
 requirements:
   host:
-    - python
+    - python>=3.6
     - pip
 
   run:
-    - python
+    - python>=3.6
+    - pandas>=1.2
+    - biopython>=1.78
+    - abricate>=1.0.1
+    - mash>=2.2.2
+    - networkx>=2.5
 
 test:
   imports:
@@ -32,10 +38,11 @@ test:
 
 about:
   home: 
-  license: MIT License
   summary: 'Gene-flank analysis tool'
   license_family: MIT
 
 extra:
-  identifiers:
-    - doi:?
+  recipe-maintainers:
+    - bede
+    - wtmatlock
+    - samlipworth
