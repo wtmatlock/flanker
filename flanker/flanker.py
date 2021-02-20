@@ -260,7 +260,7 @@ def flank_fasta_file_lin(file, window,gene):
              gene_sense=str(gene_sense['STRAND'].iloc[0])
 
              # initialise dictionary of sequence splicing functions
-             
+
              d_lin = {(True, 'both'): lambda record, pos, w, l: record.seq[max(0,pos[0]-w):min(l, pos[1]+w)],
              (True, 'upstream'): lambda record, pos, w, l : record.seq[max(0,pos[0]-w):min(l,pos[1])],
              (True, 'downstream'): lambda record, pos, w, l : record.seq[pos[0]:min(l, pos[1]+w)],
@@ -287,7 +287,7 @@ def flank_fasta_file_lin(file, window,gene):
                      l = len(record.seq)
 
                      record.seq = d_lin[(args.include_gene, x)](record, pos, w, l)
-                     writer(record, pos[2], w, guid, args.flank,gene_sense)
+
                      continue
 
 def flanker_main():
@@ -365,9 +365,11 @@ def main():
     if args.mode =="default" or args.mode == "mm":
         flanker_main()
     elif args.mode =="sm":
-        print(args.cluster)
-        salami.salami_main(args.list_of_genes,args.fasta_file,args.include_gene,args.window_step,args.window_stop,args.outfile,args.flank,args.threads,args.threshold,args.cluster)
-
+        
+        if args.list_of_genes != False:
+            salami.salami_main(args.list_of_genes,args.fasta_file,args.include_gene,args.window_step,args.window_stop,args.outfile,args.flank,args.threads,args.threshold,args.cluster)
+        if args.list_of_genes == False:
+            salami.salami_main(args.gene,args.fasta_file,args.include_gene,args.window_step,args.window_stop,args.outfile,args.flank,args.threads,args.threshold,args.cluster)
     end = time.time()
     log.info(f"All done in {round(end - start, 2)} seconds")
 

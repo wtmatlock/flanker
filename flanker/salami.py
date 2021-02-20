@@ -1,6 +1,7 @@
 import pandas as pd
 
 from flanker import flanker, cluster
+from Bio import SeqIO
 
 
 def flank_salami_linear(file, include_gene,step, stop,gene,flank):
@@ -13,13 +14,14 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
     for guid in guids:
         abricate_file=flanker.filter_abricate(data,guid)
         pos = flanker.flank_positions(abricate_file, gene)
+        print(pos)
         if pos == True:
-            log.error(f"Error: Gene {gene} not found in {guid}")
+            print(f"Error: Gene {gene} not found in {guid}")
 
 
         else:
              gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
-
+             print(gene_sense)
 
 
              gene_sense=str(gene_sense['STRAND'].iloc[0])
@@ -62,7 +64,7 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
                              x = 'upstream'
                      name=str(record.description)
 
-                     log.info(f"{gene} found in {record.description}")
+
 
                      l = len(record.seq)
 
@@ -78,7 +80,7 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
                              name=str(record.description)
                              print(pos[2] + ' found')
 
-                             s = int(start)
+                             #s = int(start)
                              l = len(record.seq)
 
                              if flank == 'upstream':
@@ -88,10 +90,9 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
 
                                  record.description = f"{record.description} | {pos[2]} | {step}bp window"
 
-                                 with open(f"{name}_{pos[2]}_{i}_salami_left_flank.fasta", "w") as f:
-                                     SeqIO.write(record, f, "fasta")
-                                     print(f"{f.name} sucessfully created!")
-                                     f.close()
+                                 flanker.writer(record, pos[2], i, guid, args.flank,gene_sense)
+
+
                                  start_left=start_left-step
 
 
@@ -102,26 +103,24 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
 
                                 record.description = f"{record.description} | {pos[2]} | {step}bp window"
 
-                                with open(f"{name}_{pos[2]}_{i}_salami_right_flank.fasta", "w") as f:
-                                    SeqIO.write(record, f, "fasta")
-                                    print(f"{f.name} sucessfully created!")
-                                    f.close()
+                                flanker.writer(record, pos[2], i, guid, args.flank,gene_sense)
+
                                 start_right=start_right+step
 
 
 
 
 
-def salami_main(genes,fasta,include_gene,wstep,wstop,out,flank,threads,threshold,cluster):
-    with open(genes) as gene_list:
-        for gene in gene_list:
-            print(gene)
-            flanker.run_abricate(fasta)
+def salami_main(gene_list,fasta,include_gene,wstep,wstop,out,flank,threads,threshold,cluster):
 
-            print("Working on gene {}".format(gene))
-            flank_salami_linear(fasta,include_gene,wstep,wstop,gene.strip(),flank)
-            print(cluster)
-        if cluster ==True:
-            define_clusters("salami","mode",threads,threshold,out)
-            log.info("Cleaning up")
-            flank_scrub()
+    for gene in gene_list:
+
+        flanker.run_abricate(fasta)
+
+        print("Working on gene {}".format(gene))
+        flank_salami_linear(fasta,include_gene,wstep,wstop,gene.strip(),flank)
+        
+    if cluster ==True:
+        define_clusters("salami","mode",threads,threshold,out)
+
+        flank_scrub()
