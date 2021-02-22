@@ -37,3 +37,13 @@ def test_cluster():
 def test_salami():
 	run('flanker -i test.fasta -g blaKPC-2 -wstop 200 -wstep 100 -m sm', cwd=data_dir)
 	run('rm -f *flank.fasta *_resfinder', cwd=data_dir)
+
+def test_nonexistent():
+	with pytest.raises(subprocess.CalledProcessError):  # FileNotFoundError underneath
+		run('flanker -i nonexistent.fasta -g blaKPC-2 -wstop 200 -wstep 100 -m sm', cwd=data_dir)
+		run('rm -f *flank.fasta *_resfinder', cwd=data_dir)
+
+def test_empty():
+	with pytest.raises(subprocess.CalledProcessError):  # AssertionError underneath
+		run('flanker -i empty.fasta -g blaKPC-2 -wstop 200 -wstep 100 -m sm', cwd=data_dir)
+		run('rm -f *flank.fasta *_resfinder', cwd=data_dir)

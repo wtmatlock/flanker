@@ -88,17 +88,10 @@ def get_arguments():
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     return args
 
-#check that the input is actually exists and is a fasta file
+# validate input
 def check_input(fasta_file):
-    try:
-        with open(fasta_file) as f:
-            input_fasta = SeqIO.parse(f, "fasta")
-            return any(input_fasta)
-    except IOError:
-        return(False)
-
-
-
+    fasta_records = list(SeqIO.parse(fasta_file, 'fasta'))
+    assert len(fasta_records) >= 1, 'No records found in fasta file'
 
 # annotate for gene(s) of interest
 def run_abricate(file):
@@ -381,13 +374,10 @@ def main():
 
     log.info(args)
 
-    test_input=check_input(args.fasta_file)
 
-    if(test_input) == False:
-        print(f"{args.fasta_file} is not a valid fasta file")
-        exit()
-    else:
-        log.info(f"{args.fasta_file} is a valid fasta file")
+    if check_input(args.fasta_file):
+        log.info(f"{args.fasta_file} is valid and not empty")
+
 
     if args.mode =="default" or args.mode == "mm":
         flanker_main()
