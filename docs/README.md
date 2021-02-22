@@ -51,7 +51,7 @@ There are 44 plasmid genomes of which 16 and 28 contain *bla*KPC-2 and *bla*KPC-
 cat *fsa > david_plasmids.fasta
 ```
 
-You should then rename the FASTA headers so that they match the original files. We have provided a simple script to do this:
+You should then rename the FASTA headers so that they match the original files. We have provided a simple script to do this (in /scripts/ directory on github):
 
 ```
 ls *fsa | sed 's/[.]fsa//' > input_files
@@ -76,6 +76,7 @@ You should now see many fasta files in the working directory containing upstream
 | ```--fasta_file``` | Input .fasta file |
 | ```--gene``` **OR** ```--list_of_genes``` | Space-delimited list of genes in the command line **OR** newline-delimited .txt of genes |
 
+
 | Optional arguments | Description | Default|
 | --- | --- | --- |
 | ```--help``` | Displays help information then closes Flanker | ```False``` |
@@ -96,6 +97,9 @@ You should now see many fasta files in the working directory containing upstream
 | ```--cluster``` | Use clustering mode? | ```False``` |
 | ```--outfile``` | Prefix for clustering output file | - |
 | ```--threshold``` | Mash distance threshold for clustering | ```0.001``` |
+| ```--kmer_length```| Kmer length for mash|```21```|
+| ```--sketch_size```| Sketch size for mash|```1000```|
+| ```--threads```| Threads to use for mash|```1```|
 
 **N.B.** Gene queries use exact matching, so e.g. querying only ```bla``` will return nothing. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. ```blaCTX-M-15``` becomes ```blaCTX-M-15_1```. Please check your Abricate output if you are unsure of the naming conventions.
 
@@ -104,6 +108,8 @@ You should now see many fasta files in the working directory containing upstream
 ## Clustering
 
 Having extracted flanking sequences around a gene, you might then want to cluster them into groups which share high sequence identity. Flanker does this using [single-linkage clustering](https://en.wikipedia.org/wiki/Single-linkage_clustering) of Mash distances. The method is very similar to that used by Ryan Wick in his [Assembly-Dereplicator](https://github.com/rrwick/Assembly-Dereplicator) package (and indeed we re-use several of his functions).
+
+The ```-cl``` flag turns on clustering mode. The most important parameter is ```-tr``` - after running Mash, Flanker filters the ```Mash dist``` output so that only pairs with a mash dist smaller than this threshold are used to build the graph. You can also optionally tune the kmer-length ```-k``` and sketch size ```-s``` which mash uses, see [Mash-Docs](https://mash.readthedocs.io/en/latest/).
 
 A seperate clustering file is produced for each window examined. The output is a comma separated file with two columns: sequence and cluster group. These can easily be combined for further processing:
 
@@ -118,18 +124,18 @@ You can take this output and create figures similar to those in our manuscript (
 
 ## Multi-allelic mode
 
-If you feed flanker a list of genes (```--list_of_genes```) in default mode (```--mode default```), flanker considers each of these in turn. However, if you turn on multi-allelic mode (```--mode mm```), it considers all genes in the list for each window. This allows you to detect flanking regions which are similar between different alleles of genes (e.g. *bla*KPC-2/3 etc) and between completely different genes. 
+If you feed flanker a list of genes (```--list_of_genes```) in default mode (```--mode default```), flanker considers each of these in turn. However, if you turn on multi-allelic mode (```--mode mm```), it considers all genes in the list for each window. This allows you to detect flanking regions which are similar between different alleles of genes (e.g. *bla*KPC-2/3 etc) and between completely different genes.
 
 
 
 ## Salami mode
 
-Salami mode (```--mode sm```)considers each window (of length ```--wstep```) from ```--window``` to ```--wstop``` as a seperate contiguous sequence; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts.
+Salami mode (```--mode sm```)considers each window (of length ```--wstep```) from 0 to ```--wstop``` as a seperate contiguous sequence; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts. N.b at present Salami mode always starts at the edge of the gene and does not include the gene, therefore setting ```--w``` and ```-inc``` currently do nothing in this mode. As with the default mode, you can optionally perform clustering on the output from Salami Mode by using the ```-cl``` flag.
 
 For instance, here we extract 100bp windows from 0-5000bp downstream of the *bla*TEM-1B gene.
 
 ```
-flanker --fasta_file example.fasta --gene blaTEM-1B --window 0 --wstop 5000 --wstep 100 --flank downstream --mode sm  
+flanker --fasta_file example.fasta --gene blaTEM-1B --wstop 5000 --wstep 100 --flank downstream --mode sm  
 ```
 
 
