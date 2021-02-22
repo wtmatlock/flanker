@@ -51,7 +51,7 @@ There are 44 plasmid genomes of which 16 and 28 contain *bla*KPC-2 and *bla*KPC-
 cat *fsa > david_plasmids.fasta
 ```
 
-You should then rename the FASTA headers so that they match the original files. We have provided a simple script to do this (in /scripts/ directory on github):
+You should then rename the FASTA headers so that they match the original files (if this is not already the case). We have provided a simple script to do this (in /scripts/ directory on github):
 
 ```
 ls *fsa | sed 's/[.]fsa//' > input_files
