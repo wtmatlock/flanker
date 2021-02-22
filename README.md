@@ -14,6 +14,6 @@ You can recreate the analysis performed in our manuscript and the figures in the
  ![Tests](https://github.com/wtmatlock/flanker/actions/workflows/test.yml/badge.svg)
  
  # License
- Flanker is licensed under the MIT License.
+ Flanker is available under the MIT License.
  
  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
