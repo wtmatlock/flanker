@@ -121,7 +121,7 @@ def flank_positions(data, gene_):
     else:
         data["dist"] = [jf.levenshtein_distance(gene_, x) for x in data["GENE"]]
         gene = data.sort_values(by="dist", ascending=True)
-
+        
     g = gene['GENE'].iloc[0]
 
     # LHS flank
@@ -179,7 +179,7 @@ def flank_fasta_file_circ(file, window,gene):
             pos=list(pos)
             gene_sense=abricate_file.loc[abricate_file['GENE']==pos[2]].filter(items=['STRAND'])
 
-            log.info(f"Gene {gene} found in {guid}")
+            log.info(f"Gene {pos[2]} found in {guid}")
 
             gene_sense=str(gene_sense['STRAND'].iloc[0])
 
@@ -297,7 +297,7 @@ def flank_fasta_file_lin(file, window, gene):
                              x = 'upstream'
                      name=record.description
 
-                     log.info(f"{gene} found in {record.description}")
+                     log.info(f"{pos[2]} found in {record.description}")
 
                      l = len(record.seq)
 
