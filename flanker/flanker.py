@@ -10,6 +10,8 @@ from pathlib import Path
 import pandas as pd
 from Bio import SeqIO
 
+import jellyfish as jf
+
 from flanker import cluster, salami
 
 
@@ -36,6 +38,9 @@ def get_arguments():
     genes.add_argument('-log','--list_of_genes',action='store',default=False,
                         help = 'Line separated file containing genes of interest')
 
+    # closest match mode
+    parser.add_argument('-cm', '--closest_match', action = 'store_true',
+                        help = 'Find closest match to query')
 
     # flanks desired
     parser.add_argument('-f','--flank', action='store',
@@ -106,14 +111,22 @@ def run_abricate(file):
 
 # returns the start and end positions of the annotation
 def flank_positions(data, gene_):
+    args = get_arguments()
+    
+    if args.closest_match == False:
+        gene = data[data["GENE"].str.match(gene_)]
+        # check if gene is found
+        if len(gene) == 0:
+            return True
+    else:
+        data["dist"] = [jf.levenshtein_distance(gene_, x) for x in data["GENE"]]
+        gene = data.sort_values(by="dist", ascending=True)
 
-    gene = data[data["GENE"].str.match(gene_)]
-
-    # check if gene is found
-    if len(gene) == 0:
-        return True
+    print(gene)
 
     g = gene['GENE'].iloc[0]
+
+    print(type(g))
 
     # LHS flank
     start = int(gene['START'].iloc[0]) # start of gene
@@ -247,7 +260,7 @@ def flank_fasta_file_circ(file, window,gene):
                         continue
 
 # generates flanks for linear sequences
-def flank_fasta_file_lin(file, window,gene):
+def flank_fasta_file_lin(file, window, gene):
     args = get_arguments()
     unfiltered_abricate_file = file + '_resfinder' # name of abricate output for fasta
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header = 0)
@@ -294,7 +307,6 @@ def flank_fasta_file_lin(file, window,gene):
 
                      record.seq = d_lin[(args.include_gene, x)](record, pos, w, l)
                      writer(record, pos[2], w, guid, args.flank, gene_sense)
-
 
                      continue
 
