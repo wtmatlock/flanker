@@ -122,11 +122,7 @@ def flank_positions(data, gene_):
         data["dist"] = [jf.levenshtein_distance(gene_, x) for x in data["GENE"]]
         gene = data.sort_values(by="dist", ascending=True)
 
-    print(gene)
-
     g = gene['GENE'].iloc[0]
-
-    print(type(g))
 
     # LHS flank
     start = int(gene['START'].iloc[0]) # start of gene
@@ -181,7 +177,7 @@ def flank_fasta_file_circ(file, window,gene):
 
         else:
             pos=list(pos)
-            gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
+            gene_sense=abricate_file.loc[abricate_file['GENE']==pos[2]].filter(items=['STRAND'])
 
             log.info(f"Gene {gene} found in {guid}")
 
@@ -274,7 +270,7 @@ def flank_fasta_file_lin(file, window, gene):
             log.error(f"Error: Gene {gene} not found in {guid}")
 
         else:
-             gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
+             gene_sense=abricate_file.loc[abricate_file['GENE']==pos[2]].filter(items=['STRAND'])
 
              gene_sense=str(gene_sense['STRAND'].iloc[0])
 
@@ -369,9 +365,6 @@ def flanker_main():
 
 def main():
     args=get_arguments()
-
-
-
 
     logger = log.getLogger()
 
