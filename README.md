@@ -3,11 +3,11 @@
 This repository accompanies the paper *Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S, Shaw LP, Stoesser N.
                                        Flanker: a tool for comparative genomics of gene flanking regions.
                                        BioRxiv. 2021. doi: https://doi.org/10.1101/2021.02.22.432255*
+                                       
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/flanker/badges/downloads.svg)](https://anaconda.org/bioconda/flanker)
 
 # Documentation
 [Read the Docs](https://flanker.readthedocs.io/en/latest/)
-
-[![Documentation Status](https://readthedocs.org/projects/flanker/badge/?version=latest)](https://flanker.readthedocs.io/en/latest/?badge=latest)
 
 # Reproducibility
 You can recreate the analysis performed in our manuscript and the figures in the Binder environment below (click on the Binder badge, N.B. it is a bit slow to load - once the environment is loaded open the flanker.rmd file).
@@ -16,6 +16,7 @@ You can recreate the analysis performed in our manuscript and the figures in the
 
  # Tests
  ![Tests](https://github.com/wtmatlock/flanker/actions/workflows/test.yml/badge.svg)
+ [![Documentation Status](https://readthedocs.org/projects/flanker/badge/?version=latest)](https://flanker.readthedocs.io/en/latest/?badge=latest)
  
  # License
  Flanker is available under the MIT License.
