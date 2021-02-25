@@ -1,15 +1,13 @@
-# Flanker
+# [Flanker](https://github.com/wtmatlock/flanker)
 
 Flanker is a tool for studying the homology of gene-flanking sequences. It will annotate FASTA/multi-FASTA files for specified genes, then write the flanking sequences to new FASTA files. There is also an optional step to cluster the flanks by sequence identity.
-
-https://github.com/wtmatlock/flanker/
-
 
 
 ## Citation
 
-If you use Flanker in your work please cite our paper (to follow).
+If you use Flanker in your work please cite our [pre-print](https://www.biorxiv.org/content/10.1101/2021.02.22.432255v1):
 
+Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S, Shaw LP, Stoesser N. Flanker: a tool for comparative genomics of gene flanking regions. BioRxiv. 2021. doi: https://doi.org/10.1101/2021.02.22.432255
 
 
 ## Installation
@@ -98,9 +96,9 @@ You should now see many fasta files in the working directory containing upstream
 | ```--cluster``` | Use clustering mode? | ```False``` |
 | ```--outfile``` | Prefix for clustering output file | - |
 | ```--threshold``` | Mash distance threshold for clustering | ```0.001``` |
-| ```--kmer_length```| Kmer length for mash|```21```|
-| ```--sketch_size```| Sketch size for mash|```1000```|
-| ```--threads```| Threads to use for mash|```1```|
+| ```--kmer_length```| *k*-mer length for Mash|```21```|
+| ```--sketch_size```| Sketch size for Mash|```1000```|
+| ```--threads```| Threads to use for Mash|```1```|
 
 **N.B.** Gene queries use exact matching by default, so e.g. querying only ```bla``` will return nothing. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. ```blaCTX-M-15``` becomes ```blaCTX-M-15_1```. Please check your Abricate output if you are unsure of the naming conventions. In closest match mode, the annotation with the smallest [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) to your query will be used.
 
