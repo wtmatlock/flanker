@@ -250,7 +250,7 @@ def flank_fasta_file_circ(file, window, gene):
         abricate_file = filter_abricate(data, guid)
         pos = flank_positions(abricate_file, gene)
 
-        if (pos==True):
+        if pos==True:
             log.warning(f"Error: Gene {gene} not found in {guid}")
 
         else:
