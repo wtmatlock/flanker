@@ -103,7 +103,7 @@ You should now see many fasta files in the working directory containing upstream
 
 **N.B.** Gene queries use exact matching by default, so e.g. querying only ```bla``` will return nothing. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. ```blaCTX-M-15``` becomes ```blaCTX-M-15_1```. Please check your Abricate output if you are unsure of the naming conventions. In closest match mode, the annotation with the smallest [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) to your query will be used.
 
-
+Additionally, there should be **no whitespace** in your .fasta header names. This can be resolved using our [helper script](https://github.com/wtmatlock/flanker/blob/main/scripts/multi_fa_rename.py).
 
 ## Clustering
 
