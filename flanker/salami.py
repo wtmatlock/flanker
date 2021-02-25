@@ -14,14 +14,14 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
     for guid in guids:
         abricate_file=flanker.filter_abricate(data,guid)
         pos = flanker.flank_positions(abricate_file, gene)
-        print(pos)
+
         if pos == True:
             print(f"Error: Gene {gene} not found in {guid}")
 
 
         else:
              gene_sense=abricate_file.loc[abricate_file['GENE']==gene].filter(items=['STRAND'])
-             print(gene_sense)
+
 
 
              gene_sense=str(gene_sense['STRAND'].iloc[0])
@@ -41,7 +41,7 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
              start_left=pos[0]
              start_right=pos[1]
 
-             print(start_left,start_right,step)
+
 
              if include_gene == True:
                  start_left=pos[1]
@@ -73,8 +73,7 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
 
 
                      for i in range(0,stop,step):
-                         print(start_left)
-                         print(start_right)
+
 
                          for record in SeqIO.parse(file, "fasta"):
                              name=str(record.description)
@@ -116,7 +115,9 @@ def salami_main(gene_list,fasta,include_gene,wstep,wstop,out,flank,threads,thres
     for gene in gene_list:
 
         flanker.run_abricate(fasta)
-
+        if flank=='both':
+            flank='upstream'
+            print('Cannot use both for Salami mode, using default upstream (use -f downstream instead if preferred)')
         print("Working on gene {}".format(gene))
         flank_salami_linear(fasta,include_gene,wstep,wstop,gene.strip(),flank)
 
