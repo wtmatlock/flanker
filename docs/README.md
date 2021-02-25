@@ -83,7 +83,7 @@ You should now see many fasta files in the working directory containing upstream
 | ```--mode``` | One of "default" - normal mode, "mm" - multi-allelic cluster, or "sm" - salami-mode| ```default``` |
 | ```--circ``` | Add if your sequence is circularised | ```False``` |
 | ```--include_gene``` | Add if you want the gene included in the output .fasta | ```False``` |
-| ```--closest_match``` | Add if you want to find the closest match to your query by string edit distance | ```False```| 
+| ```--closest_match``` | Add if you want to find the closest match to your query by string edit distance | ```False```|
 | ```--database``` | Specify the database Abricate will use to find the gene(s) | ```ncbi``` |
 | ```--verbose``` | Increase verbosity: 0 := only warnings, 1 := info, 2 := everything. | ```0``` |
 
@@ -130,7 +130,7 @@ If you feed flanker a list of genes (```--list_of_genes```) in default mode (```
 
 ## Salami mode
 
-Salami mode (```--mode sm```)considers each window (of length ```--wstep```) from 0 to ```--wstop``` as a seperate contiguous sequence; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts. N.b at present Salami mode always starts at the edge of the gene and does not include the gene, therefore setting ```--w``` and ```-inc``` currently do nothing in this mode. As with the default mode, you can optionally perform clustering on the output from Salami Mode by using the ```-cl``` flag.
+Salami mode (```--mode sm```)considers each window (of length ```--wstep```) from 0 to ```--wstop``` as a seperate contiguous sequence; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts. N.b at present Salami mode always starts at the edge of the gene and does not include the gene, therefore setting ```--w``` and ```-inc``` currently do nothing in this mode. As with the default mode, you can optionally perform clustering on the output from Salami Mode by using the ```-cl``` flag. You cannot run salami with ```-f both```, if you try to do this salami will default to ```-f upstream```. 
 
 For instance, here we extract 100bp windows from 0-5000bp downstream of the *bla*TEM-1B gene.
 
