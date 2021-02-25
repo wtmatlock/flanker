@@ -35,7 +35,7 @@ pip install git+https://github.com/wtmatlock/flanker
 pip install git+https://github.com/wtmatlock/flanker  # Install Mash and Abricate seperately
 ```
 
-External dependencies
+External dependencies:
 - [Abricate](https://github.com/tseemann/abricate)
 - [Mash](https://github.com/marbl/Mash)
 
@@ -84,6 +84,7 @@ You should now see many fasta files in the working directory containing upstream
 | ```--mode``` | One of "default" - normal mode, "mm" - multi-allelic cluster, or "sm" - salami-mode| ```default``` |
 | ```--circ``` | Add if your sequence is circularised | ```False``` |
 | ```--include_gene``` | Add if you want the gene included in the output .fasta | ```False``` |
+| ```--closest_match``` | Add if you want to find the closest match to your query by string edit distance | ```False```| 
 | ```--database``` | Specify the database Abricate will use to find the gene(s) | ```ncbi``` |
 | ```--verbose``` | Increase verbosity: 0 := only warnings, 1 := info, 2 := everything. | ```0``` |
 
@@ -101,7 +102,7 @@ You should now see many fasta files in the working directory containing upstream
 | ```--sketch_size```| Sketch size for mash|```1000```|
 | ```--threads```| Threads to use for mash|```1```|
 
-**N.B.** Gene queries use exact matching, so e.g. querying only ```bla``` will return nothing. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. ```blaCTX-M-15``` becomes ```blaCTX-M-15_1```. Please check your Abricate output if you are unsure of the naming conventions.
+**N.B.** Gene queries use exact matching by default, so e.g. querying only ```bla``` will return nothing. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. ```blaCTX-M-15``` becomes ```blaCTX-M-15_1```. Please check your Abricate output if you are unsure of the naming conventions. In closest match mode, the annotation with the smallest [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) to your query will be used.
 
 
 
