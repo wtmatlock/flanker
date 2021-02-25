@@ -38,6 +38,10 @@ def test_salami():
 	run('flanker -i test.fasta -g blaKPC-2 -wstop 200 -wstep 100 -m sm', cwd=data_dir)
 	run('rm -f *flank.fasta *_resfinder', cwd=data_dir)
 
+def test_cm():
+	run('flanker -i test.fasta -g blaKPC-x -w 100 -cm', cwd=data_dir)
+	run('rm -f *flank.fasta *_resfinder', cwd=data_dir)
+
 def test_nonexistent():
 	with pytest.raises(subprocess.CalledProcessError):  # FileNotFoundError underneath
 		run('flanker -i nonexistent.fasta -g blaKPC-2 -wstop 200 -wstep 100 -m sm', cwd=data_dir)
