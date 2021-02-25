@@ -7,6 +7,8 @@ This repository accompanies the paper *Matlock W, Lipworth S, Constantinides B, 
 # Documentation
 [Read the Docs](https://flanker.readthedocs.io/en/latest/)
 
+[![Documentation Status](https://readthedocs.org/projects/flanker/badge/?version=latest)](https://flanker.readthedocs.io/en/latest/?badge=latest)
+
 # Reproducibility
 You can recreate the analysis performed in our manuscript and the figures in the Binder environment below (click on the Binder badge, N.B. it is a bit slow to load - once the environment is loaded open the flanker.rmd file).
 
