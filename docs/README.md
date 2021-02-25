@@ -154,3 +154,5 @@ conda activate flanker
 pip install --editable ./
 pytest
 ```
+
+[![Documentation Status](https://readthedocs.org/projects/flanker/badge/?version=latest)](https://flanker.readthedocs.io/en/latest/?badge=latest)
