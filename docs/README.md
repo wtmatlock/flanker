@@ -1,6 +1,6 @@
-# [Flanker](https://github.com/wtmatlock/flanker)
+# Flanker
 
-Flanker is a tool for studying the homology of gene-flanking sequences. It will annotate FASTA/multi-FASTA files for specified genes, then write the flanking sequences to new FASTA files. There is also an optional step to cluster the flanks by sequence identity.
+[Flanker](https://github.com/wtmatlock/flanker) is a tool for studying the homology of gene-flanking sequences. It will annotate FASTA/multi-FASTA files for specified genes, then write the flanking sequences to new FASTA files. There is also an optional step to cluster the flanks by sequence identity.
 
 
 ## Citation
@@ -34,8 +34,8 @@ pip install git+https://github.com/wtmatlock/flanker  # Install Mash and Abricat
 ```
 
 External dependencies:
-- [Abricate](https://github.com/tseemann/abricate)
-- [Mash](https://github.com/marbl/Mash)
+* [Abricate](https://github.com/tseemann/abricate)
+* [Mash](https://github.com/marbl/Mash)
 
 
 
@@ -136,9 +136,6 @@ For instance, here we extract 100bp windows from 0-5000bp downstream of the *bla
 ```
 flanker --fasta_file example.fasta --gene blaTEM-1B --wstop 5000 --wstep 100 --flank downstream --mode sm  
 ```
-
-
-
 
 ## Contributing
 
