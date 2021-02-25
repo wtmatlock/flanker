@@ -18,6 +18,7 @@ Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S
 conda create -n flanker -c bioconda flanker
 conda activate flanker
 ```
+N.B. Bioconda can be tempermental for new releases, so please try the below methods if this doesn't work.
 
 ### Conda + pip
 
