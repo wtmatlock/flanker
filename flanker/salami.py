@@ -53,7 +53,7 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
              for record in SeqIO.parse(file, "fasta"):
 
 
-                 if record.description == guid:
+                 if record.id == guid:
 
                      if gene_sense == '-':
 
@@ -62,7 +62,7 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
                              x = 'downstream'
                          else:
                              x = 'upstream'
-                     name=str(record.description)
+                     
 
 
 
@@ -76,7 +76,7 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
 
 
                          for record in SeqIO.parse(file, "fasta"):
-                             name=str(record.description)
+
                              print(pos[2] + ' found')
 
                              #s = int(start)

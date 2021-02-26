@@ -243,11 +243,14 @@ def flank_fasta_file_circ(file, window, gene):
     data = pd.read_csv(unfiltered_abricate_file, sep='\t', header=0)
 
     guids = data['SEQUENCE'].unique()
+
     log.debug(guids)
 
     for guid in guids:
+        guid=guid.replace(" .*", "")
 
         abricate_file = filter_abricate(data, guid)
+
         pos = flank_positions(abricate_file, gene)
 
         if pos==True:
@@ -367,7 +370,7 @@ def flank_fasta_file_circ(file, window, gene):
                 w = int(window)
                 l = len(record.seq)
                 x = args.flank
-                if record.description == guid:
+                if record.id == guid:
                     if gene_sense == '-':
 
                         #record.seq = record.seq.reverse_complement()
@@ -375,8 +378,6 @@ def flank_fasta_file_circ(file, window, gene):
                             x = 'downstream'
                         else:
                             x = 'upstream'
-
-                    name = record.description
 
                     log.info(pos[2] + ' found!')
 
@@ -422,6 +423,7 @@ def flank_fasta_file_lin(file, window, gene):
     guids = data['SEQUENCE'].unique()
 
     for guid in guids:
+
         abricate_file = filter_abricate(data, guid)
         pos = flank_positions(abricate_file, gene)
         if pos==True:
@@ -480,14 +482,18 @@ def flank_fasta_file_lin(file, window, gene):
 
             # loop through records in fasta
             for record in SeqIO.parse(file, "fasta"):
-                if record.description == guid:
+
+
+
+                if record.id == guid:
+
                     if gene_sense == '-':
 
                         if args.flank == 'upstream':
                             x = 'downstream'
                         else:
                             x = 'upstream'
-                    name = record.description
+
 
                     log.info(f"{pos[2]} found in {record.description}")
 

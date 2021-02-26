@@ -48,6 +48,11 @@ def test_cm():
 	run('ls *blaKPC*flank.fasta',cwd=data_dir)
 	run('rm -f *flank.fasta *_resfinder', cwd=data_dir)
 
+def test_wonky_header():
+	run('flanker -i wonky_header.fasta -g blaKPC-2 -w 100', cwd=data_dir)
+	run('ls *blaKPC*flank.fasta',cwd=data_dir)
+	run('rm -f *flank.fasta *_resfinder', cwd=data_dir)
+
 def test_nonexistent():
 	with pytest.raises(subprocess.CalledProcessError):  # FileNotFoundError underneath
 		run('flanker -i nonexistent.fasta -g blaKPC-2 -wstop 200 -wstep 100 -m sm', cwd=data_dir)
