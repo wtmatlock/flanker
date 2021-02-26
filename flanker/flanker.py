@@ -23,7 +23,7 @@ __author__ = "Samuel Lipworth, William Matlock"
 # arguments for the script
 def get_arguments():
     parser = argparse.ArgumentParser(
-        description="""Flanker (version 0.1.3).
+        description="""Flanker (version 0.1.4).
                        If you use Flanker in your work, please cite us:
                        Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S, Shaw LP, Stoesser N.
                        Flanker: a tool for comparative genomics of gene flanking regions.
