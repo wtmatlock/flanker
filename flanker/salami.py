@@ -49,62 +49,63 @@ def flank_salami_linear(file, include_gene,step, stop,gene,flank):
 
 
 
+             for i in range(0,stop,step):
 
-             for record in SeqIO.parse(file, "fasta"):
+                 for record in SeqIO.parse(file, "fasta"):
 
 
-                 if record.id == guid:
+                     if record.id == guid:
 
-                     if gene_sense == '-':
+                         if gene_sense == '-':
 
                          #record.seq = record.seq.reverse_complement()
-                         if flank == 'upstream':
-                             x = 'downstream'
-                         else:
-                             x = 'upstream'
-                     
-
-
-
-                     l = len(record.seq)
+                            if flank == 'upstream':
+                                x = 'downstream'
+                            else:
+                                x = 'upstream'
 
 
 
 
+                         l = len(record.seq)
 
-                     for i in range(0,stop,step):
 
 
-                         for record in SeqIO.parse(file, "fasta"):
 
-                             print(pos[2] + ' found')
+
+
+
+
+
+
+                         print(pos[2] + ' found')
 
                              #s = int(start)
-                             l = len(record.seq)
+                         l = len(record.seq)
 
-                             if flank == 'upstream':
-
-
-                                 record.seq = record.seq[max(0, start_left-step):start_left]
-
-                                 record.description = f"{record.description} | {pos[2]} | {step}bp window"
-
-                                 flanker.writer(record, pos[2], i, guid, args.flank,gene_sense)
+                         if flank == 'upstream':
 
 
-                                 start_left=start_left-step
+                             record.seq = record.seq[max(0, start_left-step):start_left]
+
+                             record.description = f"{record.description} | {pos[2]} | {step}bp window"
+
+                             flanker.writer(record, pos[2], i, guid, args.flank,gene_sense)
 
 
-                             elif flank == 'downstream':
+                             start_left=start_left-step
 
 
-                                record.seq = record.seq[start_right:min(len(record.seq), start_right + step)]
+                         elif flank == 'downstream':
 
-                                record.description = f"{record.description} | {pos[2]} | {step}bp window"
 
-                                flanker.writer(record, pos[2], i, guid, args.flank,gene_sense)
+                             record.seq = record.seq[start_right:min(len(record.seq), start_right + step)]
 
-                                start_right=start_right+step
+                             record.description = f"{record.description} | {pos[2]} | {step}bp window"
+
+                             flanker.writer(record, pos[2], i, guid, args.flank,gene_sense)
+
+                             start_right=start_right+step
 
 
 
