@@ -367,7 +367,7 @@ def flank_fasta_file_circ(file, window, gene):
                 w = int(window)
                 l = len(record.seq)
                 x = args.flank
-                if record.description == guid:
+                if record.id == guid:
                     if gene_sense == '-':
 
                         #record.seq = record.seq.reverse_complement()
@@ -480,7 +480,7 @@ def flank_fasta_file_lin(file, window, gene):
 
             # loop through records in fasta
             for record in SeqIO.parse(file, "fasta"):
-                if record.description == guid:
+                if record.id == guid:
                     if gene_sense == '-':
 
                         if args.flank == 'upstream':
