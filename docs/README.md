@@ -116,7 +116,7 @@ If you feed flanker a list of genes (```--list_of_genes```) in default mode (```
 
 ## Salami mode
 
-Salami mode (```--mode sm```)considers each window (of length ```--wstep```) from 0 to ```--wstop``` as a seperate contiguous sequence; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts. N.b at present Salami mode always starts at the edge of the gene and does not include the gene, therefore setting ```--w``` and ```-inc``` currently do nothing in this mode. As with the default mode, you can optionally perform clustering on the output from Salami Mode by using the ```-cl``` flag. You cannot run salami with ```-f both```, if you try to do this salami will default to ```-f upstream```. 
+Salami mode (```--mode sm```) considers each window (of length ```--wstep```) from 0 to ```--wstop``` as a seperate contiguous sequence; in default mode these are concatenated together. This is intended to allow detection of recombination/mobile genetic elements which are occur in diverse genetic contexts. At present Salami mode always starts at the edge of the gene and does not include the gene, therefore setting ```--w``` and ```-inc``` currently do nothing in this mode. As with the default mode, you can optionally perform clustering on the output from salami mode by using the ```-cl``` flag. You cannot run salami with ```-f both```, if you try to do this alami will default to ```-f upstream```. 
 
 For instance, here we extract 100bp windows from 0-5000bp downstream of the *bla*TEM-1B gene.
 
