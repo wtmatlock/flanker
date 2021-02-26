@@ -40,7 +40,7 @@ def test_cluster():
 
 def test_salami():
 	run('flanker -i test.fasta -g blaKPC-2 -wstop 200 -wstep 100 -m sm', cwd=data_dir)
-	run(';s *flank.fasta',cwd=data_dir)
+	run('ls *flank.fasta',cwd=data_dir)
 	run('rm -f *flank.fasta *_resfinder', cwd=data_dir)
 
 def test_cm():
