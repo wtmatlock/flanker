@@ -30,8 +30,6 @@ External dependencies:
 - [Abricate](https://github.com/tseemann/abricate)
 - [Mash](https://github.com/marbl/Mash)
 
-
-
 ## Quickstart
 
 First we download some hybrid assemblies of plasmid genomes from *David, Sophia, et al. "Integrated chromosomal and plasmid sequence analyses reveal diverse modes of carbapenemase gene spread among Klebsiella pneumoniae." Proceedings of the National Academy of Sciences 117.40 (2020): 25043-25054.*
