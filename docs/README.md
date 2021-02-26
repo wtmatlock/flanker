@@ -27,8 +27,8 @@ pip install git+https://github.com/wtmatlock/flanker  # Install Mash and Abricat
 ```
 
 External dependencies:
-* [Abricate](https://github.com/tseemann/abricate)
-* [Mash](https://github.com/marbl/Mash)
+- [Abricate](https://github.com/tseemann/abricate)
+- [Mash](https://github.com/marbl/Mash)
 
 
 
@@ -93,10 +93,6 @@ You should now see many fasta files in the working directory containing upstream
 | ```--sketch_size```| Sketch size for Mash|```1000```|
 | ```--threads```| Threads to use for Mash|```1```|
 
-**N.B.** Gene queries use exact matching by default, so e.g. querying only ```bla``` will return nothing. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. ```blaCTX-M-15``` becomes ```blaCTX-M-15_1```. Please check your Abricate output if you are unsure of the naming conventions. In closest match mode, the annotation with the smallest [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) to your query will be used.
-
-Additionally, there should be **no whitespace** in your .fasta header names. This can be resolved using our [helper script](https://github.com/wtmatlock/flanker/blob/main/scripts/multi_fa_rename.py).
-
 ## Clustering
 
 Having extracted flanking sequences around a gene, you might then want to cluster them into groups which share high sequence identity. Flanker does this using [single-linkage clustering](https://en.wikipedia.org/wiki/Single-linkage_clustering) of Mash distances. The method is very similar to that used by Ryan Wick in his [Assembly-Dereplicator](https://github.com/rrwick/Assembly-Dereplicator) package (and indeed we re-use several of his functions).
@@ -129,6 +125,11 @@ For instance, here we extract 100bp windows from 0-5000bp downstream of the *bla
 ```
 flanker --fasta_file example.fasta --gene blaTEM-1B --wstop 5000 --wstep 100 --flank downstream --mode sm  
 ```
+
+## Troubleshooting
+
+- Your FASTA headers should have no whitespace. This can be resolved using our [helper script](https://github.com/wtmatlock/flanker/blob/main/scripts/multi_fa_rename.py).
+- Gene queries use exact matching by default, so e.g. querying only ```bla``` will return nothing. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. ```blaCTX-M-15``` becomes ```blaCTX-M-15_1```. Please check your Abricate output if you are unsure of the naming conventions. In closest match mode, the annotation with the smallest [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) to your query will be used.
 
 ## Contributing
 
