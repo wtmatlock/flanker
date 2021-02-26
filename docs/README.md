@@ -14,6 +14,8 @@ Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S
 
 ### Conda + pip
 
+This is the recommended method for installation.
+
 ```
 conda create -n flanker -c bioconda python=3 abricate=1.0.1 mash
 conda activate flanker
@@ -55,8 +57,6 @@ flanker --flank upstream --window 0 --wstop 5000 --wstep 100 --gene blaKPC-2 --f
 ```
 
 You should now see many fasta files in the working directory containing upstream flanking regions from 0 to 4900 bp.
-
-
 
 ## Usage
 
@@ -106,13 +106,9 @@ sed -i '1 i\flank,cluster' all_out
 
 You can take this output and create figures similar to those in our manuscript (see the Binder on the Flanker GitHub page) or use in custom downstream applications.
 
-
-
 ## Multi-allelic mode
 
 If you feed flanker a list of genes (```--list_of_genes```) in default mode (```--mode default```), flanker considers each of these in turn. However, if you turn on multi-allelic mode (```--mode mm```), it considers all genes in the list for each window. This allows you to detect flanking regions which are similar between different alleles of genes (e.g. *bla*KPC-2/3 etc) and between completely different genes.
-
-
 
 ## Salami mode
 
@@ -126,7 +122,6 @@ flanker --fasta_file example.fasta --gene blaTEM-1B --wstop 5000 --wstep 100 --f
 
 ## Troubleshooting
 
-- Your FASTA headers should have no whitespace. This can be resolved using our [helper script](https://github.com/wtmatlock/flanker/blob/main/scripts/multi_fa_rename.py).
 - Gene queries use substring matching by default, so e.g. querying ```bla``` will return some beta-lactamase, if it's there. Also be mindful that non-default databases, such as Resfinder, add indexing after annotation names e.g. ```blaCTX-M-15``` becomes ```blaCTX-M-15_1```. Please check your Abricate output if you are unsure of the naming conventions. In closest match mode, the annotation with the smallest [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) to your query will be used.
 
 ## Contributing
