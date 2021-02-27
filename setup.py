@@ -11,7 +11,7 @@ setup(
     license='LICENSE',
     python_requires='>=3.6',
     packages=['flanker'],
-    install_requires=['pandas', 'biopython', 'networkx', 'jellyfish'],
+    install_requires=['pandas', 'biopython', 'networkx', 'Levenshtein'],
     entry_points={'console_scripts':['flanker=flanker.flanker:main']},
     classifiers=[
         'Intended Audience :: Science/Research',
