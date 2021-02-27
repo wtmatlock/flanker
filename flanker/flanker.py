@@ -10,7 +10,7 @@ from pathlib import Path
 import pandas as pd
 from Bio import SeqIO
 
-import jellyfish as jf
+from Levenshtein import distance
 
 from flanker import cluster, salami
 
@@ -19,15 +19,13 @@ start = time.time()
 
 __author__ = "Samuel Lipworth, William Matlock"
 
-
 # arguments for the script
 def get_arguments():
     parser = argparse.ArgumentParser(
-        description="""Flanker (version 0.1.4).
-                       If you use Flanker in your work, please cite us:
-                       Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S, Shaw LP, Stoesser N.
-                       Flanker: a tool for comparative genomics of gene flanking regions.
-                       BioRxiv. 2021. doi: https://doi.org/10.1101/2021.02.22.432255""",
+        description="""Flanker (version 0.1.5). If you use Flanker in your work, please cite us:
+                       Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D,
+                       Hopkins S, Shaw LP, Stoesser N.Flanker: a tool for comparative genomics of
+                       gene flanking regions.BioRxiv. 2021. doi: https://doi.org/10.1101/2021.02.22.432255""",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     required = parser.add_argument_group('required arguments')
 
@@ -185,7 +183,7 @@ def flank_positions(data, gene_):
 
     else:
         data["dist"] = [
-            jf.levenshtein_distance(
+            distance(
                 gene_, x) for x in data["GENE"]]
         gene = data.sort_values(by="dist", ascending=True)
 
