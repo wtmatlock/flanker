@@ -28,7 +28,7 @@ requirements:
     - abricate>=1.0.1
     - mash>=2.2.2
     - networkx>=2.5
-    - python-levenshtein==0.12.1
+    - python-levenshtein==0.12.2
 
 test:
   imports:
