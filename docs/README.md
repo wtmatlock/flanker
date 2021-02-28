@@ -12,15 +12,19 @@ Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S
 
 ## Installation
 
-### Conda + pip
+### Bioconda
 
-This is the recommended method for installation.
+```conda install -c bioconda flanker```
+
+### Conda + pip
 
 ```
 conda create -n flanker -c bioconda python=3 abricate=1.0.1 mash
 conda activate flanker
 pip install git+https://github.com/wtmatlock/flanker
 ```
+
+This is may be slightly ahead of the Bioconda release at times.
 
 ### pip
 
