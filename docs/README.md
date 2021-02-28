@@ -14,7 +14,9 @@ Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S
 
 ### Bioconda
 
-```conda install -c bioconda flanker```
+```
+conda install -c bioconda flanker
+```
 
 ### Conda + pip
 
