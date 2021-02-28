@@ -3,7 +3,7 @@
 This repository accompanies the paper *Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S, Shaw LP, Stoesser N.
                                        Flanker: a tool for comparative genomics of gene flanking regions.
                                        BioRxiv. 2021. doi: https://doi.org/10.1101/2021.02.22.432255*
-                                       
+                                      
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/flanker/badges/downloads.svg)](https://anaconda.org/bioconda/flanker)
 
 # Documentation
