@@ -12,7 +12,7 @@ Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S
 
 ## Installation
 
-### Bioconda
+### Bioconda (version 0.1.5)
 
 ```
 conda install -c bioconda flanker
