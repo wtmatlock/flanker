@@ -374,6 +374,8 @@ def flank_fasta_file_circ(file, window, gene):
                         #record.seq = record.seq.reverse_complement()
                         if args.flank == 'upstream':
                             x = 'downstream'
+                        elif args.flank =='both':
+                            x = 'both'
                         else:
                             x = 'upstream'
 
@@ -489,6 +491,8 @@ def flank_fasta_file_lin(file, window, gene):
 
                         if args.flank == 'upstream':
                             x = 'downstream'
+                        elif args.flank =='both':
+                            x = 'both'
                         else:
                             x = 'upstream'
 
