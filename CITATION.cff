@@ -1,0 +1,39 @@
+# YAML 1.2
+---
+authors: 
+  -
+    family-names: Matlock
+    given-names: W
+  -
+    family-names: Lipworth
+    given-names: S
+  -
+    family-names: Constantinides
+    given-names: B
+  -
+    family-names: Peto
+    given-names: TEA
+  -
+    family-names: Walker
+    given-names: AS
+  -
+    family-names: Crook
+    given-names: D
+  -
+    family-names: Hopkins
+    given-names: S
+  -
+    family-names: Shaw
+    given-names: LP
+  -
+    family-names: Stoesser
+    given-names: N
+cff-version: "1.1.0"
+date-released: 2021-02-27
+doi: "10.1101/2021.02.22.432255"
+license: MIT
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://github.com/wtmatlock/flanker"
+title: "Flanker: a tool for comparative genomics of gene flanking regions"
+version: "0.1.5"
+...
