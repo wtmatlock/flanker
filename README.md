@@ -6,7 +6,6 @@ This repository accompanies the paper *Matlock W, Lipworth S, Constantinides B, 
  
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/flanker/badges/downloads.svg)](https://anaconda.org/bioconda/flanker)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/flanker/badges/latest_release_date.svg)](https://anaconda.org/bioconda/flanker)
-[![DOI:10.1101/2021.02.22.432255](http://img.shields.io/badge/DOI-10.1101/2021.02.22.432255-<>.svg)](https://doi.org/10.1101/2021.02.22.432255)
 
 # Documentation
 [Read the Docs](https://flanker.readthedocs.io/en/latest/)
