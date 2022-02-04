@@ -6,8 +6,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest]
-        python-version: [3.6, 3.9]
+        os: [ubuntu-latest, macos-latest]
+        python-version: ['3.6', '3.9', '3.10']
     name: Python ${{ matrix.python-version }} (${{ matrix.os }})
     steps:
       - uses: actions/checkout@v2
@@ -19,7 +19,7 @@ jobs:
           conda-channels: conda-forge, bioconda
       - name: Install
         run: |
-          conda install abricate=1.0.1 mash pytest
+          conda install abricate mash pytest
           pip install .
       - name: Test
         run: |
