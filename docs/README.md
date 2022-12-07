@@ -5,9 +5,9 @@
 
 ## Citation
 
-If you use Flanker in your work please cite our [pre-print](https://www.biorxiv.org/content/10.1101/2021.02.22.432255v1):
+If you use Flanker in your work please cite our [paper](https://www.microbiologyresearch.org/content/journal/mgen/10.1099/mgen.0.000634):
 
-Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S, Shaw LP, Stoesser N. Flanker: a tool for comparative genomics of gene flanking regions. BioRxiv. 2021. doi: https://doi.org/10.1101/2021.02.22.432255
+*Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S, Shaw LP, Stoesser N. Flanker: a tool for comparative genomics of gene flanking regions. Microbial Genomics. 2021. doi: https://doi.org/10.1099/mgen.0.000634*
 
 
 ## Installation
