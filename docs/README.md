@@ -15,7 +15,7 @@ Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S
 ### Mamba (v. 1.1.0) + Conda (v. 22.9.0) + pip (v. 22.3.1)
 
 ```
-conda install mamba -n base -c conda-forge
+conda install mamba=1.1.0 -n base -c conda-forge
 mamba create -n flanker_env -c bioconda python=3.7 abricate=1.0.1 pandas=1.2 biopython=1.78  mash=2.2.2 networkx=2.5 python-levenshtein=0.12.2
 mamba activate flanker_env
 pip install git+https://github.com/wtmatlock/flanker
