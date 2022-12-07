@@ -12,31 +12,15 @@ Matlock W, Lipworth S, Constantinides B, Peto TEA, Walker AS, Crook D, Hopkins S
 
 ## Installation
 
-### Bioconda (version 0.1.5)
+### Mamba (v. 1.1.0) + Conda (v. 22.9.0) + pip (v. 22.3.1)
 
 ```
-conda install -c bioconda flanker
-```
-
-### Conda + pip
-
-```
-conda create -n flanker -c bioconda python=3 abricate=1.0.1 mash
-conda activate flanker
+conda install mamba -n base -c conda-forge
+mamba create -n flanker_env -c bioconda python=3.7 abricate=1.0.1 pandas=1.2 biopython=1.78  mash=2.2.2 networkx=2.5 python-levenshtein=0.12.2
+mamba activate flanker_env
 pip install git+https://github.com/wtmatlock/flanker
+flanker -h
 ```
-
-This is may be slightly ahead of the Bioconda release at times.
-
-### pip
-
-```
-pip install git+https://github.com/wtmatlock/flanker  # Install Mash and Abricate seperately
-```
-
-External dependencies:
-- [Abricate](https://github.com/tseemann/abricate)
-- [Mash](https://github.com/marbl/Mash)
 
 ## Quickstart
 
