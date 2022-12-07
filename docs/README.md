@@ -12,7 +12,7 @@ If you use Flanker in your work please cite our [paper](https://www.microbiology
 
 ## Installation
 
-### Mamba (v. 1.1.0) + Conda (v. 22.9.0) + pip (v. 22.3.1)
+### Conda (v. 22.9.0) + pip (v. 22.3.1)
 
 ```
 conda install mamba=1.1.0 -n base -c conda-forge
