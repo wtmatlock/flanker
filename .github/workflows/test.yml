@@ -19,7 +19,7 @@ jobs:
           conda-channels: conda-forge, bioconda
       - name: Install
         run: |
-          conda install mamba=1.1.0 -n base -c conda-forge
+          conda install mamba=1.1.0 pytest -n base -c conda-forge
           mamba create -n flanker-test -c bioconda python=3.7 abricate=1.0.1 pandas=1.2 biopython=1.78  mash=2.2.2 networkx=2.5 python-levenshtein=0.12.2
           pip install .
       - name: Test
