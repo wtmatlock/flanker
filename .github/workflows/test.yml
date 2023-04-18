@@ -17,7 +17,6 @@ jobs:
           update-conda: true
           python-version: ${{ matrix.python-version }}
           conda-channels: conda-forge, bioconda
-          activate-environment: flanker-test
       - name: Install
         run: |
           conda install mamba=1.1.0 -n base -c conda-forge
@@ -26,4 +25,3 @@ jobs:
       - name: Test
         run: |
           pytest -s
-
