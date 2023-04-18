@@ -12,7 +12,7 @@ If you use Flanker in your work please cite our [paper](https://www.microbiology
 
 ## Installation
 
-### Conda (v. 22.9.0) + pip (v. 22.3.1)
+### Conda + pip
 
 ```
 conda install mamba=1.1.0 -n base -c conda-forge
@@ -43,7 +43,7 @@ mv david_plasmids_renamed.fasta david_plasmids.fasta
 Now you are ready to use Flanker. In this example we are going to compare the flanking sequences around *bla*KPC-2. We are going to extract windows from 0bp (```--window```) to 5000bp (```--wstop```) base pairs in 100bp chuncks (```--wstep```) to the upsteam (```--flank upstream```) of the gene. We will include the gene (```--include_gene```) and use the default NCBI database.
 
 ```
-flanker --flank upstream --window 0 --wstop 5000 --wstep 100 --gene blaKPC-2 --fasta_file david_plasmids.fasta --include_gene
+flanker --flank upstream --window 0 -wstop 5000 -wstep 100 --gene blaKPC-2 --fasta_file david_plasmids.fasta --include_gene
 ```
 
 You should now see many fasta files in the working directory containing upstream flanking regions from 0 to 4900 bp.
