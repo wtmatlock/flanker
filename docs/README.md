@@ -12,7 +12,7 @@ If you use Flanker in your work please cite our [paper](https://www.microbiology
 
 ## Installation
 
-### Conda + pip
+### Conda/mamba + pip
 
 ```
 conda install mamba=1.1.0 -n base -c conda-forge
@@ -21,7 +21,15 @@ mamba activate flanker_env
 pip install git+https://github.com/wtmatlock/flanker
 flanker -h
 ```
+If you are having trouble, one thing to check is the order of your conda channels prioir to installation:
 
+```
+$cat .condarc
+channels:
+  - conda-forge
+  - defaults
+ ```
+ 
 ## Quickstart
 
 First we download some hybrid assemblies of plasmid genomes from *David, Sophia, et al. "Integrated chromosomal and plasmid sequence analyses reveal diverse modes of carbapenemase gene spread among Klebsiella pneumoniae." Proceedings of the National Academy of Sciences 117.40 (2020): 25043-25054.*
