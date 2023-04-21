@@ -12,16 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Setup conda
-        uses: s-weigand/setup-conda@v1
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          update-conda: true
+          auto-update-conda: true
+          miniforge-variant: Mambaforge
+          channels: conda-forge, bioconda
           python-version: ${{ matrix.python-version }}
-          conda-channels: conda-forge, bioconda
-      - name: Install
+          activate-environment: flanker-test
+          environment-file: flanker-test.yml
+          use-mamba: true     
+      - name: Build flanker environment
         run: |
-          conda install mamba=1.1.0 pytest -n base -c conda-forge
-          mamba create -n flanker-test -c bioconda python=3.7 abricate=1.0.1 pandas=1.2 biopython=1.78  mash=2.2.2 networkx=2.5 python-levenshtein=0.12.2
-          pip install .
+          conda activate flanker-test
+          conda install pytest
+          pip install .         
       - name: Test
         run: |
           pytest -s
