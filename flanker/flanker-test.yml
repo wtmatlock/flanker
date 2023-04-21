@@ -1,0 +1,13 @@
+name: flanker-test
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+- python=3.7.12
+- abricate=1.0.1
+- pandas=1.2.5
+- biopython=1.78
+- mash=2.2.2
+- networkx=2.5.1
+- python-levenshtein
