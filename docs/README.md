@@ -28,7 +28,7 @@ $cat .condarc
 channels:
   - conda-forge
   - defaults
- ```
+```
  
 ## Quickstart
 
