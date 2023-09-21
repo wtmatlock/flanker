@@ -20,11 +20,10 @@ jobs:
       - name: Python ${{ matrix.python-version }} (${{ matrix.os }})
         uses: actions/checkout@v2
       
-      - name: Create environment with Mamba
+      - name: Create environment with Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
-          mamba-version: "*"
           channels: conda-forge,bioconda,defaults
           auto-activate-base: false
           activate-environment: flanker-test
@@ -33,20 +32,11 @@ jobs:
       - name: Check solution
         run: |
           conda --version
-          mamba --version
-          mamba env export
-          
-      - name: Debug Mamba Execution
-        run: |
-          set -x  # Enable debugging output
-          mamba env update -n flanker-test -f flanker-test.yml
-        env:
-          MAMBA_FORCE_REINSTALL: true  # Sometimes useful to force reinstallation
           
       - name: Build flanker environment
         run: |
-          mamba activate flanker-test
-          mamba install pytest
+          conda activate flanker-test
+          conda install pytest
           pip install .       
           
       - name: Run tests
