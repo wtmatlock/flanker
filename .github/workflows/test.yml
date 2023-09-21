@@ -4,22 +4,20 @@ on:
     paths:
       - 'flanker-test.yaml'
       - '.github/workflows/text.yaml'
-
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  create-env:
     strategy:
       matrix:
         os: [macos-latest]
         python-version: [3.6, 3.9]
-    name: Python ${{ matrix.python-version }} (${{ matrix.os }})
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: bash -l {0}
-        
     steps:
       - name: Python ${{ matrix.python-version }} (${{ matrix.os }})
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
       
       - name: create environment with mamba
         uses: conda-incubator/setup-miniconda@v2
