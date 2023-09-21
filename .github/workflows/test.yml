@@ -15,12 +15,14 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
+          channels: conda-forge, bioconda, defaults
           miniforge-variant: Mambaforge
-          channels: conda-forge, bioconda
           python-version: ${{ matrix.python-version }}
           activate-environment: flanker-test
           environment-file: flanker-test.yml
-          use-mamba: true     
+          use-mamba: true
+          mamba-version: "*"
+          auto-activate-base: false          
       - name: Check solution
         run: |
           mamba env export
