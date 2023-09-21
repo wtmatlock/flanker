@@ -19,7 +19,7 @@ jobs:
           channels: conda-forge, bioconda
           python-version: ${{ matrix.python-version }}
           activate-environment: flanker-test
-          environment-file: main/flanker-test.yml
+          environment-file: flanker-test.yml
           use-mamba: true     
       - name: Check solution
         run: |
