@@ -1,35 +1,46 @@
-name: Tests
-on: [push]
-
+name: flanker-test
+on:
+  push:
+    paths:
+      - 'flanker-test.yaml'
+      - '.github/workflows/text.yaml'
 jobs:
-  build:
+  create-env:
+    name: ${{ matrix.os }} 
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+        
     strategy:
       matrix:
         os: [macos-latest]
         python-version: [3.6, 3.9]
-    name: Python ${{ matrix.python-version }} (${{ matrix.os }})
+        
     steps:
+      - name: Python ${{ matrix.python-version }} (${{ matrix.os }})
       - uses: actions/checkout@v2
-      - name: Setup conda
+      
+      - name: create environment with mamba
         uses: conda-incubator/setup-miniconda@v2
         with:
-          auto-update-conda: true
-          channels: conda-forge, bioconda, defaults
-          miniforge-variant: Mambaforge
           python-version: ${{ matrix.python-version }}
+          mamba-version: "*"
+          channels: conda-forge,bioconda,defaults
+          auto-activate-base: false
           activate-environment: flanker-test
           environment-file: flanker-test.yml
-          mamba-version: "*"
-          auto-activate-base: false          
+                
       - name: Check solution
         run: |
           mamba env export
+          
       - name: Build flanker environment
         run: |
           mamba activate flanker-test
           mamba install pytest
-          pip install .         
-      - name: Test
+          pip install .       
+          
+      - name: Run tests
         run: |
           pytest -s
