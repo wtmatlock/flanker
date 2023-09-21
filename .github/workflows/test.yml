@@ -1,9 +1,7 @@
 name: flanker-test
 on:
   push:
-    paths:
-      - 'flanker-test.yaml'
-      - '.github/workflows/test.yaml'
+
 jobs:
   create-env:
     strategy:
