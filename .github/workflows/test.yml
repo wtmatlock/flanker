@@ -21,10 +21,13 @@ jobs:
           activate-environment: flanker-test
           environment-file: main/flanker-test.yml
           use-mamba: true     
+      - name: Check solution
+      run: |
+        mamba env export
       - name: Build flanker environment
         run: |
-          conda activate flanker-test
-          conda install pytest
+          mamba activate flanker-test
+          mamba install pytest
           pip install .         
       - name: Test
         run: |
