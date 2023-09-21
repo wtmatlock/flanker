@@ -14,10 +14,13 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
+      - name: Update Conda
+        run: conda update -n base -c defaults conda
+        
       - name: Python ${{ matrix.python-version }} (${{ matrix.os }})
         uses: actions/checkout@v2
       
-      - name: create environment with mamba
+      - name: Create environment with Mamba
         uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
@@ -29,6 +32,8 @@ jobs:
                 
       - name: Check solution
         run: |
+          conda --version
+          mamba --version
           mamba env export
           
       - name: Build flanker environment
