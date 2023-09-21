@@ -6,16 +6,15 @@ on:
       - '.github/workflows/text.yaml'
 jobs:
   create-env:
+    strategy:
+      matrix:
+        os: [macos-latest]
+        python-version: [3.6, 3.9]  
     name: ${{ matrix.os }} 
     runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: bash -l {0}
-        
-    strategy:
-      matrix:
-        os: [macos-latest]
-        python-version: [3.6, 3.9]
         
     steps:
       - name: Python ${{ matrix.python-version }} (${{ matrix.os }})
