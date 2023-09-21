@@ -22,8 +22,8 @@ jobs:
           environment-file: main/flanker-test.yml
           use-mamba: true     
       - name: Check solution
-      run: |
-        mamba env export
+        run: |
+          mamba env export
       - name: Build flanker environment
         run: |
           mamba activate flanker-test
