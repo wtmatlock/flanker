@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - 'flanker-test.yaml'
-      - '.github/workflows/text.yaml'
+      - '.github/workflows/test.yaml'
 jobs:
   create-env:
     strategy:
