@@ -36,6 +36,13 @@ jobs:
           mamba --version
           mamba env export
           
+      - name: Debug Mamba Execution
+        run: |
+          set -x  # Enable debugging output
+          mamba env update -n flanker-test -f flanker-test.yml
+        env:
+          MAMBA_FORCE_REINSTALL: true  # Sometimes useful to force reinstallation
+          
       - name: Build flanker environment
         run: |
           mamba activate flanker-test
