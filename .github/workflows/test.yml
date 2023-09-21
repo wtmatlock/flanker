@@ -4,14 +4,15 @@ on:
     paths:
       - 'flanker-test.yaml'
       - '.github/workflows/text.yaml'
+
 jobs:
-  create-env:
+  build:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macos-latest]
-        python-version: [3.6, 3.9]  
-    name: ${{ matrix.os }} 
-    runs-on: ${{ matrix.os }}
+        python-version: [3.6, 3.9]
+    name: Python ${{ matrix.python-version }} (${{ matrix.os }})
     defaults:
       run:
         shell: bash -l {0}
