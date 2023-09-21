@@ -13,12 +13,17 @@ jobs:
     defaults:
       run:
         shell: bash -l {0}
+        
     steps:
-      - name: Update Conda
-        run: conda update -n base -c defaults conda
         
       - name: Python ${{ matrix.python-version }} (${{ matrix.os }})
         uses: actions/checkout@v2
+            
+      - name: Verify Conda installation
+        run: ls -l /usr/local/miniconda/condabin/conda
+  
+      - name: Update Conda
+        run: conda update -n base -c defaults conda
       
       - name: Create environment with Conda
         uses: conda-incubator/setup-miniconda@v2
