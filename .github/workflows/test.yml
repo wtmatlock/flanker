@@ -8,42 +8,40 @@ jobs:
       matrix:
         os: [macos-latest]
         python-version: [3.6, 3.9]
-    name: ${{ matrix.os }}
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: bash -l {0}
-        
     steps:
-        
-      - name: Python ${{ matrix.python-version }} (${{ matrix.os }})
+      - name: Check out repository
         uses: actions/checkout@v2
-            
+
       - name: Verify Conda installation
-        run: ls -l /usr/local/miniconda/condabin/conda
-  
-      - name: Update Conda
-        run: conda update -n base -c defaults conda
-      
-      - name: Create environment with Conda
+        run: |
+          ls -l /usr/local/miniconda/condabin/conda || echo "Conda not installed"
+
+      - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
           channels: conda-forge,bioconda,defaults
           auto-activate-base: false
-          activate-environment: flanker-test
-          environment-file: flanker-test.yml
-                
-      - name: Check solution
+
+      - name: Update Conda
         run: |
-          conda --version
-          
-      - name: Build flanker environment
+          conda update -n base -c defaults conda -y
+
+      - name: Create and Activate Environment
+        run: |
+          conda env create -f flanker-test.yml --name flanker-test
+          conda activate flanker-test
+          conda info --envs
+
+      - name: Install Dependencies
         run: |
           conda activate flanker-test
-          conda install pytest
-          pip install .       
-          
-      - name: Run tests
+          conda install pytest -y
+          pip install .
+
+      - name: Run Tests
         run: |
+          conda activate flanker-test
           pytest -s
