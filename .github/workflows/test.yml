@@ -26,4 +26,5 @@ jobs:
           auto-activate-base: false
           conda-remove-defaults: true
       - run: pip install .
+      - run: pip install pytest
       - run: python -m pytest
