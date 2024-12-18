@@ -12,7 +12,7 @@ jobs:
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: 3.9  
+          python-version: 3.9  # Use only Python 3.9
           channels: conda-forge,bioconda,defaults
           auto-activate-base: false
           miniconda-version: "latest"
@@ -24,7 +24,7 @@ jobs:
       - name: Initialize Conda for the shell
         run: |
           conda init bash  # Initialize Conda for bash shell
-          source ~/.bashrc  # Apply the initialization
+          source ~/.bash_profile  # Apply the initialization by sourcing .bash_profile
 
       - name: Update Conda
         run: |
