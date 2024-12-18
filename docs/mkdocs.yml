@@ -1,7 +1,7 @@
 site_name: Flanker Documentation		
 
 nav:		
-    - Home: README.md		
+    - Home: docs/README.md		
 
 theme:
     name: readthedocs
