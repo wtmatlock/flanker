@@ -14,16 +14,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Verify Conda installation
-        run: |
-          ls -l /usr/local/miniconda/condabin/conda || echo "Conda not installed"
-
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
           channels: conda-forge,bioconda,defaults
           auto-activate-base: false
+          miniconda-version: "latest"  # Specify Miniconda version
+
+      - name: Verify Conda installation
+        run: |
+          ls -l /usr/local/miniconda/condabin/conda || echo "Conda not installed"
 
       - name: Update Conda
         run: |
